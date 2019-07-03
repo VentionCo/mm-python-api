@@ -95,11 +95,11 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
-print "Controller connected"
+print ( "Controller connected" )
 ```
 
 #### Output
@@ -140,13 +140,13 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
 machine_motion_example = machine_motion_example.configMachineMotionIp(NETWORK_MODE.static, "192.168.0.2", "255.255.255.0", "192.168.0.1")
 
-print "--> Controller connected & ethernet interface configured (static)"
+print ( "--> Controller connected & ethernet interface configured (static)" )
 ```
 
 #### Output 1
@@ -167,13 +167,13 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
 machine_motion_example = machine_motion_example.configMachineMotionIp(NETWORK_MODE.dhcp, "", "", "")
 
-print "--> Controller connected & ethernet interface configured (dhcp)"
+print ( "--> Controller connected & ethernet interface configured (dhcp)" )
 ```
 
 #### Output 2
@@ -210,14 +210,14 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
 # Configure the axis number one, 8 uSteps and 150 mm / turn for a timing belt
 machine_motion_example = machine_motion_example.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
 
-print "--> Controller axis 1 configured"
+print ( "--> Controller axis 1 configured" )
 ```
 
 #### Output
@@ -253,14 +253,14 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
 # Saving a string on the controller
 machine_motion_example = machine_motion_example.saveData("data_1", "save_this_string_on_the_controller")
 
-print "--> Data sent on controller"
+print ( "--> Data sent on controller" )
 ```
 
 ---
@@ -286,7 +286,7 @@ def templateCallback(data):
 
 # Define a callback to print the data retrieved using the getData function
 def printGetDataResult(data):
-   print "--> Retrieved data = " + data
+   print ( "--> Retrieved data = " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -325,7 +325,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -334,7 +334,7 @@ machine_motion_example.emitHome(1)
 # Wait for the message to be acknowledged by the motion controller
 while machine_motion_example.isReady() != "true": pass
 
-print "--> This line executes after the motion controller has acknowledged receipt of the command."
+print ( "--> This line executes after the motion controller has acknowledged receipt of the command." )
 
 ```
 
@@ -368,7 +368,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -378,7 +378,7 @@ machine_motion_example.emitHome(1)
 while machine_motion_example.isReady() != "true": pass
 machine_motion_example.waitForMotionCompletion()
 
-print "--> This line executes after the motion controller has acknowledged the reception of the command."
+print ( "--> This line executes after the motion controller has acknowledged the reception of the command." )
 
 ```
 
@@ -422,14 +422,14 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
 # Send a stop command to the machine (this works even if the machine has not started moving yet)
 machine_motion_example.emitStop()
 
-print "--> Machine Stopped"
+print ( "--> Machine Stopped" )
 
 ```
 
@@ -461,7 +461,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -469,7 +469,7 @@ machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_
 machine_motion_example.emitHomeAll()
 machine_motion_example.waitForMotionCompletion()
 
-print "--> All axes are now at home position."
+print ( "--> All axes are now at home position." )
 
 ```
 
@@ -492,7 +492,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -500,7 +500,7 @@ machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_
 machine_motion_example.emitHome(1)
 machine_motion_example.waitForMotionCompletion()
 
-print "--> Axis 1 is now at home position."
+print ( "--> Axis 1 is now at home position." )
 
 ```
 
@@ -546,14 +546,14 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
 # Configuring the travel speed to 10,000 mm / min
 machine_motion_example.emitSpeed(10000)
 
-print "--> Machine moves are not set to 10 000 mm / min"
+print ( "--> Machine moves are not set to 10 000 mm / min" )
 
 ```
 
@@ -575,14 +575,14 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
 # Configuring the travel speed to 1000 mm / second^2
 machine_motion_example.emitAcceleration(1000)
 
-print "--> Machine moves are not set to accelerate @ 1000 mm / second^2"
+print ( "--> Machine moves are not set to accelerate @ 1000 mm / second^2" )
 
 ```
 
@@ -639,7 +639,7 @@ machine_motion_example.waitForMotionCompletion()
 machine_motion_example.emitAbsoluteMove(1, 100)
 machine_motion_example.waitForMotionCompletion()
 
-print "--> Example completed."
+print ( "--> Example completed." )
 
 ```
 
@@ -691,7 +691,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -712,7 +712,7 @@ machine_motion_example.waitForMotionCompletion()
 machine_motion_example.emitRelativeMove(1, "negative", 100)
 machine_motion_example.waitForMotionCompletion()
 
-print "--> Example completed."
+print ( "--> Example completed." )
 
 ```
 
@@ -761,7 +761,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -779,7 +779,7 @@ machine_motion_example.waitForMotionCompletion()
 machine_motion_example.emitgCode("G0 X500 Y500 F10000")
 machine_motion_example.waitForMotionCompletion()
 
-print "--> Example completed."
+print ( "--> Example completed." )
 
 ```
 
@@ -860,11 +860,11 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
    
 # Define a callback to invoke when a control device is attached to the controller
 def attachControlDeviceCallback(data):
-    print "Attach control device callback: " + data      
+    print ( "Attach control device callback: " + data )     
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -897,11 +897,11 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
    
 # Define a callback to invoke when a control device is attached to the controller
 def attachControlDeviceCallback(data):
-    print "Attach control device callback: " + data   
+    print ( "Attach control device callback: " + data )  
 
 # Define a callback to invoke when a control device is detached from the controller    
 def detachControlDeviceCallback(data):
@@ -949,19 +949,19 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
    
 # Define a callback to invoke when a control device is attached to the controller
 def attachControlDeviceCallback(data):
-    print "Attach control device callback: " + data   
+    print ( "Attach control device callback: " + data )  
 
 # Define a callback to invoke when a control device is detached from the controller    
 def detachControlDeviceCallback(data):
-    print "Detach control device callback: " + data     
+    print ( "Detach control device callback: " + data )    
 
 # Define a callback to invoke when a control device is read    
 def readControlDeviceCallback(data):
-    print "Read control device callback: " + data      
+    print ( "Read control device callback: " + data )     
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -1006,23 +1006,23 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
    
 # Define a callback to invoke when a control device is attached to the controller
 def attachControlDeviceCallback(data):
-    print "Attach control device callback: " + data   
+    print ( "Attach control device callback: " + data )  
 
 # Define a callback to invoke when a control device is detached from the controller    
 def detachControlDeviceCallback(data):
-    print "Detach control device callback: " + data    
+    print ( "Detach control device callback: " + data )   
     
 # Define a callback to invoke when a control device is read    
 def readControlDeviceCallback(data):
-    print "Read control device callback: " + data   
+    print ( "Read control device callback: " + data )  
 
 # Define a callback to invoke when a control device is written
 def writeControlDeviceCallback(data):
-    print "Write control device callback: " + data 
+    print ( "Write control device callback: " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
