@@ -1,6 +1,3 @@
-# mm-python-api
-MachineMotion Python API
-
 # How-to Guide: MachineMotion Python SDK
 
 <div style="text-align: center;"><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/021/large/cover_python_guide.png?1550698357" width="80%" /></div>
