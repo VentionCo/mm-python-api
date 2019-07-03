@@ -1,0 +1,26 @@
+---
+tag: m500
+title: Save Settings
+brief: Save settings to EEPROM.
+
+experimental: false
+requires: EEPROM_SETTINGS
+group: eeprom
+
+codes:
+  - M500
+
+long: Save all configurable settings to EEPROM.
+
+notes:
+  - Requires `EEPROM_SETTINGS`.
+  - Since Marlin 1.1.0 only changed bytes are written to prolong EEPROM life.
+
+parameters:
+
+examples:
+  -
+    pre: Save settings
+    code: M500
+
+---
