@@ -282,7 +282,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 # Define a callback to print the data retrieved using the getData function
 def printGetDataResult(data):
