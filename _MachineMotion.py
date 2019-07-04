@@ -570,12 +570,13 @@ class MachineMotion:
     #
     # Function to configure the axis motion.
     # @param axis       --- Description: The axis number.                           --- Type: number [1, 2, 3]
-    # @param u_step     --- Description: uStep setting.                             --- Type: number either [1, 2, 4, 8, 16]
-    # @param mech_gain  --- Description: Mechanical gain of the axis in mm / turn.  --- Type: number
+    # @param _u_step    --- Description: uStep setting.                             --- Type: number either [1, 2, 4, 8, 16]
+    # @param _mech_gain --- Description: Mechanical gain of the axis in mm / turn.  --- Type: number
     # @status
     #
-    def configAxis(self, axis, u_step, mech_gain):
-
+    def configAxis(self, axis, _u_step, _mech_gain):
+        u_step    = float(_u_step)
+        mech_gain = float(_mech_gain)
 
         # validate that the uStep setting is valid
         if (self.valid_u_step.index(u_step) != -1):
