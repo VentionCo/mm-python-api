@@ -706,7 +706,7 @@ class MachineMotion:
         device = int(msg.topic.replace('devices/io-expander/', '').replace('/digitalInput', '')) - 1
         values = int(msg.payload, 16)
         if(device >= 0 and device < len(self.validPorts)) :
-            self.portInputs[self.valssidPorts[device]] = values
+            self.portInputs[self.validPorts[device]] = values
 
     def __onDisconnect(self, client, userData, rc):
        print("Disconnected with rtn code [%d]"% (rc) )
