@@ -700,13 +700,13 @@ class MachineMotion:
 
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput/#')
+            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput')
 
     def __onMessage(self, client, userData, msg):
-        device = int(msg.topic.replace('devices/io-expander/', '')) - 1
-        values = int(msg.payload, 23)
+        device = int(msg.topic.replace('devices/io-expander/', '').replace('/digitalInput', '')) - 1
+        values = int(msg.payload, 16)
         if(device >= 0 and device < len(self.validPorts)) :
-            self.portInputs[self.validPorts[device]] = values
+            self.portInputs[self.valssidPorts[device]] = values
 
     def __onDisconnect(self, client, userData, rc):
        print("Disconnected with rtn code [%d]"% (rc) )
