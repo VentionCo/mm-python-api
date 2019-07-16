@@ -570,12 +570,13 @@ class MachineMotion:
     #
     # Function to configure the axis motion.
     # @param axis       --- Description: The axis number.                           --- Type: number [1, 2, 3]
-    # @param u_step     --- Description: uStep setting.                             --- Type: number either [1, 2, 4, 8, 16]
-    # @param mech_gain  --- Description: Mechanical gain of the axis in mm / turn.  --- Type: number
+    # @param _u_step    --- Description: uStep setting.                             --- Type: number either [1, 2, 4, 8, 16]
+    # @param _mech_gain --- Description: Mechanical gain of the axis in mm / turn.  --- Type: number
     # @status
     #
-    def configAxis(self, axis, u_step, mech_gain):
-
+    def configAxis(self, axis, _u_step, _mech_gain):
+        u_step    = float(_u_step)
+        mech_gain = float(_mech_gain)
 
         # validate that the uStep setting is valid
         if (self.valid_u_step.index(u_step) != -1):
@@ -681,7 +682,7 @@ class MachineMotion:
             if port not in self.attachedDevices.keys() or self.attachedDevices[port] == "IO_EXPANDER_GENERIC":
                 portNumber = self.validPorts.index(port) + 1
                 signalNumber = self.validSignals.index(signal) - 4
-                self.myMqttClient.publish('digitalOutput/' + str(portNumber) + '/' + str(signalNumber), '1' if value else '0')
+                self.myMqttClient.publish('devices/io-expander/' + str(portNumber) + '/digitalOutput/' +  str(signalNumber), '1' if value else '0')
                 callback("true" if value else "false")
             # Legacy devices
             else :
@@ -699,13 +700,13 @@ class MachineMotion:
 
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('digitalInput/#')
+            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput')
 
     def __onMessage(self, client, userData, msg):
-        port = int(msg.topic.replace('digitalInput/', '')) - 1
+        device = int(msg.topic.replace('devices/io-expander/', '').replace('/digitalInput', '')) - 1
         values = int(msg.payload, 16)
-        if(port >= 0 and port < len(self.validPorts)) :
-            self.portInputs[self.validPorts[port]] = values
+        if(device >= 0 and device < len(self.validPorts)) :
+            self.portInputs[self.validPorts[device]] = values
 
     def __onDisconnect(self, client, userData, rc):
        print("Disconnected with rtn code [%d]"% (rc) )

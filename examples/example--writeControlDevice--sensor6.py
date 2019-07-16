@@ -1,4 +1,4 @@
-from _MachineMotion_v1_6_5 import *
+from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def motionControllerMessagesCallback(data):
