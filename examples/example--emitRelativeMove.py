@@ -2,7 +2,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -21,4 +21,4 @@ machine_motion_example.emitAbsoluteMove(1, 100)
 # Move the axis one by a negative increment of 100 mm
 machine_motion_example.emitRelativeMove(1, "negative", 100)
 
-print "--> Example completed."
+print ( "--> Example completed." )

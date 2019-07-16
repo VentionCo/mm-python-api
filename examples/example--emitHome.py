@@ -2,7 +2,7 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -10,4 +10,4 @@ machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_
 machine_motion_example.emitHome(1)
 machine_motion_example.waitForMotionCompletion()
 
-print "--> Axis 1 is now at home position."
+print ( "--> Axis 1 is now at home position." )

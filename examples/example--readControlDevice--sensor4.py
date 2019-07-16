@@ -2,19 +2,19 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
    
 # Define a callback to invoke when a control device is attached to the controller
 def attachControlDeviceCallback(data):
-    print "Attach control device callback: " + data   
+    print ( "Attach control device callback: " + data )
 
 # Define a callback to invoke when a control device is detached from the controller    
 def detachControlDeviceCallback(data):
-    print "Detach control device callback: " + data     
+    print ( "Detach control device callback: " + data )
 
 # Define a callback to invoke when a control device is read    
 def readControlDeviceCallback(data):
-    print "Read control device callback: " + data      
+    print ( "Read control device callback: " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 

@@ -2,14 +2,14 @@ from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def motionControllerMessagesCallback(data):
-   print "Controller gCode responses " + data
+   print ( "Controller gCode responses " + data )
 
 def unusedCallback(data):
     pass
 
 # Define a callback to invoke when a control device is read    
 def writeControlCallback(data):
-    print "Read control device callback: " + data      
+    print ( "Read control device callback: " + data )     
 
 machine_motion_example = MachineMotion(motionControllerMessagesCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
