@@ -71,6 +71,10 @@ To set up the MachineMotion Python library:
   pip install -U pathlib
   ```
 
+  ```console
+  pip install -U paho-mqtt
+  ```
+
 - The MachineMotion Python library is now ready to use. Programs can be created and ran from the workspace folder.
 
 ## Connectivity Setup

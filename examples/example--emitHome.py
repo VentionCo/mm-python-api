@@ -4,7 +4,8 @@ from _MachineMotion import *
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+#machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+machine_motion_example = MachineMotion(templateCallback, "192.168.0.147")
 
 # Homing axis one
 machine_motion_example.emitHome(1)
