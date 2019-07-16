@@ -11,7 +11,21 @@ MachineMotion Python API
 
 This guide will cover the setup and use of Vention’s MachineMotion™ Python Software Development Kit (SDK). After reading this guide, you will be ready to deploy custom motion and control applications using Vention’s MachineMotion controller. Before you begin, we recommended reading the <a href="https://www.vention.io/technical_documents/machine_motion_docs/vention_machine_motion_user_guide" target="_blank">MachineMotion Quick Start Guide</a> to get familiar with the technology.
 
-## Typical System Overview
+## Overview
+
+The MachineMotion python SDK has been designed to allow user applications to execute:
+
+>- internally to MachineMotion; or
+>- on an external computer connected to MachineMotion via the USB or Ethernet port.
+
+The Python SDK includes the following core features:
+
+>- Simplied interface to all MachineMotion functionality
+>- Control of one or multiple MachineMotion from a single program
+>- Direct access to the internal motion controller via gCode
+
+
+---
 
 Many systems are built by centralizing application-level software on a host computer. The software interacts with various devices (such as robotic devices, sensors, proprietary products, and data acquisition equipment) and delivers the required application behavior (see Figure 1).
 
