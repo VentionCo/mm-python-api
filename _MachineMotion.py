@@ -397,7 +397,7 @@ class MachineMotion:
         if portName in self.validPorts:
             return True
 
-        print "ERROR: Port name " + portName + " is invalid. Try 'SENSOR4', 'SENSOR5' or 'SENSOR6'."
+        print ( "ERROR: Port name " + portName + " is invalid. Try 'SENSOR4', 'SENSOR5' or 'SENSOR6'." )
 
         sys.exit()
 
@@ -405,7 +405,7 @@ class MachineMotion:
         if deviceName in self.validDevices:
             return True
 
-        print "ERROR: Device name " + deviceName + " is invalid. Try 'ENCODER' or 'IO_EXPANDER_GENERIC'."
+        print ( "ERROR: Device name " + deviceName + " is invalid. Try 'ENCODER' or 'IO_EXPANDER_GENERIC'." )
 
         sys.exit()
 
@@ -413,7 +413,7 @@ class MachineMotion:
         if signalName in self.validSignals:
             return True
 
-        print "ERROR: Signal name " + signalName + " is invalid. Try 'SIGNAL0', 'SIGNAL1', 'SIGNAL2', 'SIGNAL3', 'SIGNAL4', 'SIGNAL5' or 'SIGNAL6'."
+        print ( "ERROR: Signal name " + signalName + " is invalid. Try 'SIGNAL0', 'SIGNAL1', 'SIGNAL2', 'SIGNAL3', 'SIGNAL4', 'SIGNAL5' or 'SIGNAL6'." )
 
         sys.exit()
 
@@ -709,7 +709,7 @@ class MachineMotion:
             self.portInputs[self.validPorts[device]] = values
 
     def __onDisconnect(self, client, userData, rc):
-       print("Disconnected with rtn code [%d]"% (rc) )
+       print( "Disconnected with rtn code [%d]"% (rc) )
 
     def __establishConnection(self, isReconnection):
         global gCodeCallbackRef
