@@ -4,6 +4,7 @@ Date: July 16<sup>th</sup>, 2019
 
 ## Improvements:
 - Added support for Python3 and Python2.
+- Updated the REAMDME to include the new MQTT library dependency.
 
 
 # Version: 1.6.6
