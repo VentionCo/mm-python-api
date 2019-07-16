@@ -1,6 +1,17 @@
+# Version: 1.6.6
+
+Date:  July 4<sup>th</sup> 2019
+
+## Bug Fixes:
+- Fix distance of movement smaller then requested on linear axis.
+
+## Improvements:
+- All examples import statement are now version independant.
+
+<br><br>
 # Version: 1.6.5
 
-Date:  June 4 2019
+Date:  June 4<sup>th</sup> 2019
 
 ## Bug Fixes:
 - Fix Line Number mismatch with the help of the 'resend' message

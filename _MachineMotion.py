@@ -682,7 +682,7 @@ class MachineMotion:
             if port not in self.attachedDevices.keys() or self.attachedDevices[port] == "IO_EXPANDER_GENERIC":
                 portNumber = self.validPorts.index(port) + 1
                 signalNumber = self.validSignals.index(signal) - 4
-                self.myMqttClient.publish('digitalOutput/' + str(portNumber) + '/' + str(signalNumber), '1' if value else '0')
+                self.myMqttClient.publish('devices/io-expander/' + str(portNumber) + '/digitalOutput/' +  str(signalNumber), '1' if value else '0')
                 callback("true" if value else "false")
             # Legacy devices
             else :
@@ -700,13 +700,13 @@ class MachineMotion:
 
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('digitalInput/#')
+            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput')
 
     def __onMessage(self, client, userData, msg):
-        port = int(msg.topic.replace('digitalInput/', '')) - 1
+        device = int(msg.topic.replace('devices/io-expander/', '').replace('/digitalInput', '')) - 1
         values = int(msg.payload, 16)
-        if(port >= 0 and port < len(self.validPorts)) :
-            self.portInputs[self.validPorts[port]] = values
+        if(device >= 0 and device < len(self.validPorts)) :
+            self.portInputs[self.validPorts[device]] = values
 
     def __onDisconnect(self, client, userData, rc):
        print("Disconnected with rtn code [%d]"% (rc) )
