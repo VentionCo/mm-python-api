@@ -21,8 +21,15 @@ The Python SDK includes the following core features:
 >- Control of one or multiple MachineMotion from a single program
 >- Direct access to the internal motion controller via gCode
 
+<p style="text-align:center;" ><img src="media/python-overview.png" width="65%" height="65%"></p>
 
----
+<center>
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 1: Structure of a Python program</em></p>
+</center>
+
+
+
+## Host Connection Example
 
 Many systems are built by centralizing application-level software on a host computer. The software interacts with various devices (such as robotic devices, sensors, proprietary products, and data acquisition equipment) and delivers the required application behavior (see Figure 1).
 
