@@ -670,7 +670,7 @@ class MachineMotion:
     #
     # @param encoder - The encoder identifier from which to get the position
     # @return        - The last realtime position
-    def getEncoderRealtimePosition(self, encoder):
+    def readEncoderRealtimePosition(self, encoder):
         # -- Grow the encoder position storage. --
         while (len(self.encoderRealtimePositions) <= encoder):
             self.encoderRealtimePositions.append(0)
