@@ -380,8 +380,9 @@ class MachineMotion:
     valid_u_step = [1, 2, 4, 8, 16]
     
     # -- Local storage of device information. --
-    digitalInputs          = [[]]
-    ioExpanderAvailability = []
+    digitalInputs            = [[]]
+    ioExpanderAvailability   = []
+    encoderRealtimePositions = []
 
     # ------------------------------------------------------------------------
     # Utility function to convert the given input to a boolean value.
@@ -435,6 +436,15 @@ class MachineMotion:
         if (pinId < 0 or pinId > 3):
             return False
         return True
+        
+    # ------------------------------------------------------------------------
+    # Converts encoder alias to encoder internal index
+    #
+    # @param alias - The encoder alias
+    # @return      - The encoder internal index
+    def toEncoderIndex(alias):
+        if ( type(alias) is int ): return alias
+        return self.validPorts.index(alias)
         
     # ------------------------------------------------------------------------
     # Determines if the given id is valid for an encoder.
@@ -656,6 +666,28 @@ class MachineMotion:
         self.mySocket.on('getDataResponse', callback)
 
     # ------------------------------------------------------------------------
+    # Retreive the last recieved encoder realtime position from local storage.
+    #
+    # @param encoder - The encoder identifier from which to get the position
+    # @return        - The last realtime position
+    def getEncoderRealtimePosition(self, encoder):
+        # -- Grow the encoder position storage. --
+        while (len(self.encoderRealtimePositions) <= encoder):
+            self.encoderRealtimePositions.append(0)
+        return self.encoderRealtimePositions[encoder]
+        
+    # ------------------------------------------------------------------------
+    # Save the received encoder realtime position into local storage.
+    #
+    # @param encoder  - The encoder identifier that reported the new position
+    # @param position - The realtime position received
+    def setEncoderRealtimePosition(self, encoder, position):
+        # -- Grow the encoder position storage. --
+        while (len(self.encoderRealtimePositions) <= encoder):
+            self.encoderRealtimePositions.append(0)
+        self.encoderRealtimePositions[encoder] = position
+
+    # ------------------------------------------------------------------------
     # Retreive the digital input from local storage.
     #
     # @param device - The device associated with the digital input
@@ -786,8 +818,8 @@ class MachineMotion:
             self.setDigitalInput( device, pin, value )
             return
         if (deviceType == 'encoder'):
-            position = int( payload )
-            self.encoderRealtimePosition = position
+            position = float( payload )
+            self.setEncoderRealtimePosition( device, position )
 
     def __onDisconnect(self, client, userData, rc):
        print( "Disconnected with rtn code [%d]"% (rc) )
