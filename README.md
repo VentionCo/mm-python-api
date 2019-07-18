@@ -48,7 +48,7 @@ Using MachineMotion with Python is ideal for these types of applications, especi
 To set up the MachineMotion Python library:  
 
 - Download the latest
-<a href="https://s3.amazonaws.com/ventionblobs/sdk/machineMotionPythonApi_v1.6.2.zip" target="_blank">Python SDK 1.6.2</a>
+<a href="https://github.com/VentionCo/mm-python-api/releases" target="_blank">Python SDK</a>
 
 - Unzip the content on your computer. This location will be your workspace.
 
