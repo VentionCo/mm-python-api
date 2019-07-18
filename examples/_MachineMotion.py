@@ -376,46 +376,75 @@ class MachineMotion:
     myAxis2_steps_mm = "notInitialized"
     myAxis3_steps_mm = "notInitialized"
 
-    validPorts   = ["SENSOR4", "SENSOR5", "SENSOR6"]
-    validDevices = ["IO_EXPANDER_GENERIC", "ENCODER"]
-    validSignals = ["SIGNAL4", "SIGNAL5", "SIGNAL6", "SIGNAL7", "SIGNAL0", "SIGNAL1", "SIGNAL2", "SIGNAL3"]
-
-    portInputs = dict.fromkeys(validPorts, 0)
-    signalMasks = dict.fromkeys(validSignals, 0)
-    for i, v in enumerate(validSignals) :
-        signalMasks[v] = 1 << i
-
+    validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
+    
+    # -- Local storage of device information. --
+    digitalInputs          = [[]]
+    ioExpanderAvailability = []
 
-    attach_control_device_socket_response   = WaitForSocketTopic()
-    read_control_device_socket_response     = WaitForSocketTopic()
-    write_control_device_socket_response    = WaitForSocketTopic()
-    detach_control_device_socket_response   = WaitForSocketTopic()
-    attachedDevices = {}
-
-    def __isPortValid(self, portName):
-        if portName in self.validPorts:
+    # ------------------------------------------------------------------------
+    # Utility function to convert the given input to a boolean value.
+    #
+    # @param value - The valur to be converted to a boolean
+    def toBool(self, value):
+        if ( type(value) is bool ): return value
+        if ( type(value) is int ):
+            if ( value == 0 ): return False
             return True
-
-        print ( "ERROR: Port name " + portName + " is invalid. Try 'SENSOR4', 'SENSOR5' or 'SENSOR6'." )
-
-        sys.exit()
-
-    def __isDeviceValid(self, deviceName):
-        if deviceName in self.validDevices:
+        if ( type(value) is str ):
+            value = value.upper()
+            if ( value == 'TRUE' or value == 'YES' or value == '1'):
+                return True
+            return False
+        # -- Default to false if no conversion exists. --
+        return False
+        
+    # ------------------------------------------------------------------------
+    # Determines if the given id is valid for an IO Exapnder.
+    #
+    # @param {int} id - Device identifier
+    # @return {Bool}  - True if valid; False otherwise
+    def isIoExpanderIdValid(self, id):
+        if (id < 1 or id > 3):
+            return False
+        return True
+        
+    # ------------------------------------------------------------------------
+    # Determines if the given input pin identifier is valid for an IO Exapnder.
+    #
+    # @param {int} deviceId - Device identifier
+    # @param {int} pinId    - Pin identifier
+    # @return {Bool}        - True if valid; False otherwise
+    def isIoExpanderInputIdValid(self, deviceId, pinId):
+        if (self.isIoExpanderIdValid( deviceId ) == False):
+            return False
+        if (pinId < 0 or pinId > 3):
+            return False
+        return True
+        
+    # ------------------------------------------------------------------------
+    # Determines if the given output pin identifier is valid for an IO Exapnder.
+    #
+    # @param {int} deviceId - Device identifier
+    # @param {int} pinId    - Pin identifier
+    # @return {Bool}        - True if valid; False otherwise
+    def isIoExpanderOutputIdValid(self, deviceId, pinId):
+        if (self.isIoExpanderIdValid( deviceId ) == False):
+            return False
+        if (pinId < 0 or pinId > 3):
+            return False
+        return True
+        
+    # ------------------------------------------------------------------------
+    # Determines if the given id is valid for an encoder.
+    #
+    # @return {Bool} - True if valid; False otherwise
+    def isEncoderIdValid(self, id):
+        if id in self.validPorts:
             return True
-
-        print ( "ERROR: Device name " + deviceName + " is invalid. Try 'ENCODER' or 'IO_EXPANDER_GENERIC'." )
-
-        sys.exit()
-
-    def __isSignalValid(self, signalName):
-        if signalName in self.validSignals:
-            return True
-
-        print ( "ERROR: Signal name " + signalName + " is invalid. Try 'SIGNAL0', 'SIGNAL1', 'SIGNAL2', 'SIGNAL3', 'SIGNAL4', 'SIGNAL5' or 'SIGNAL6'." )
-
-        sys.exit()
+        return False
+            
 
     #
     # Function that will immediately stop all motion of all the axes
@@ -626,87 +655,139 @@ class MachineMotion:
         # On reception of the data invoke the callback function.
         self.mySocket.on('getDataResponse', callback)
 
-    def detachControlDevice(self, port, callback):
+    # ------------------------------------------------------------------------
+    # Retreive the digital input from local storage.
+    #
+    # @param device - The device associated with the digital input
+    # @param pin    - The pin index on the device
+    # @return       - 0/1 depending on the voltage state of the input
+    def getDigitalInput(self, device, pin):
+        # -- Grow the digital inputs device storage. --
+        while (len(self.digitalInputs) <= device):
+            self.digitalInputs.append([])
+        # -- Grow the gitial inputs pin storage. --
+        while (len(self.digitalInputs[device]) <= pin):
+            self.digitalInputs[device].append(int(0))
+        return self.digitalInputs[device][pin]
+        
+    # ------------------------------------------------------------------------
+    # Save the digital input for later retreival.
+    #
+    # @param device - The device associated with the digital input
+    # @param pin    - The pin index on the device
+    # @param state  - 0/1 depending on the voltage state of the input
+    def setDigitalInput(self, device, pin, state):
+        # -- Grow the digital inputs device storage. --
+        while (len(self.digitalInputs) <= device):
+            self.digitalInputs.append([])
+        # -- Grow the gitial inputs pin storage. --
+        while (len(self.digitalInputs[device]) <= pin):
+            self.digitalInputs[device].append(int(0))
+        self.digitalInputs[device][pin]= state
+        
+    # ------------------------------------------------------------------------
+    # Save the digital input for later retreival.
+    #
+    # @param device              - The IO expander device identifier
+    # @param {bool} availability - IO Expander availability state
+    def setIoExpanderAvailability(self, device, availability):
+        # -- Grow the IO expander availability local storage. --
+        while (len(self.ioExpanderAvailability) <= device):
+            self.ioExpanderAvailability.append( False )
+        self.ioExpanderAvailability[device]= availability
+        
+    # ------------------------------------------------------------------------
+    # Save the digital input for later retreival.
+    #
+    # @param device   - The IO expander device identifier
+    # @preturn {bool} - IO Expander availability state
+    def isIoExpanderAvailable(self, device):
+        # -- Grow the IO expander availability local storage. --
+        while (len(self.ioExpanderAvailability) <= device):
+            self.ioExpanderAvailability.append( False )
+        return self.ioExpanderAvailability[device]
+        
+    # ------------------------------------------------------------------------
+    # Returns the last known state of the specified dgital input.
+    #
+    # @param device - The IO Expander device identifier
+    # @param pin    - The pin identifier to be read
+    # @return       - 0/1 reflecting the voltage state of the input
+    def digitalRead(self, device, pin):
+        if (self.isIoExpanderInputIdValid( device, pin ) == False):
+            print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
+            return
+        return self.getDigitalInput(device, pin)
+        
+    # ------------------------------------------------------------------------
+    # Changes the digital output state of the specified digital output.
+    #
+    # @param device - The IO Expander device identifier
+    # @param pin    - The pin identifier to be read
+    # @param value  - 0/1 reflecting the new voltage state of the output
+    def digitalWrite(self, device, pin, value):
+        if (self.isIoExpanderOutputIdValid( device, pin ) == False):
+            print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
+            return
+        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digitalOutput/' +  str(pin), '1' if value else '0')
+            
+    # ------------------------------------------------------------------------
+    # Returns the last received encoder position.
+    #
+    # @param {int} encoder - The identifier of the encoder.
+    # @return              - The relatime encoder position (deled by up to 250ms)
+    #
+    # NOTE: The encoder position return may be offset by up to 250ms caused by
+    #       internal propagation delays
+    
+    def encoderRead(self, encoder):
+        encoder.upper()
+        if (self.isEncoderIdValid( encoder ) == False):
+            print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
+            return
+        return self.encoderRealTimePosition[encoder]
+        
 
-        if (self.__isPortValid(port)):
-            if port in self.attachedDevices.keys():
-                del self.attachedDevices[port]
-
-            # Assign the user callback to the socket response object
-            self.detach_control_device_socket_response.set_user_callback(callback)
-
-            # Send a command to reada control device that is connected to the MachineMotion controller
-            detachCmd = {"port": port}
-            packet = json.dumps(detachCmd)
-            self.mySocket.emit('detachControlDevice', packet)
-
-            self.detach_control_device_socket_response.wait_for_response(self.mySocket, 'detachControlDeviceResponse', callback)
-
-            #time.sleep(0.25)
-
-    def attachControlDevice(self, port, device, callback):
-
-        if (self.__isPortValid(port) and self.__isDeviceValid(device)):
-            self.attachedDevices[port] = device
-
-            # Assign the user callback to the socket response object
-            self.attach_control_device_socket_response.set_user_callback(callback)
-
-            # Send a command to reada control device that is connected to the MachineMotion controller
-            attachCmd = {"port": port, "device": device}
-            packet = json.dumps(attachCmd)
-            self.mySocket.emit('attachControlDevice', packet)
-
-            self.attach_control_device_socket_response.wait_for_response(self.mySocket, 'attachControlDeviceResponse', callback)
-
-            #time.sleep(0.25)
-
-    def readControlDevice(self, port, signal, callback):
-        if (self.__isPortValid(port) and self.__isSignalValid(signal)):
-            if port not in self.attachedDevices.keys() or self.attachedDevices[port] == "IO_EXPANDER_GENERIC":
-                # Unattached or IO device
-                callback("true" if (self.portInputs[port] & self.signalMasks[signal] > 0) else "false")
-            # Legacy devices
-            else:
-                # Send a command to read a control device that is connected to the MachineMotion controller
-                readCmd = {"port": port, "signal": signal}
-                packet = json.dumps(readCmd)
-                self.mySocket.emit('readControlDevice', packet)
-
-                self.read_control_device_socket_response.wait_for_response(self.mySocket, 'readControlDeviceResponse', callback)
-
-
-    def writeControlDevice(self, port, signal, value, callback):
-        if (self.__isPortValid(port) and self.__isSignalValid(signal)):
-            # Unattached or IO device
-            if port not in self.attachedDevices.keys() or self.attachedDevices[port] == "IO_EXPANDER_GENERIC":
-                portNumber = self.validPorts.index(port) + 1
-                signalNumber = self.validSignals.index(signal) - 4
-                self.myMqttClient.publish('devices/io-expander/' + str(portNumber) + '/digitalOutput/' +  str(signalNumber), '1' if value else '0')
-                callback("true" if value else "false")
-            # Legacy devices
-            else :
-                # Assign the user callback to the socket response object
-                self.write_control_device_socket_response.set_user_callback(callback)
-
-                # Send a command to read a control device that is connected to the MachineMotion controller
-                writeCmd = {"port": port, "signal": signal, "value": value}
-                packet = json.dumps(writeCmd)
-                self.mySocket.emit('writeControlDevice', packet)
-
-                self.write_control_device_socket_response.wait_for_response(self.mySocket, 'writeControlDeviceResponse', callback)
-
-
-
+    # ------------------------------------------------------------------------
+    # Register to the MQTT broker on each connection.
+    #
+    # @param client   - The MQTT client identifier (us)
+    # @param userData - The user data we have supply on registration (none)
+    # @param flags    - Connection flags
+    # @param rc       - The connection return code
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput')
+            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput/#')
+            self.myMqttClient.subscribe('devices/encoder/+/realtimePosition')
+            self.myMqttClient.subscribe('devices/io-expander/+/available')
 
+    # ------------------------------------------------------------------------
+    # Update our internal state from the messages received from the MQTT broker
+    #
+    # @param client   - The MQTT client identifier (us)
+    # @param userData - The user data we have supply on registration (none)
+    # @param msg      - The MQTT message recieved
     def __onMessage(self, client, userData, msg):
-        device = int(msg.topic.replace('devices/io-expander/', '').replace('/digitalInput', '')) - 1
-        values = int(msg.payload, 16)
-        if(device >= 0 and device < len(self.validPorts)) :
-            self.portInputs[self.validPorts[device]] = values
+        payload = msg.payload.decode('ascii')
+        topicParts = msg.topic.split('/')
+        deviceType = topicParts[1]
+        device = int( topicParts[2] )
+        if (deviceType == 'io-expander'):
+            # -- Manage IO Expander availability. --
+            attribute = topicParts[3]
+            if( attribute == 'available' ):
+                self.setIoExpanderAvailability( device, self.toBool( payload ) )
+                return
+            # -- Manage IO Expander digital input. --
+            pin = int( topicParts[4] )
+            if (self.isIoExpanderInputIdValid(device, pin) == False):
+                return
+            value  = int( payload )
+            self.setDigitalInput( device, pin, value )
+            return
+        if (deviceType == 'encoder'):
+            position = int( payload )
+            self.encoderRealtimePosition = position
 
     def __onDisconnect(self, client, userData, rc):
        print( "Disconnected with rtn code [%d]"% (rc) )
