@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
@@ -6,7 +7,10 @@ def templateCallback(data):
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
-# Configuring the travel speed to 10 000 mm / min
-machine_motion_example.emitSpeed(10000)
+# Send a stop command to the Machine (even if it is not moving yet !)
 
-print ( "--> Machine moves are now set to 10 000 mm / min" )
+for i in range(0, 50):
+   machine_motion_example.emitStop()
+   machine_motion_example.emitRelativeMove(1, "positive", 10)
+
+print ( "--> Machine Stopped" )

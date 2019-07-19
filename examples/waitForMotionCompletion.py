@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
@@ -8,6 +9,8 @@ machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_
 
 # Homing axis one
 machine_motion_example.emitHome(1)
+# Wait for the message to be acknowledged by the motion controller
+while machine_motion_example.isReady() != "true": pass
 machine_motion_example.waitForMotionCompletion()
 
-print ( "--> Axis 1 is now at home position." )
+print ( "--> This line executes after the motion controller has acknowledged the reception of the command." )

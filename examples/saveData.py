@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
@@ -6,10 +7,7 @@ def templateCallback(data):
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
-# Send a stop command to the Machine (even if it is not moving yet !)
+# Saving a string on the controller
+machine_motion_example = machine_motion_example.saveData("data_1", "save_this_string_on_the_controller")
 
-for i in range(0, 50):
-   machine_motion_example.emitStop()
-   machine_motion_example.emitRelativeMove(1, "positive", 10)
-
-print ( "--> Machine Stopped" )
+print ( "--> Data sent on controller" )
