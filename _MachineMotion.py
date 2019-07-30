@@ -396,7 +396,7 @@ class MachineMotion:
     # @param {int} pinId    - Pin identifier
     # @return {Bool}        - True if valid; False otherwise
     def isIoExpanderInputIdValid(self, deviceId, pinId):
-        if (self.isIoExpanderIsValid( deviceId ) == False):
+        if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
         if (pinId < 0 or pinId > 3):
             return False
@@ -409,7 +409,7 @@ class MachineMotion:
     # @param {int} pinId    - Pin identifier
     # @return {Bool}        - True if valid; False otherwise
     def isIoExpanderOutputIdValid(self, deviceId, pinId):
-        if (self.isIoExpanderIsValid( deviceId ) == False):
+        if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
         if (pinId < 0 or pinId > 3):
             return False
@@ -638,7 +638,13 @@ class MachineMotion:
         if (self.isIoExpanderInputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
-        return self.digitalInput[device][pin]
+        if (not hasattr(self, 'digitalInputs')):
+            self.digitalInputs = {}
+        if (not device in self.digitalInputs):
+            self.digitalInputs[device] = {}
+        if (not pin in self.digitalInputs[device]):
+            self.digitalInputs[device][pin] = 0
+        return self.digitalInputs[device][pin]
         
     def digitalWrite(self, device, pin, value):
         if (self.isIoExpanderOutputIdValid( device, pin ) == False):
@@ -690,6 +696,10 @@ class MachineMotion:
             if (self.isIoExpanderInputIdValid(device, pin) == False):
                 return
             value  = int( msg.payload )
+            if (not hasattr(self, 'digitalInputs')):
+                self.digitalInputs = {}
+            if (not device in self.digitalInputs):
+                self.digitalInputs[device] = {}
             self.digitalInputs[device][pin]= value
             return
         if (deviceType == 'encoder'):
