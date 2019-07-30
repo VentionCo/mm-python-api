@@ -532,6 +532,14 @@ class MachineMotion:
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
         while self.isReady() != "true": pass
 
+    # ------------------------------------------------------------------------
+    # Move the axis to an absolute position
+    #
+    # @param axis     - The axis to move
+    # @param position - The absolute position to move to.
+    def moveToAbsolutePosition(self, axis, position):
+        self.emitAbsoluteMove(axis, position)
+    
     #
     # Function to send a relative move command to the MachineMotion controller
     # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: int or string.
@@ -748,7 +756,7 @@ class MachineMotion:
     def digitalRead(self, device, pin):
         if (self.isIoExpanderInputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
-            return
+            return 0
         return self.getDigitalInput(device, pin)
         
     # ------------------------------------------------------------------------
@@ -776,7 +784,7 @@ class MachineMotion:
         encoder.upper()
         if (self.isEncoderIdValid( encoder ) == False):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
-            return
+            return 0
         return self.encoderRealTimePosition[encoder]
         
 
