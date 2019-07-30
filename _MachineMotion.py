@@ -438,6 +438,8 @@ class MachineMotion:
 
         # Wait and send a dummy packet to insure that other commands after the emit stop are not flushed.
         time.sleep(0.500)
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
         self.myGCode.__emit__("G0 X0")
         while self.isReady() != "true": pass
 
