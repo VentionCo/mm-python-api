@@ -769,7 +769,7 @@ class MachineMotion:
         if (self.isIoExpanderOutputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
-        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digitalOutput/' +  str(pin), '1' if value else '0')
+        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
             
     # ------------------------------------------------------------------------
     # Returns the last received encoder position.
@@ -797,8 +797,8 @@ class MachineMotion:
     # @param rc       - The connection return code
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput/#')
-            self.myMqttClient.subscribe('devices/encoder/+/realtimePosition')
+            self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
+            self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
             self.myMqttClient.subscribe('devices/io-expander/+/available')
 
     # ------------------------------------------------------------------------
