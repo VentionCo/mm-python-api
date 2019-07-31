@@ -642,9 +642,9 @@ class MachineMotion:
     #
     # @param device - The io-expander device identifier
     # @return.      - True if the io-expander exists; False otherwise
-    def isIoExpanderAvailable(self, device) {
+    def isIoExpanderAvailable(self, device):
         return myIoExpanderAvailabilityState[ device-1 ]
-    }
+    
     
     # ------------------------------------------------------------------------
     # Read the digital input from a pin a given device.
