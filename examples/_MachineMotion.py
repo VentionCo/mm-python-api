@@ -643,7 +643,7 @@ class MachineMotion:
     # @param device - The io-expander device identifier
     # @return.      - True if the io-expander exists; False otherwise
     def isIoExpanderAvailable(self, device):
-        return myIoExpanderAvailabilityState[ device-1 ]
+        return self.myIoExpanderAvailabilityState[ device-1 ]
     
     
     # ------------------------------------------------------------------------
@@ -717,11 +717,13 @@ class MachineMotion:
         device = int( topicParts[2] )
         if (deviceType == 'io-expander'):
             if (topicParts[3] == 'available'):
-                if ( str(msg.payload) == 'true' ):
-                    self.myIoExpanderAvailabilityStatus[device-1] = True
+                availability = str( msg.payload ).lower()
+                print ( "availability: " + availability )
+                if ( availability == 'true' ):
+                    self.myIoExpanderAvailabilityState[device-1] = True
                     return
-                else
-                    self.myIoExpanderAvailabilityStatus[device-1] = False
+                else:
+                    self.myIoExpanderAvailabilityState[device-1] = False
                     return
             pin = int( topicParts[4] )
             if (self.isIoExpanderInputIdValid(device, pin) == False):
