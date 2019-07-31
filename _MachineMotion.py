@@ -372,6 +372,7 @@ class MachineMotion:
 
     myMqttClient = None
     myIoExpanderAvailabilityState = [ False, False, False, False ]
+    myEncoderRealtimePositions    = [ 0, 0, 0 ]
 
     myAxis1_steps_mm = "notInitialized"
     myAxis2_steps_mm = "notInitialized"
@@ -421,7 +422,7 @@ class MachineMotion:
     #
     # @return {Bool} - True if valid; False otherwise
     def isEncoderIdValid(self, id):
-        if id in self.validPorts:
+        if id >= 0 and id <= 3:
             return True
         return False
             
@@ -684,12 +685,22 @@ class MachineMotion:
     #
     # NOTE: The encoder position return may be offset by up to 250ms caused by
     #       internal propagation delays
-    def encoderRead(self, encoder):
-        encoder.upper()
+    def readEncoder(self, encoder):
+        return self.readEncoderRealtimePosition( encoder )
+
+    # ------------------------------------------------------------------------
+    # Returns the last received encoder position.
+    #
+    # @param {int} encoder - The identifier of the encoder.
+    # @return              - The relatime encoder position (deled by up to 250ms)
+    #
+    # NOTE: The encoder position return may be offset by up to 250ms caused by
+    #       internal propagation delays
+    def readEncoderRealtimePosition(self, encoder):
         if (self.isEncoderIdValid( encoder ) == False):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return
-        return self.encoderRealTimePosition[encoder]
+        return self.myEncoderRealtimePositions[encoder]
         
 
     # ------------------------------------------------------------------------
@@ -718,7 +729,6 @@ class MachineMotion:
         if (deviceType == 'io-expander'):
             if (topicParts[3] == 'available'):
                 availability = str( msg.payload ).lower()
-                print ( "availability: " + availability )
                 if ( availability == 'true' ):
                     self.myIoExpanderAvailabilityState[device-1] = True
                     return
@@ -736,8 +746,8 @@ class MachineMotion:
             self.digitalInputs[device][pin]= value
             return
         if (deviceType == 'encoder'):
-            position = int( msg.payload )
-            self.encoderRealtimePosition = position
+            position = float( msg.payload )
+            self.myEncoderRealtimePositions[device] = position
 
     def __onDisconnect(self, client, userData, rc):
        print( "Disconnected with rtn code [%d]"% (rc) )
