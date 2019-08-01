@@ -504,6 +504,31 @@ class MachineMotion:
         while self.isReady() != "true": pass
 
     #
+    # Function to send an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param positions --- Description: positions are the positions from their home location where the axes will go. --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxesAbsoluteMove(self, axes, positions):
+        if (not isinstance(axes, list) or not isinstance(positions, list)):
+            raise TypeError("Axes and Postions must be lists")
+
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to absolute motion mode
+        self.myGCode.__emit__("G90")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, position in zip(axes, positions):
+            command += self.myGCode.__getTrueAxis__(axis) + str(position) + " "
+        self.myGCode.__emit__(command)
+        while self.isReady() != "true": pass
+
+    #
     # Function to send a relative move command to the MachineMotion controller
     # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: int or string.
     # @param direction --- Description: direction is the direction in which the relative move will be conducted. --- Type: string of value equal to "positive" or "negative"
@@ -524,6 +549,34 @@ class MachineMotion:
 
         # Transmit move command
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+        while self.isReady() != "true": pass
+
+    #
+    # Function to send a relative move command to the MachineMotion controller
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param directions --- Description: direction are the directions in which the relative moves will be conducted. --- Type: list of strings of value equal to "positive" or "negative"
+    # @param distances are the distances of the relative moves --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxisRelativeMove(self, axes, directions, distances):
+        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
+            raise TypeError("Axes and Postions must be lists")
+        
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to relative motion mode
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, direction, distance in zip(axes, directions, distances):
+            if direction == "positive": distance = "" + str(distance)
+            elif direction  == "negative": distance = "-" + str(distance)
+            command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
+        self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
 
     #
