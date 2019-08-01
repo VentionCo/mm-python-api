@@ -371,6 +371,8 @@ class MachineMotion:
     myGCode = "notInitialized"
 
     myMqttClient = None
+    myIoExpanderAvailabilityState = [ False, False, False, False ]
+    myEncoderRealtimePositions    = [ 0, 0, 0 ]
 
     myAxis1_steps_mm = "notInitialized"
     myAxis2_steps_mm = "notInitialized"
@@ -420,7 +422,7 @@ class MachineMotion:
     #
     # @return {Bool} - True if valid; False otherwise
     def isEncoderIdValid(self, id):
-        if id in self.validPorts:
+        if id >= 0 and id <= 3:
             return True
         return False
             
@@ -689,9 +691,24 @@ class MachineMotion:
         # On reception of the data invoke the callback function.
         self.mySocket.on('getDataResponse', callback)
 
+    # ------------------------------------------------------------------------
+    # Determines if the io-expander with the given id is available
+    #
+    # @param device - The io-expander device identifier
+    # @return.      - True if the io-expander exists; False otherwise
+    def isIoExpanderAvailable(self, device):
+        return self.myIoExpanderAvailabilityState[ device-1 ]
+    
+    
+    # ------------------------------------------------------------------------
+    # Read the digital input from a pin a given device.
+    #
+    # @param device - The device identifier (1-3) to read from
+    # @param pin.   - The pin index to read from (0-3)
+    # @return.      - The latest pin value
     def digitalRead(self, device, pin):
         if (self.isIoExpanderInputIdValid( device, pin ) == False):
-            print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
+            print ( "DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin) )
             return
         if (not hasattr(self, 'digitalInputs')):
             self.digitalInputs = {}
@@ -701,11 +718,17 @@ class MachineMotion:
             self.digitalInputs[device][pin] = 0
         return self.digitalInputs[device][pin]
         
+    # ------------------------------------------------------------------------
+    # Modify the digital output of the given pin a the specified device.
+    #
+    # @param device - The device identifier (1-3) to write to
+    # @param pin.   - The pin index to write to (0-3)
+    # @param value  - The pin value to be written
     def digitalWrite(self, device, pin, value):
         if (self.isIoExpanderOutputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
-        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digitalOutput/' +  str(pin), '1' if value else '0')
+        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
             
     # ------------------------------------------------------------------------
     # Returns the last received encoder position.
@@ -715,13 +738,22 @@ class MachineMotion:
     #
     # NOTE: The encoder position return may be offset by up to 250ms caused by
     #       internal propagation delays
-    
-    def encoderRead(self, encoder):
-        encoder.upper()
+    def readEncoder(self, encoder):
+        return self.readEncoderRealtimePosition( encoder )
+
+    # ------------------------------------------------------------------------
+    # Returns the last received encoder position.
+    #
+    # @param {int} encoder - The identifier of the encoder.
+    # @return              - The relatime encoder position (deled by up to 250ms)
+    #
+    # NOTE: The encoder position return may be offset by up to 250ms caused by
+    #       internal propagation delays
+    def readEncoderRealtimePosition(self, encoder):
         if (self.isEncoderIdValid( encoder ) == False):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return
-        return self.encoderRealTimePosition[encoder]
+        return self.myEncoderRealtimePositions[encoder]
         
 
     # ------------------------------------------------------------------------
@@ -733,8 +765,9 @@ class MachineMotion:
     # @param rc       - The connection return code
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput/#')
-            self.myMqttClient.subscribe('devices/encoder/+/realtimePosition')
+            self.myMqttClient.subscribe('devices/io-expander/+/available')
+            self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
+            self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
 
     # ------------------------------------------------------------------------
     # Update our internal state from the messages received from the MQTT broker
@@ -747,6 +780,14 @@ class MachineMotion:
         deviceType = topicParts[1]
         device = int( topicParts[2] )
         if (deviceType == 'io-expander'):
+            if (topicParts[3] == 'available'):
+                availability = str( msg.payload ).lower()
+                if ( availability == 'true' ):
+                    self.myIoExpanderAvailabilityState[device-1] = True
+                    return
+                else:
+                    self.myIoExpanderAvailabilityState[device-1] = False
+                    return
             pin = int( topicParts[4] )
             if (self.isIoExpanderInputIdValid(device, pin) == False):
                 return
@@ -758,8 +799,8 @@ class MachineMotion:
             self.digitalInputs[device][pin]= value
             return
         if (deviceType == 'encoder'):
-            position = int( msg.payload )
-            self.encoderRealtimePosition = position
+            position = float( msg.payload )
+            self.myEncoderRealtimePositions[device] = position
 
     def __onDisconnect(self, client, userData, rc):
        print( "Disconnected with rtn code [%d]"% (rc) )

@@ -371,6 +371,8 @@ class MachineMotion:
     myGCode = "notInitialized"
 
     myMqttClient = None
+    myIoExpanderAvailabilityState = [ False, False, False, False ]
+    myEncoderRealtimePositions    = [ 0, 0, 0 ]
 
     myAxis1_steps_mm = "notInitialized"
     myAxis2_steps_mm = "notInitialized"
@@ -378,29 +380,7 @@ class MachineMotion:
 
     validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
-    
-    # -- Local storage of device information. --
-    digitalInputs            = [[]]
-    ioExpanderAvailability   = []
-    encoderRealtimePositions = []
 
-    # ------------------------------------------------------------------------
-    # Utility function to convert the given input to a boolean value.
-    #
-    # @param value - The valur to be converted to a boolean
-    def toBool(self, value):
-        if ( type(value) is bool ): return value
-        if ( type(value) is int ):
-            if ( value == 0 ): return False
-            return True
-        if ( type(value) is str ):
-            value = value.upper()
-            if ( value == 'TRUE' or value == 'YES' or value == '1'):
-                return True
-            return False
-        # -- Default to false if no conversion exists. --
-        return False
-        
     # ------------------------------------------------------------------------
     # Determines if the given id is valid for an IO Exapnder.
     #
@@ -438,20 +418,11 @@ class MachineMotion:
         return True
         
     # ------------------------------------------------------------------------
-    # Converts encoder alias to encoder internal index
-    #
-    # @param alias - The encoder alias
-    # @return      - The encoder internal index
-    def toEncoderIndex(alias):
-        if ( type(alias) is int ): return alias
-        return self.validPorts.index(alias)
-        
-    # ------------------------------------------------------------------------
     # Determines if the given id is valid for an encoder.
     #
     # @return {Bool} - True if valid; False otherwise
     def isEncoderIdValid(self, id):
-        if id in self.validPorts:
+        if id >= 0 and id <= 3:
             return True
         return False
             
@@ -469,6 +440,8 @@ class MachineMotion:
 
         # Wait and send a dummy packet to insure that other commands after the emit stop are not flushed.
         time.sleep(0.500)
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
         self.myGCode.__emit__("G0 X0")
         while self.isReady() != "true": pass
 
@@ -532,14 +505,6 @@ class MachineMotion:
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
         while self.isReady() != "true": pass
 
-    # ------------------------------------------------------------------------
-    # Move the axis to an absolute position
-    #
-    # @param axis     - The axis to move
-    # @param position - The absolute position to move to.
-    def moveToAbsolutePosition(self, axis, position):
-        self.emitAbsoluteMove(axis, position)
-    
     #
     # Function to send a relative move command to the MachineMotion controller
     # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: int or string.
@@ -674,102 +639,43 @@ class MachineMotion:
         self.mySocket.on('getDataResponse', callback)
 
     # ------------------------------------------------------------------------
-    # Retreive the last recieved encoder realtime position from local storage.
+    # Determines if the io-expander with the given id is available
     #
-    # @param encoder - The encoder identifier from which to get the position
-    # @return        - The last realtime position
-    def readEncoderRealtimePosition(self, encoder):
-        # -- Grow the encoder position storage. --
-        while (len(self.encoderRealtimePositions) <= encoder):
-            self.encoderRealtimePositions.append(0)
-        return self.encoderRealtimePositions[encoder]
-        
+    # @param device - The io-expander device identifier
+    # @return.      - True if the io-expander exists; False otherwise
+    def isIoExpanderAvailable(self, device):
+        return self.myIoExpanderAvailabilityState[ device-1 ]
+    
+    
     # ------------------------------------------------------------------------
-    # Save the received encoder realtime position into local storage.
+    # Read the digital input from a pin a given device.
     #
-    # @param encoder  - The encoder identifier that reported the new position
-    # @param position - The realtime position received
-    def setEncoderRealtimePosition(self, encoder, position):
-        # -- Grow the encoder position storage. --
-        while (len(self.encoderRealtimePositions) <= encoder):
-            self.encoderRealtimePositions.append(0)
-        self.encoderRealtimePositions[encoder] = position
-
-    # ------------------------------------------------------------------------
-    # Retreive the digital input from local storage.
-    #
-    # @param device - The device associated with the digital input
-    # @param pin    - The pin index on the device
-    # @return       - 0/1 depending on the voltage state of the input
-    def getDigitalInput(self, device, pin):
-        # -- Grow the digital inputs device storage. --
-        while (len(self.digitalInputs) <= device):
-            self.digitalInputs.append([])
-        # -- Grow the gitial inputs pin storage. --
-        while (len(self.digitalInputs[device]) <= pin):
-            self.digitalInputs[device].append(int(0))
+    # @param device - The device identifier (1-3) to read from
+    # @param pin.   - The pin index to read from (0-3)
+    # @return.      - The latest pin value
+    def digitalRead(self, device, pin):
+        if (self.isIoExpanderInputIdValid( device, pin ) == False):
+            print ( "DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin) )
+            return
+        if (not hasattr(self, 'digitalInputs')):
+            self.digitalInputs = {}
+        if (not device in self.digitalInputs):
+            self.digitalInputs[device] = {}
+        if (not pin in self.digitalInputs[device]):
+            self.digitalInputs[device][pin] = 0
         return self.digitalInputs[device][pin]
         
     # ------------------------------------------------------------------------
-    # Save the digital input for later retreival.
+    # Modify the digital output of the given pin a the specified device.
     #
-    # @param device - The device associated with the digital input
-    # @param pin    - The pin index on the device
-    # @param state  - 0/1 depending on the voltage state of the input
-    def setDigitalInput(self, device, pin, state):
-        # -- Grow the digital inputs device storage. --
-        while (len(self.digitalInputs) <= device):
-            self.digitalInputs.append([])
-        # -- Grow the gitial inputs pin storage. --
-        while (len(self.digitalInputs[device]) <= pin):
-            self.digitalInputs[device].append(int(0))
-        self.digitalInputs[device][pin]= state
-        
-    # ------------------------------------------------------------------------
-    # Save the digital input for later retreival.
-    #
-    # @param device              - The IO expander device identifier
-    # @param {bool} availability - IO Expander availability state
-    def setIoExpanderAvailability(self, device, availability):
-        # -- Grow the IO expander availability local storage. --
-        while (len(self.ioExpanderAvailability) <= device):
-            self.ioExpanderAvailability.append( False )
-        self.ioExpanderAvailability[device]= availability
-        
-    # ------------------------------------------------------------------------
-    # Save the digital input for later retreival.
-    #
-    # @param device   - The IO expander device identifier
-    # @preturn {bool} - IO Expander availability state
-    def isIoExpanderAvailable(self, device):
-        # -- Grow the IO expander availability local storage. --
-        while (len(self.ioExpanderAvailability) <= device):
-            self.ioExpanderAvailability.append( False )
-        return self.ioExpanderAvailability[device]
-        
-    # ------------------------------------------------------------------------
-    # Returns the last known state of the specified dgital input.
-    #
-    # @param device - The IO Expander device identifier
-    # @param pin    - The pin identifier to be read
-    # @return       - 0/1 reflecting the voltage state of the input
-    def digitalRead(self, device, pin):
-        if (self.isIoExpanderInputIdValid( device, pin ) == False):
-            print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
-            return 0
-        return self.getDigitalInput(device, pin)
-        
-    # ------------------------------------------------------------------------
-    # Changes the digital output state of the specified digital output.
-    #
-    # @param device - The IO Expander device identifier
-    # @param pin    - The pin identifier to be read
-    # @param value  - 0/1 reflecting the new voltage state of the output
+    # @param device - The device identifier (1-3) to write to
+    # @param pin.   - The pin index to write to (0-3)
+    # @param value  - The pin value to be written
     def digitalWrite(self, device, pin, value):
         if (self.isIoExpanderOutputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
-        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digitalOutput/' +  str(pin), '1' if value else '0')
+        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
             
     # ------------------------------------------------------------------------
     # Returns the last received encoder position.
@@ -779,13 +685,22 @@ class MachineMotion:
     #
     # NOTE: The encoder position return may be offset by up to 250ms caused by
     #       internal propagation delays
-    
-    def encoderRead(self, encoder):
-        encoder.upper()
+    def readEncoder(self, encoder):
+        return self.readEncoderRealtimePosition( encoder )
+
+    # ------------------------------------------------------------------------
+    # Returns the last received encoder position.
+    #
+    # @param {int} encoder - The identifier of the encoder.
+    # @return              - The relatime encoder position (deled by up to 250ms)
+    #
+    # NOTE: The encoder position return may be offset by up to 250ms caused by
+    #       internal propagation delays
+    def readEncoderRealtimePosition(self, encoder):
         if (self.isEncoderIdValid( encoder ) == False):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
-            return 0
-        return self.encoderRealTimePosition[encoder]
+            return
+        return self.myEncoderRealtimePositions[encoder]
         
 
     # ------------------------------------------------------------------------
@@ -797,9 +712,9 @@ class MachineMotion:
     # @param rc       - The connection return code
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput/#')
-            self.myMqttClient.subscribe('devices/encoder/+/realtimePosition')
             self.myMqttClient.subscribe('devices/io-expander/+/available')
+            self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
+            self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
 
     # ------------------------------------------------------------------------
     # Update our internal state from the messages received from the MQTT broker
@@ -808,26 +723,31 @@ class MachineMotion:
     # @param userData - The user data we have supply on registration (none)
     # @param msg      - The MQTT message recieved
     def __onMessage(self, client, userData, msg):
-        payload = msg.payload.decode('ascii')
         topicParts = msg.topic.split('/')
         deviceType = topicParts[1]
         device = int( topicParts[2] )
         if (deviceType == 'io-expander'):
-            # -- Manage IO Expander availability. --
-            attribute = topicParts[3]
-            if( attribute == 'available' ):
-                self.setIoExpanderAvailability( device, self.toBool( payload ) )
-                return
-            # -- Manage IO Expander digital input. --
+            if (topicParts[3] == 'available'):
+                availability = str( msg.payload ).lower()
+                if ( availability == 'true' ):
+                    self.myIoExpanderAvailabilityState[device-1] = True
+                    return
+                else:
+                    self.myIoExpanderAvailabilityState[device-1] = False
+                    return
             pin = int( topicParts[4] )
             if (self.isIoExpanderInputIdValid(device, pin) == False):
                 return
-            value  = int( payload )
-            self.setDigitalInput( device, pin, value )
+            value  = int( msg.payload )
+            if (not hasattr(self, 'digitalInputs')):
+                self.digitalInputs = {}
+            if (not device in self.digitalInputs):
+                self.digitalInputs[device] = {}
+            self.digitalInputs[device][pin]= value
             return
         if (deviceType == 'encoder'):
-            position = float( payload )
-            self.setEncoderRealtimePosition( device, position )
+            position = float( msg.payload )
+            self.myEncoderRealtimePositions[device] = position
 
     def __onDisconnect(self, client, userData, rc):
        print( "Disconnected with rtn code [%d]"% (rc) )
