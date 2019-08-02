@@ -28,6 +28,12 @@ The Python SDK includes the following core features:
 </center>
 
 
+## Compatibility
+
+ The Python API V2 requires MachineMotion version V1.12 or newer. Please update your MachineMotion core software for any prior versions. 
+ 
+ Please use [mm-python-api V1.6.7](https://github.com/VentionCo/mm-python-api/releases/tag/v1.6.7) for prior version of MachineMotion software.
+
 
 ## Host Connection Example
 
@@ -858,221 +864,114 @@ Controller gCode responses ok
 
 Functions that exchange data with the MachineMotion controller (no movement involved).
 
----
-### attachControlDevice(port, device, callback)
-
-Configures a control device on a specific MachineMotion port.
-
-#### port {CONTROL_DEVICE_PORTS}
-> Port on which the device is connected
-
-#### device {CONTROL_DEVICE_TYPE}
-> Type of device connected
-
-#### callback {def callbackName(data):}
-> Function to invoke once the data is available. The data will be passed to the callback as an argument (a serialized JSON string, specifically).
-
-#### return value
-> none
-
-#### callback argument {String}
-> Status message
-
-#### Example
-
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-   
-# Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )     
-
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Attach a control device (in this case, an encoder) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","ENCODER", attachControlDeviceCallback)
-
-```
-
----
-### detachControlDevice(port, callback)
-
-Deconfigure a control device on a specific MachineMotion port.
-
-#### port {CONTROL_DEVICE_PORTS}
-> Port at which the device is connected
-
-#### callback {def callbackName(data):}
-> Function to invoke once the data is available. The data will be passed to the callback as an argument (a serialized JSON string).
-
-#### return value
-> none
-
-#### callback argument {String}
-> Status message 
-
-#### Example
-
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-   
-# Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )  
-
-# Define a callback to invoke when a control device is detached from the controller    
-def detachControlDeviceCallback(data):
-    print "Detach control device callback: " + data     
-
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Attach a control device (an encoder in this case) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","ENCODER", attachControlDeviceCallback)
-
-# Some other code here ...
-
-# Detach (deconfigure) a control device that was previously attached to the MachineMotion controller.
-machine_motion_controller.detachControlDevice("SENSOR4", detachControlDeviceCallback)
-
-```
-
----
-### readControlDevice(port, signal, callback)
-
-Read a given signal on a control device on a specific MachineMotion port.
-
-#### port {CONTROL_DEVICE_PORTS}
-> Port on which the device is connected
-
-#### signal {CONTROL_DEVICE_SIGNALS}
-> Signal to read on the device
-
-#### callback {def callbackName(data):}
-> Function to invoke once the data is available. The data will be passed to the callback as an argument (a serialized JSON string).
-
-#### return value
-> none
-
-#### callback argument {serialized JSON String}
-> { port:   "port",
-    signal: "signal",
-    value:  "value read",
-    error:  "error message“}
-
-#### Example
-
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-   
-# Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )  
-
-# Define a callback to invoke when a control device is detached from the controller    
-def detachControlDeviceCallback(data):
-    print ( "Detach control device callback: " + data )    
-
-# Define a callback to invoke when a control device is read    
-def readControlDeviceCallback(data):
-    print ( "Read control device callback: " + data )     
-
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Attach a control device (in this case, and encoder) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","ENCODER", attachControlDeviceCallback)
-
-count = 0
-
-for count in range (0, 100):
-
-    # Read the signal of a control device. SIGNAL0 of the encoder returns the relative position in turns. The encoder resets its position to 0 at power-on. Position is given in turns.
-    machine_motion_controller.readControlDevice("SENSOR4", "SIGNAL0", readControlDeviceCallback)
-
-    time.sleep(1)
-
-# Detach (deconfigure) a control device that was previously attached to the MachineMotion controller.
-machine_motion_controller.detachControlDevice("SENSOR4", detachControlDeviceCallback)
-
-```
-
----
-### writeControlDevice(port, signal, callback)
-
-Deconfigures a control device at a specific MachineMotion port.
-
-#### port {CONTROL_DEVICE_PORTS}
-> Port at which the device is connected
-
-#### signal {CONTROL_DEVICE_SIGNALS}
-> Signal to read on the device
-
-#### callback argument {JSON formatted String}
-> { port: "port",
-    signal: "signal",
-    value: "value read",
-    error: "error message“}
-
-#### Example
-
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-   
-# Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )  
-
-# Define a callback to invoke when a control device is detached from the controller    
-def detachControlDeviceCallback(data):
-    print ( "Detach control device callback: " + data )   
+**IMPORTANT:**
+The following interfaces:
+    - attachControlDevice(port, device, callback)
+    - detachControlDevice(port, callback)
+    - readControlDevice(port, signal, callback)
+    - writeControlDevice(port, signal, callback)
     
-# Define a callback to invoke when a control device is read    
-def readControlDeviceCallback(data):
-    print ( "Read control device callback: " + data )  
+have been obsoleted and replaced with:
+    - isIoExpanderAvailable( device )
+    - digitalRead( device, pin )
+    - digitalWrite( device, pin )
+    - readEncoderRealtimePosition( device )
+    
+---
+### isIoExpanderAvailable( device )
 
-# Define a callback to invoke when a control device is written
-def writeControlDeviceCallback(data):
-    print ( "Write control device callback: " + data )
+Determines if the io-expander with the given id is available
 
+@param device - The io-expander device identifier
+@return       - True if the io-expander exists; False otherwise
+
+#### Example
+
+```python
+from _MachineMotion import *
+
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+   
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Attach a control device (in this case, an encoder) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","IO_EXPANDER_GENERIC", attachControlDeviceCallback)
-
-count = 0
-
-for count in range (0, 100):
-
-    # Read the signal of a control device. SIGNAL0 of the IO expander, which returns True or False depending on the state of the IO.
-    machine_motion_controller.readControlDevice("SENSOR4", "SIGNAL0", readControlDeviceCallback)
-
-    time.sleep(1)
-    
-    # Write the signal of a control device (here, SIGNAL0 of the IO expander).
-    machine_motion_controller.writeControlDevice("SENSOR4", "SIGNAL0", writeControlDeviceCallback)    
-    
-    time.sleep(1)
-
-# Detach (deconfigure) a control device that was previously attached to the MachineMotion controller.
-machine_motion_controller.detachControlDevice("SENSOR4", detachControlDeviceCallback)
+io_expander_id = 1
+if ( machine_motion_example.isIoExpanderAvailable( io_expander_id ) ):
+    machine_motion_example.digitalWrite(io_expander_id, 1, 0 )
 
 ```
 
+
+---
+### digitalRead(device, pin)
+
+Read the digital input from the given pin in put on the IO Expander
+
+@param device - The IO expander device identifier (1-3)
+@param pin.   - The pin index to read from (0-3)
+@return.      - The level at the IO expander pin
+
+#### Example
+
+```python
+from _MachineMotion import *
+
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+   
+machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+io_expander_id = 1
+input_pin = 0
+pinValue = machine_motion_example.digitalRead( io_expander_id , input_pin )
+
+```
+
+---
+### digitalWrite(device,  pin, value)
+
+Modify the digital output of the given pin a the specified device.
+
+@param device - The IO expander device identifier (1-3)
+@param pin.   - The pin index to write to (0-3)
+@param value  - The pin value to be written
+
+#### Example
+
+```python
+from _MachineMotion import *
+
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+   
+machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+io_expander_id = 1
+input_pin = 0
+machine_motion_example.digitalWrite( io_expander_id , input_pin, 0 )
+
+```
+
+---
+### readEncoderRealtimePositioon( device )
+
+Returns the realtime position of the given encoder.
+
+@param encoder - The identifier of the encoder (0-2).
+@return        - The relatime encoder position (deled by up to 250ms)
+
+**NOTE:** The encoder position return may be offset by up to 250ms caused by internal propagation delays
+
+#### Example
+
+```python
+from _MachineMotion import *
+
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+   
+machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+encoder_id = 1
+encoder_1_position = machine_motion_example.readEncoderRealtimePosition( encoder_id  )
+
+```
 
 ## Executing Python Programs
 
