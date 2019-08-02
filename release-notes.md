@@ -4,7 +4,7 @@ The MachineMotion Python API V2.0 aims at simplifying the interfaces to the digi
 
 ## Compatibility
 
- The Python API V2 requires MachineMotion version V1.12 or newer. Please update your MachineMotion core software for any prior versions. 
+ The Python API V2 requires MachineMotion version V1.12 or newer.
  
  Please use [mm-python-api V1.6.7](https://github.com/VentionCo/mm-python-api/releases/tag/v1.6.7) for prior version of MachineMotion software.
 
