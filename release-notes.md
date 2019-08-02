@@ -15,6 +15,7 @@ The MachineMotion Python API V2.0 aims at simplifying the interfaces to the digi
     - readControlDevice
     - writecontrolDevice
 - **New interfaces:**
+    - isIoExpanderAvailable(device)
     - digitalRead(device, pin)
     - digitalWrite(device, pin, value)
     - readEncoderRealtimePosition(device)
