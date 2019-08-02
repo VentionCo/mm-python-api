@@ -17,6 +17,7 @@ import paho.mqtt.client as mqtt
 # Misc. Variables
 motion_completed = "false"
 waiting_motion_status = "false"
+waiting_current_position = "false"
 
 machineMotionRef = None
 gCodeCallbackRef = None
@@ -103,6 +104,11 @@ class GCode:
     lastPacket = {"data": "null", "lineNumber": "null"}
     gCodeErrors = {"checksum": "Error:checksum mismatch, Last Line: ", "lineNumber": "Error:Line Number is not Last Line Number+1, Last Line: "}
     userCallback = None
+    currentPositions = {
+        1 : None,
+        2 : None,
+        3 : None
+    }
 
     #
     # Class constructor
@@ -254,6 +260,7 @@ class GCode:
     def __rxCallback__(self, data):
 
         global waiting_motion_status
+        global waiting_current_position
         global lastSendTimeStamp
 
         # print "DEBUG---Last command sent: " + str(self.lastPacket)
@@ -289,6 +296,15 @@ class GCode:
                 self.__emit__(self.lastPacket['data'])
         elif (data.find('Resend:') != -1):
             self.lineNumber = self.__extractLineNumberInResend__(data)
+
+        if data.find('Count X:') != -1:
+            # print 'Current position : ' + data
+
+            self.currentPositions[1] = float(data[data.find('X')+2:(data.find('Y')-1)])
+            self.currentPositions[2] = float(data[data.find('Y')+2:(data.find('Z')-1)])
+            self.currentPositions[3] = float(data[data.find('Z')+2:(data.find('E')-1)])
+
+            waiting_current_position = "false"
 
         fastMotionStatusCallback(data, self)
 
@@ -371,51 +387,70 @@ class MachineMotion:
     myGCode = "notInitialized"
 
     myMqttClient = None
+    myIoExpanderAvailabilityState = [ False, False, False, False ]
+    myEncoderRealtimePositions    = [ 0, 0, 0 ]
 
     myAxis1_steps_mm = "notInitialized"
     myAxis2_steps_mm = "notInitialized"
     myAxis3_steps_mm = "notInitialized"
 
-    validPorts   = ["SENSOR4", "SENSOR5", "SENSOR6"]
-    validDevices = ["IO_EXPANDER_GENERIC", "ENCODER"]
-    validSignals = ["SIGNAL4", "SIGNAL5", "SIGNAL6", "SIGNAL7", "SIGNAL0", "SIGNAL1", "SIGNAL2", "SIGNAL3"]
-
-    portInputs = dict.fromkeys(validPorts, 0)
-    signalMasks = dict.fromkeys(validSignals, 0)
-    for i, v in enumerate(validSignals) :
-        signalMasks[v] = 1 << i
-
+    validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
 
-    attach_control_device_socket_response   = WaitForSocketTopic()
-    read_control_device_socket_response     = WaitForSocketTopic()
-    write_control_device_socket_response    = WaitForSocketTopic()
-    detach_control_device_socket_response   = WaitForSocketTopic()
-    attachedDevices = {}
-
-    def __isPortValid(self, portName):
-        if portName in self.validPorts:
+    # ------------------------------------------------------------------------
+    # Determines if the given id is valid for an IO Exapnder.
+    #
+    # @param {int} id - Device identifier
+    # @return {Bool}  - True if valid; False otherwise
+    def isIoExpanderIdValid(self, id):
+        if (id < 1 or id > 3):
+            return False
+        return True
+        
+    # ------------------------------------------------------------------------
+    # Determines if the given input pin identifier is valid for an IO Exapnder.
+    #
+    # @param {int} deviceId - Device identifier
+    # @param {int} pinId    - Pin identifier
+    # @return {Bool}        - True if valid; False otherwise
+    def isIoExpanderInputIdValid(self, deviceId, pinId):
+        if (self.isIoExpanderIdValid( deviceId ) == False):
+            return False
+        if (pinId < 0 or pinId > 3):
+            return False
+        return True
+        
+    # ------------------------------------------------------------------------
+    # Determines if the given output pin identifier is valid for an IO Exapnder.
+    #
+    # @param {int} deviceId - Device identifier
+    # @param {int} pinId    - Pin identifier
+    # @return {Bool}        - True if valid; False otherwise
+    def isIoExpanderOutputIdValid(self, deviceId, pinId):
+        if (self.isIoExpanderIdValid( deviceId ) == False):
+            return False
+        if (pinId < 0 or pinId > 3):
+            return False
+        return True
+        
+    # ------------------------------------------------------------------------
+    # Determines if the given id is valid for an encoder.
+    #
+    # @return {Bool} - True if valid; False otherwise
+    def isEncoderIdValid(self, id):
+        if id >= 0 and id <= 3:
             return True
+        return False
 
-        print ( "ERROR: Port name " + portName + " is invalid. Try 'SENSOR4', 'SENSOR5' or 'SENSOR6'." )
 
-        sys.exit()
+    def getCurrentPositions(self):
+        global waiting_current_position
 
-    def __isDeviceValid(self, deviceName):
-        if deviceName in self.validDevices:
-            return True
+        waiting_current_position = "true"
+        self.myGCode.__emit__("M114")
+        while self.isReady() != "true" and waiting_current_position == "true": pass
 
-        print ( "ERROR: Device name " + deviceName + " is invalid. Try 'ENCODER' or 'IO_EXPANDER_GENERIC'." )
-
-        sys.exit()
-
-    def __isSignalValid(self, signalName):
-        if signalName in self.validSignals:
-            return True
-
-        print ( "ERROR: Signal name " + signalName + " is invalid. Try 'SIGNAL0', 'SIGNAL1', 'SIGNAL2', 'SIGNAL3', 'SIGNAL4', 'SIGNAL5' or 'SIGNAL6'." )
-
-        sys.exit()
+        return self.myGCode.currentPositions
 
     #
     # Function that will immediately stop all motion of all the axes
@@ -430,6 +465,8 @@ class MachineMotion:
 
         # Wait and send a dummy packet to insure that other commands after the emit stop are not flushed.
         time.sleep(0.500)
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
         self.myGCode.__emit__("G0 X0")
         while self.isReady() != "true": pass
 
@@ -494,6 +531,31 @@ class MachineMotion:
         while self.isReady() != "true": pass
 
     #
+    # Function to send an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param positions --- Description: positions are the positions from their home location where the axes will go. --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxesAbsoluteMove(self, axes, positions):
+        if (not isinstance(axes, list) or not isinstance(positions, list)):
+            raise TypeError("Axes and Postions must be lists")
+
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to absolute motion mode
+        self.myGCode.__emit__("G90")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, position in zip(axes, positions):
+            command += self.myGCode.__getTrueAxis__(axis) + str(position) + " "
+        self.myGCode.__emit__(command)
+        while self.isReady() != "true": pass
+
+    #
     # Function to send a relative move command to the MachineMotion controller
     # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: int or string.
     # @param direction --- Description: direction is the direction in which the relative move will be conducted. --- Type: string of value equal to "positive" or "negative"
@@ -514,6 +576,34 @@ class MachineMotion:
 
         # Transmit move command
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+        while self.isReady() != "true": pass
+
+    #
+    # Function to send a relative move command to the MachineMotion controller
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param directions --- Description: direction are the directions in which the relative moves will be conducted. --- Type: list of strings of value equal to "positive" or "negative"
+    # @param distances are the distances of the relative moves --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxisRelativeMove(self, axes, directions, distances):
+        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
+            raise TypeError("Axes and Postions must be lists")
+        
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to relative motion mode
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, direction, distance in zip(axes, directions, distances):
+            if direction == "positive": distance = "" + str(distance)
+            elif direction  == "negative": distance = "-" + str(distance)
+            command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
+        self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
 
     #
@@ -544,6 +634,9 @@ class MachineMotion:
         return motion_completed
 
     def waitForMotionCompletion(self):
+        global waiting_motion_status
+
+        waiting_motion_status = "true"
         self.emitgCode("V0")
         while  self.isMotionCompleted() != "true": pass
 
@@ -626,87 +719,116 @@ class MachineMotion:
         # On reception of the data invoke the callback function.
         self.mySocket.on('getDataResponse', callback)
 
-    def detachControlDevice(self, port, callback):
+    # ------------------------------------------------------------------------
+    # Determines if the io-expander with the given id is available
+    #
+    # @param device - The io-expander device identifier
+    # @return.      - True if the io-expander exists; False otherwise
+    def isIoExpanderAvailable(self, device):
+        return self.myIoExpanderAvailabilityState[ device-1 ]
+    
+    
+    # ------------------------------------------------------------------------
+    # Read the digital input from a pin a given device.
+    #
+    # @param device - The device identifier (1-3) to read from
+    # @param pin.   - The pin index to read from (0-3)
+    # @return.      - The latest pin value
+    def digitalRead(self, device, pin):
+        if (self.isIoExpanderInputIdValid( device, pin ) == False):
+            print ( "DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin) )
+            return
+        if (not hasattr(self, 'digitalInputs')):
+            self.digitalInputs = {}
+        if (not device in self.digitalInputs):
+            self.digitalInputs[device] = {}
+        if (not pin in self.digitalInputs[device]):
+            self.digitalInputs[device][pin] = 0
+        return self.digitalInputs[device][pin]
+        
+    # ------------------------------------------------------------------------
+    # Modify the digital output of the given pin a the specified device.
+    #
+    # @param device - The device identifier (1-3) to write to
+    # @param pin.   - The pin index to write to (0-3)
+    # @param value  - The pin value to be written
+    def digitalWrite(self, device, pin, value):
+        if (self.isIoExpanderOutputIdValid( device, pin ) == False):
+            print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
+            return
+        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
+            
+    # ------------------------------------------------------------------------
+    # Returns the last received encoder position.
+    #
+    # @param {int} encoder - The identifier of the encoder.
+    # @return              - The relatime encoder position (deled by up to 250ms)
+    #
+    # NOTE: The encoder position return may be offset by up to 250ms caused by
+    #       internal propagation delays
+    def readEncoder(self, encoder):
+        return self.readEncoderRealtimePosition( encoder )
 
-        if (self.__isPortValid(port)):
-            if port in self.attachedDevices.keys():
-                del self.attachedDevices[port]
+    # ------------------------------------------------------------------------
+    # Returns the last received encoder position.
+    #
+    # @param {int} encoder - The identifier of the encoder.
+    # @return              - The relatime encoder position (deled by up to 250ms)
+    #
+    # NOTE: The encoder position return may be offset by up to 250ms caused by
+    #       internal propagation delays
+    def readEncoderRealtimePosition(self, encoder):
+        if (self.isEncoderIdValid( encoder ) == False):
+            print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
+            return
+        return self.myEncoderRealtimePositions[encoder]
+        
 
-            # Assign the user callback to the socket response object
-            self.detach_control_device_socket_response.set_user_callback(callback)
-
-            # Send a command to reada control device that is connected to the MachineMotion controller
-            detachCmd = {"port": port}
-            packet = json.dumps(detachCmd)
-            self.mySocket.emit('detachControlDevice', packet)
-
-            self.detach_control_device_socket_response.wait_for_response(self.mySocket, 'detachControlDeviceResponse', callback)
-
-            #time.sleep(0.25)
-
-    def attachControlDevice(self, port, device, callback):
-
-        if (self.__isPortValid(port) and self.__isDeviceValid(device)):
-            self.attachedDevices[port] = device
-
-            # Assign the user callback to the socket response object
-            self.attach_control_device_socket_response.set_user_callback(callback)
-
-            # Send a command to reada control device that is connected to the MachineMotion controller
-            attachCmd = {"port": port, "device": device}
-            packet = json.dumps(attachCmd)
-            self.mySocket.emit('attachControlDevice', packet)
-
-            self.attach_control_device_socket_response.wait_for_response(self.mySocket, 'attachControlDeviceResponse', callback)
-
-            #time.sleep(0.25)
-
-    def readControlDevice(self, port, signal, callback):
-        if (self.__isPortValid(port) and self.__isSignalValid(signal)):
-            if port not in self.attachedDevices.keys() or self.attachedDevices[port] == "IO_EXPANDER_GENERIC":
-                # Unattached or IO device
-                callback("true" if (self.portInputs[port] & self.signalMasks[signal] > 0) else "false")
-            # Legacy devices
-            else:
-                # Send a command to read a control device that is connected to the MachineMotion controller
-                readCmd = {"port": port, "signal": signal}
-                packet = json.dumps(readCmd)
-                self.mySocket.emit('readControlDevice', packet)
-
-                self.read_control_device_socket_response.wait_for_response(self.mySocket, 'readControlDeviceResponse', callback)
-
-
-    def writeControlDevice(self, port, signal, value, callback):
-        if (self.__isPortValid(port) and self.__isSignalValid(signal)):
-            # Unattached or IO device
-            if port not in self.attachedDevices.keys() or self.attachedDevices[port] == "IO_EXPANDER_GENERIC":
-                portNumber = self.validPorts.index(port) + 1
-                signalNumber = self.validSignals.index(signal) - 4
-                self.myMqttClient.publish('devices/io-expander/' + str(portNumber) + '/digitalOutput/' +  str(signalNumber), '1' if value else '0')
-                callback("true" if value else "false")
-            # Legacy devices
-            else :
-                # Assign the user callback to the socket response object
-                self.write_control_device_socket_response.set_user_callback(callback)
-
-                # Send a command to read a control device that is connected to the MachineMotion controller
-                writeCmd = {"port": port, "signal": signal, "value": value}
-                packet = json.dumps(writeCmd)
-                self.mySocket.emit('writeControlDevice', packet)
-
-                self.write_control_device_socket_response.wait_for_response(self.mySocket, 'writeControlDeviceResponse', callback)
-
-
-
+    # ------------------------------------------------------------------------
+    # Register to the MQTT broker on each connection.
+    #
+    # @param client   - The MQTT client identifier (us)
+    # @param userData - The user data we have supply on registration (none)
+    # @param flags    - Connection flags
+    # @param rc       - The connection return code
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput')
+            self.myMqttClient.subscribe('devices/io-expander/+/available')
+            self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
+            self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
 
+    # ------------------------------------------------------------------------
+    # Update our internal state from the messages received from the MQTT broker
+    #
+    # @param client   - The MQTT client identifier (us)
+    # @param userData - The user data we have supply on registration (none)
+    # @param msg      - The MQTT message recieved
     def __onMessage(self, client, userData, msg):
-        device = int(msg.topic.replace('devices/io-expander/', '').replace('/digitalInput', '')) - 1
-        values = int(msg.payload, 16)
-        if(device >= 0 and device < len(self.validPorts)) :
-            self.portInputs[self.validPorts[device]] = values
+        topicParts = msg.topic.split('/')
+        deviceType = topicParts[1]
+        device = int( topicParts[2] )
+        if (deviceType == 'io-expander'):
+            if (topicParts[3] == 'available'):
+                availability = str( msg.payload ).lower()
+                if ( availability == 'true' ):
+                    self.myIoExpanderAvailabilityState[device-1] = True
+                    return
+                else:
+                    self.myIoExpanderAvailabilityState[device-1] = False
+                    return
+            pin = int( topicParts[4] )
+            if (self.isIoExpanderInputIdValid(device, pin) == False):
+                return
+            value  = int( msg.payload )
+            if (not hasattr(self, 'digitalInputs')):
+                self.digitalInputs = {}
+            if (not device in self.digitalInputs):
+                self.digitalInputs[device] = {}
+            self.digitalInputs[device][pin]= value
+            return
+        if (deviceType == 'encoder'):
+            position = float( msg.payload )
+            self.myEncoderRealtimePositions[device] = position
 
     def __onDisconnect(self, client, userData, rc):
        print( "Disconnected with rtn code [%d]"% (rc) )

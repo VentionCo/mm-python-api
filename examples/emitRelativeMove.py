@@ -1,8 +1,9 @@
+#!/usr/bin/python
 from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
-    print ( "Controller gCode responses " + data )
+   print ( "Controller gCode responses " + data )
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
@@ -14,10 +15,11 @@ machine_motion_example.emitAcceleration(1000)
 
 # Homing axis one
 machine_motion_example.emitHome(1)
-machine_motion_example.waitForMotionCompletion()
 
-# Use the G0 command to move both axis one and two by 500mm at a travel speed of 10 000 mm / minute
-machine_motion_example.emitgCode("G0 X50 Y50 F10000")
-machine_motion_example.waitForMotionCompletion()
+# Move the axis one to position 100 mm
+machine_motion_example.emitAbsoluteMove(1, 100)
+
+# Move the axis one by a negative increment of 100 mm
+machine_motion_example.emitRelativeMove(1, "negative", 100)
 
 print ( "--> Example completed." )
