@@ -17,6 +17,7 @@ import paho.mqtt.client as mqtt
 # Misc. Variables
 motion_completed = "false"
 waiting_motion_status = "false"
+waiting_current_position = "false"
 
 machineMotionRef = None
 gCodeCallbackRef = None
@@ -103,6 +104,11 @@ class GCode:
     lastPacket = {"data": "null", "lineNumber": "null"}
     gCodeErrors = {"checksum": "Error:checksum mismatch, Last Line: ", "lineNumber": "Error:Line Number is not Last Line Number+1, Last Line: "}
     userCallback = None
+    currentPositions = {
+        1 : None,
+        2 : None,
+        3 : None
+    }
 
     #
     # Class constructor
@@ -254,6 +260,7 @@ class GCode:
     def __rxCallback__(self, data):
 
         global waiting_motion_status
+        global waiting_current_position
         global lastSendTimeStamp
 
         # print "DEBUG---Last command sent: " + str(self.lastPacket)
@@ -289,6 +296,15 @@ class GCode:
                 self.__emit__(self.lastPacket['data'])
         elif (data.find('Resend:') != -1):
             self.lineNumber = self.__extractLineNumberInResend__(data)
+
+        if data.find('Count X:') != -1:
+            # print 'Current position : ' + data
+
+            self.currentPositions[1] = float(data[data.find('X')+2:(data.find('Y')-1)])
+            self.currentPositions[2] = float(data[data.find('Y')+2:(data.find('Z')-1)])
+            self.currentPositions[3] = float(data[data.find('Z')+2:(data.find('E')-1)])
+
+            waiting_current_position = "false"
 
         fastMotionStatusCallback(data, self)
 
@@ -425,7 +441,16 @@ class MachineMotion:
         if id >= 0 and id <= 3:
             return True
         return False
-            
+
+
+    def getCurrentPositions(self):
+        global waiting_current_position
+
+        waiting_current_position = "true"
+        self.myGCode.__emit__("M114")
+        while self.isReady() != "true" and waiting_current_position == "true": pass
+
+        return self.myGCode.currentPositions
 
     #
     # Function that will immediately stop all motion of all the axes
@@ -609,6 +634,9 @@ class MachineMotion:
         return motion_completed
 
     def waitForMotionCompletion(self):
+        global waiting_motion_status
+
+        waiting_motion_status = "true"
         self.emitgCode("V0")
         while  self.isMotionCompleted() != "true": pass
 
