@@ -14,7 +14,7 @@ state = 0
 for count in range (0, 100):
     # -- Verify if the IO Expander is currently attached. --
     if ( machine_motion_example.isIoExpanderAvailable(device) == False ):
-        print ( "IO Exapnder 1 is not available!!! Please verify connection.")
+        print ( "IO Exapnder "+str(device)+" is not available!!! Please verify connection.")
     else:
         machine_motion_example.digitalWrite(device, 0, state)
         print ( "Device= "+str(device)+", pin= 0, value= " + str(state) )
