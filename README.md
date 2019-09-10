@@ -866,12 +866,14 @@ Functions that exchange data with the MachineMotion controller (no movement invo
 
 **IMPORTANT:**
 The following interfaces:
+
     - attachControlDevice(port, device, callback)
     - detachControlDevice(port, callback)
     - readControlDevice(port, signal, callback)
     - writeControlDevice(port, signal, callback)
     
 have been obsoleted and replaced with:
+
     - isIoExpanderAvailable( device )
     - digitalRead( device, pin )
     - digitalWrite( device, pin )
@@ -882,7 +884,7 @@ have been obsoleted and replaced with:
 
 Determines if the io-expander with the given id is available
 
-@param device - The io-expander device identifier
+@param device - The io-expander device identifier  
 @return       - True if the io-expander exists; False otherwise
 
 #### Example
@@ -906,9 +908,9 @@ if ( machine_motion_example.isIoExpanderAvailable( io_expander_id ) ):
 
 Read the digital input from the given pin in put on the IO Expander
 
-@param device - The IO expander device identifier (1-3)
-@param pin.   - The pin index to read from (0-3)
-@return.      - The level at the IO expander pin
+@param device - The IO expander device identifier (1-3)  
+@param pin.   - The pin index to read from (0-3)  
+@return.      - The level at the IO expander pin  
 
 #### Example
 
@@ -930,9 +932,9 @@ pinValue = machine_motion_example.digitalRead( io_expander_id , input_pin )
 
 Modify the digital output of the given pin a the specified device.
 
-@param device - The IO expander device identifier (1-3)
-@param pin.   - The pin index to write to (0-3)
-@param value  - The pin value to be written
+@param device - The IO expander device identifier (1-3)  
+@param pin.   - The pin index to write to (0-3)  
+@param value  - The pin value to be written  
 
 #### Example
 
@@ -954,8 +956,8 @@ machine_motion_example.digitalWrite( io_expander_id , input_pin, 0 )
 
 Returns the realtime position of the given encoder.
 
-@param encoder - The identifier of the encoder (0-2).
-@return        - The relatime encoder position (deled by up to 250ms)
+@param encoder - The identifier of the encoder (0-2)  
+@return        - The relatime encoder position (deled by up to 250ms)  
 
 **NOTE:** The encoder position return may be offset by up to 250ms caused by internal propagation delays
 
