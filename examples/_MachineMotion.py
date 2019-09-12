@@ -1,5 +1,4 @@
-# File name:            _MachineMotion_1_6_5.py                     #
-# Version:              1.6.5                                       #
+# File name:            _MachineMotion.py                           #
 # Author:               Francois Giguere                            #
 # Note:                 Information about all the g-Code            #
 #                       commands supported are available at         #
@@ -15,8 +14,9 @@ from socketIO_client import SocketIO, BaseNamespace
 import paho.mqtt.client as mqtt
 
 # Misc. Variables
-motion_completed = "false"
-waiting_motion_status = "false"
+motion_completed         = "false"
+waiting_motion_status    = "false"
+waiting_current_position = "false"
 
 machineMotionRef = None
 gCodeCallbackRef = None
@@ -103,6 +103,11 @@ class GCode:
     lastPacket = {"data": "null", "lineNumber": "null"}
     gCodeErrors = {"checksum": "Error:checksum mismatch, Last Line: ", "lineNumber": "Error:Line Number is not Last Line Number+1, Last Line: "}
     userCallback = None
+    currentPositions = {
+        1 : None,
+        2 : None,
+        3 : None
+    }
 
     #
     # Class constructor
@@ -254,6 +259,7 @@ class GCode:
     def __rxCallback__(self, data):
 
         global waiting_motion_status
+        global waiting_current_position
         global lastSendTimeStamp
 
         # print "DEBUG---Last command sent: " + str(self.lastPacket)
@@ -289,6 +295,15 @@ class GCode:
                 self.__emit__(self.lastPacket['data'])
         elif (data.find('Resend:') != -1):
             self.lineNumber = self.__extractLineNumberInResend__(data)
+
+        if data.find('Count X:') != -1:
+            # print 'Current position : ' + data
+
+            self.currentPositions[1] = float(data[data.find('X')+2:(data.find('Y')-1)])
+            self.currentPositions[2] = float(data[data.find('Y')+2:(data.find('Z')-1)])
+            self.currentPositions[3] = float(data[data.find('Z')+2:(data.find('E')-1)])
+
+            waiting_current_position = "false"
 
         fastMotionStatusCallback(data, self)
 
@@ -425,7 +440,16 @@ class MachineMotion:
         if id >= 0 and id <= 3:
             return True
         return False
-            
+
+
+    def getCurrentPositions(self):
+        global waiting_current_position
+
+        waiting_current_position = "true"
+        self.myGCode.__emit__("M114")
+        while self.isReady() != "true" and waiting_current_position == "true": pass
+
+        return self.myGCode.currentPositions
 
     #
     # Function that will immediately stop all motion of all the axes
@@ -506,6 +530,31 @@ class MachineMotion:
         while self.isReady() != "true": pass
 
     #
+    # Function to send an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param positions --- Description: positions are the positions from their home location where the axes will go. --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxesAbsoluteMove(self, axes, positions):
+        if (not isinstance(axes, list) or not isinstance(positions, list)):
+            raise TypeError("Axes and Postions must be lists")
+
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to absolute motion mode
+        self.myGCode.__emit__("G90")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, position in zip(axes, positions):
+            command += self.myGCode.__getTrueAxis__(axis) + str(position) + " "
+        self.myGCode.__emit__(command)
+        while self.isReady() != "true": pass
+
+    #
     # Function to send a relative move command to the MachineMotion controller
     # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: int or string.
     # @param direction --- Description: direction is the direction in which the relative move will be conducted. --- Type: string of value equal to "positive" or "negative"
@@ -526,6 +575,34 @@ class MachineMotion:
 
         # Transmit move command
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+        while self.isReady() != "true": pass
+
+    #
+    # Function to send a relative move command to the MachineMotion controller
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param directions --- Description: direction are the directions in which the relative moves will be conducted. --- Type: list of strings of value equal to "positive" or "negative"
+    # @param distances are the distances of the relative moves --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxisRelativeMove(self, axes, directions, distances):
+        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
+            raise TypeError("Axes and Postions must be lists")
+        
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to relative motion mode
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, direction, distance in zip(axes, directions, distances):
+            if direction == "positive": distance = "" + str(distance)
+            elif direction  == "negative": distance = "-" + str(distance)
+            command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
+        self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
 
     #
@@ -556,6 +633,9 @@ class MachineMotion:
         return motion_completed
 
     def waitForMotionCompletion(self):
+        global waiting_motion_status
+
+        waiting_motion_status = "true"
         self.emitgCode("V0")
         while  self.isMotionCompleted() != "true": pass
 

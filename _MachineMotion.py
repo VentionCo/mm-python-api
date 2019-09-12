@@ -1,5 +1,4 @@
-# File name:            _MachineMotion_1_6_5.py                     #
-# Version:              1.6.5                                       #
+# File name:            _MachineMotion.py                           #
 # Author:               Francois Giguere                            #
 # Note:                 Information about all the g-Code            #
 #                       commands supported are available at         #
@@ -15,8 +14,8 @@ from socketIO_client import SocketIO, BaseNamespace
 import paho.mqtt.client as mqtt
 
 # Misc. Variables
-motion_completed = "false"
-waiting_motion_status = "false"
+motion_completed         = "false"
+waiting_motion_status    = "false"
 waiting_current_position = "false"
 
 machineMotionRef = None
