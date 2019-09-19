@@ -7,8 +7,8 @@ RELEASE_BRANCH = release/${VERSION}
 .PHONY: develop release
 
 develop:
-ifneq (${CURRENT_BRANCH},${BRANCH})
-	@echo "Switching the branch develop..."
+ifneq (${CURRENT_BRANCH},develop)
+	@echo "Switching to branch develop..."
 	@git pull
 	@git checkout develop
 	@echo Done - mm-python-api
@@ -16,9 +16,9 @@ endif
 
 release:
 ifneq (${CURRENT_BRANCH},${RELEASE_BRANCH})
-	@echo "Switching to branch " ${RELASE_BRANCH}
+	@echo "Switching to branch ${RELASE_BRANCH}"
 	@git pull
-	@git checkoput ${RELEASE_BRANCH}
+	@git checkout ${RELEASE_BRANCH}
 	@echo Done - mm-python-api
 endif
 
