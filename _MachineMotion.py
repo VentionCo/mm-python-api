@@ -441,7 +441,6 @@ class MachineMotion:
             return True
         return False
 
-
     def getCurrentPositions(self):
         global waiting_current_position
 
@@ -479,6 +478,8 @@ class MachineMotion:
         motion_completed = "false"
 
         self.myGCode.__emit__("G28")
+        
+        while self.isReady() != "true": pass
 
     #
     # Function that will initiate the homing sequence for the axis specified. The sequence will home the axis using the endstops signals.
@@ -491,6 +492,8 @@ class MachineMotion:
         motion_completed = "false"
 
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
+        
+        while self.isReady() != "true": pass
 
     #
     # Function to send a displacement speed configuration command
