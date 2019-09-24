@@ -1,4 +1,4 @@
-# How-to Guide: MachineMotion Python SDK
+﻿# How-to Guide: MachineMotion Python SDK
 
 <div style="text-align: center;"><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/021/large/cover_python_guide.png?1550698357" width="80%" /></div>
 
@@ -13,11 +13,11 @@ This guide will cover the setup and use of Vention’s MachineMotion™ Python S
 The MachineMotion python SDK has been designed to allow user applications to execute:
 
 >- internally to MachineMotion; or
->- on an external computer connected to MachineMotion via the USB or Ethernet port.
+>- on an external computer connected to MachineMotion via the Ethernet or DEFAULT Ethernet port.
 
 The Python SDK includes the following core features:
 
->- Simplied interface to all MachineMotion functionality
+>- Simplified interface to all MachineMotion functionality
 >- Control of one or multiple MachineMotion from a single program
 >- Direct access to the internal motion controller via gCode
 
@@ -59,7 +59,7 @@ To set up the MachineMotion Python library:
 - Unzip the content on your computer. This location will be your workspace.
 
 - Install
-<a href="https://www.python.org/download/releases/2.7/" target="_blank">Python 2.7</a> 
+<a href="https://www.python.org/downloads/release/python-2713/" target="_blank">Python 2.7.13</a> 
 
 *++Note for Windows users++: Make sure to add Python.exe to the PATH environment variable as shown in *Figure 2*.*
 
@@ -85,17 +85,17 @@ To set up the MachineMotion Python library:
 
 ## Connectivity Setup
 
-MachineMotion has two communication ports, one labeled USB and one labeled ETHERNET. Both use IP connectivity and have their own unique IP addresses, (see *Figure 3*).
+MachineMotion has two communication ports, one labeled 192.168.7.2 and one labeled ETHERNET. Both use IP connectivity and have their own unique IP addresses, (see *Figure 3*).  
 
 </br>
 
-<p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/025/large/auto_HTG0006_machineMotionFrontPanel.png?1550763012" width="50%" height="50%"></p>
+<p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/694/original/ce-cl-105-0003-front.png?1562785675" width="100%" height="50%"></p>
 
 <p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 3: MachineMotion front panel.</em></p>
 
-The IP address associated with the USB port is static (192.168.7.2 for Windows; 192.168.6.2 for Mac and Linux). It cannot be configured or modified. The USB port should be used for direct computer-to-MachineMotion connectivity.
+The IP address associated with the Default Ethernet port is static (192.168.7.2 for Windows; 192.168.7.2 for Mac and Linux). It cannot be configured or modified. 
 
-The IP address associated with the ETHERNET port can be modified to suit your network requirements. Refer to the <a href="https://www.vention.io/" target="_blank">How-to Guide: MachineMotion Network Setup</a> for more details.
+In order to better suit your network requirements, the IP address associated with the ETHERNET port can be either configured as DHCP or as static. Refer to the <a href="https://www.vention.io/" target="_blank">How-to Guide: MachineMotion Network Setup</a> for more details.
 
 ## Configuring the network and axes 
 
@@ -151,6 +151,9 @@ Configures the IP address of the controller Ethernet interface.
 
 #### mode {NETWORK_MODE}
 > IP configures the network management profile as either static or DHCP.
+> Valid arguments are:
+> NETWORK_MODE.static
+> NETWORK_MODE.dhcp
 
 #### ip {String}
 > Desired static IP address to assign to the MachineMotion controller. Format is "nnn.nnn.nnn.nnnn", where n are numbers.
@@ -221,11 +224,11 @@ Controller gCode responses ok
 ### configAxis(axis, u_step, mech_gain)
 
 Configure the axis' mechanical gain and micro-step settings to ensure accurate motion.
-
+  
 #### axis {Number}
 > Axis to configure
 
-u_step {MICRO_STEPS}
+#### u_step {MICRO_STEPS}
 > Micro-step setting
 
 #### mech_gain {MECH_GAIN}
@@ -277,7 +280,7 @@ Controller gCode responses ok
 #### return value
 > None.
 
-#### Exampledfd
+#### Example
 
 ```python
 from _MachineMotion import *
@@ -1062,3 +1065,4 @@ Note that when using direct G-Code commands, the axis name mapping in *Table 4* 
 </div>
 
 <p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Table 4: G-Code to MachineMotion Axis Mapping.</em></p>
+
