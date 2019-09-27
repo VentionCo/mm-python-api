@@ -48,3 +48,6 @@ If you require more information about how to setup you controller to communicate
 ## API Documentation
 
 [Application Programming Interface: Python v1.6.8](__documentation/api/machine_motion_python_api--v1.6.8.md)
+
+## Release Notes
+[Release Notes: Python v1.6.8](release-notes.md)

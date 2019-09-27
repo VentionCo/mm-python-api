@@ -545,7 +545,7 @@ sys.exit(0)
 ---
 ### emitAbsoluteMove(axis, position)
 
-Configures the travel acceleration. Travel acceleration applies to combined axis moves and single axis moves.
+> Sends an absolute move command to the MachineMotion controller
 
 #### axis {AXIS_NUMBER}
 > Axis to move to home location
@@ -556,7 +556,8 @@ Configures the travel acceleration. Travel acceleration applies to combined axis
 #### return value
 > none
 
-#### Example
+#### Reference Example
+> example--emitAbsoluteMove.py
 
 ```python
 from _MachineMotion_1_6_8 import *
@@ -588,6 +589,63 @@ print ("Application Message: Axis 1 is at home \n")
 
 # Move the axis 1 to position 100 mm
 mm.emitAbsoluteMove(1, 100)
+print ("Application Message: Motion on-going ... \n")
+
+mm.waitForMotionCompletion()
+print ("Application Message: Motion completed \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
+```
+
+---
+### emitCombinedAbsoluteMove(axes, positions)
+
+> Send an absolute move command to the MachineMotion controller. Moves multiple axis simultaneously.
+
+#### axes {array of numbers}
+> Axes to move
+
+#### positions {array of numbers}
+> Position to move the axes to
+
+#### return value
+> none
+
+#### Reference Example
+> example--emitCombinedAbsoluteMove.py
+
+```python
+from _MachineMotion_1_6_8 import *
+
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+
+print ("Application Message: MachineMotion Program Starting \n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion Axis 1 Configured \n")
+
+# Configuring the travel speed to 10000 mm / min
+mm.emitSpeed(10000)
+print ("Application Message: Speed configured \n")
+
+# Configuring the travel speed to 1000 mm / second^2
+mm.emitAcceleration(1000)
+print ("Application Message: Acceleration configured \n")
+
+# Homing axis 1
+mm.emitHome(1)
+print ("Application Message: Axis 1 is at home \n")
+
+# Move the axis 1 to position 100 mm
+mm.emitCombinedAbsoluteMove([1, 2, 3], [100, 200, 100])
 print ("Application Message: Motion on-going ... \n")
 
 mm.waitForMotionCompletion()
@@ -648,6 +706,66 @@ print ("Application Message: Axis 1 at home \n")
 # Move the axis one to position 100 mm
 mm.emitRelativeMove(1, "positive", 100)
 print ("Application Message: Move on-going ... \n")
+
+mm.waitForMotionCompletion()
+print ("Application Message: Motion completed \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
+```
+
+---
+### emitCombinedAxisRelativeMove(axes, directions, distances)
+
+> Send a relative move command to the MachineMotion controller. Moves multiple axis simultaneously.
+
+#### axes {array of numbers}
+> Axes to move
+
+#### directions {list of strings of value equal to "positive" or "negative"}
+> Motion direction for each axis
+
+#### distances {array of numbers}
+> Distances to move for each axis
+
+#### return value
+> none
+
+#### Reference Example
+> example--emitCombinedRelativeMove.py
+
+```python
+from _MachineMotion_1_6_8 import *
+
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+
+print ("Application Message: MachineMotion Program Starting \n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion Axis 1 Configured \n")
+
+# Configuring the travel speed to 10000 mm / min
+mm.emitSpeed(10000)
+print ("Application Message: Speed configured \n")
+
+# Configuring the travel speed to 1000 mm / second^2
+mm.emitAcceleration(1000)
+print ("Application Message: Acceleration configured \n")
+
+# Homing axis 1
+mm.emitHome(1)
+print ("Application Message: Axis 1 at home \n")
+
+# Move the axis one to position 100 mm
+mm.emitCombinedRelativeMove([1,2,3], ["positive","positive","positive"], [100, 200, 300])
+print ("Application Message: Multi-axis move on-going ... \n")
 
 mm.waitForMotionCompletion()
 print ("Application Message: Motion completed \n")
