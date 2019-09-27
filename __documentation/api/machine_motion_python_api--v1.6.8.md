@@ -600,7 +600,7 @@ sys.exit(0)
 ```
 
 ---
-### emitCombinedAbsoluteMove(axes, positions)
+### emitCombinedAxesAbsoluteMove(axes, positions)
 
 > Send an absolute move command to the MachineMotion controller. Moves multiple axis simultaneously.
 
@@ -614,7 +614,7 @@ sys.exit(0)
 > none
 
 #### Reference Example
-> example--emitCombinedAbsoluteMove.py
+> example--emitCombinedAxesAbsoluteMove.py
 
 ```python
 from _MachineMotion_1_6_8 import *
@@ -641,11 +641,11 @@ mm.emitAcceleration(1000)
 print ("Application Message: Acceleration configured \n")
 
 # Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 is at home \n")
+mm.emitHomeAll()
+print ("Application Message: Axes at home \n")
 
 # Move the axis 1 to position 100 mm
-mm.emitCombinedAbsoluteMove([1, 2, 3], [100, 200, 100])
+mm.emitCombinedAxesAbsoluteMove([1, 2, 3], [50, 100, 50])
 print ("Application Message: Motion on-going ... \n")
 
 mm.waitForMotionCompletion()
@@ -699,13 +699,13 @@ print ("Application Message: Speed configured \n")
 mm.emitAcceleration(1000)
 print ("Application Message: Acceleration configured \n")
 
-# Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 at home \n")
+# Homing all axes
+mm.emitHomeAll()
+print ("Application Message: Axes at home \n")
 
 # Move the axis one to position 100 mm
-mm.emitRelativeMove(1, "positive", 100)
-print ("Application Message: Move on-going ... \n")
+mm.emitCombinedAxisRelativeMove([1, 2, 3], ["positive", "positive", "positive"], [100, 200, 300])
+print ("Application Message: Multi-axis move on-going ... \n")
 
 mm.waitForMotionCompletion()
 print ("Application Message: Motion completed \n")
@@ -716,7 +716,7 @@ sys.exit(0)
 ```
 
 ---
-### emitCombinedAxisRelativeMove(axes, directions, distances)
+### emitCombinedAxesRelativeMove(axes, directions, distances)
 
 > Send a relative move command to the MachineMotion controller. Moves multiple axis simultaneously.
 
@@ -733,7 +733,7 @@ sys.exit(0)
 > none
 
 #### Reference Example
-> example--emitCombinedRelativeMove.py
+> example--emitCombinedAxesRelativeMove.py
 
 ```python
 from _MachineMotion_1_6_8 import *

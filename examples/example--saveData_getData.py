@@ -4,7 +4,7 @@
 ## Author: Francois Giguere
 ## Version: 1.6.8
 ## Email: info@vention.cc
-## Status: released
+## Status: tested
 ##################################################
 
 from _MachineMotion_1_6_8 import *

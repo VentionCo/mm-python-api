@@ -1,17 +1,18 @@
 # Version 1.6.8
 
-Date: September 24<sup>th</sup>, 2019
+- Date:         September 27<sup>th</sup>, 2019
+- Released by:  Francois Giguere
 
 ## Compatibility
 
 ### Interface Changes
-- No Interface changes in this release
 
 #### Obsoleted Interfaces
 - none
 
 #### New Interfaces
 - setPosition
+- setAxisDirection
 - emitCombinedAxisRelativeMove
 - emitCombinedAxesAbsoluteMove
 

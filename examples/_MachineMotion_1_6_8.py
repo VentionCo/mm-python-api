@@ -532,7 +532,7 @@ class MachineMotion:
     #
     def emitCombinedAxesAbsoluteMove(self, axes, positions):
         if (not isinstance(axes, list) or not isinstance(positions, list)):
-            raise TypeError("Axes and Postions must be lists")
+            raise TypeError("All parameters must be lists")
 
         global motion_completed
 
@@ -580,8 +580,8 @@ class MachineMotion:
     # @status
     #
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
-        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
-            raise TypeError("Axes and Postions must be lists")
+        if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
+            raise TypeError("All parameters must be lists")
         
         global motion_completed
 
@@ -691,6 +691,38 @@ class MachineMotion:
         else:
             pass
             # print "Argument error, {configAxis(self, axis, u_step, mech_gain)}, {u_step} argument is invalid"
+            
+    #
+    # Function to reverse the positive direction of an axis, also reverse the home and end-of-travel sensor port
+    # @param axis --- Description: Axis on which the setting applies    --- Type: string or number.
+    # @param data --- Description: normal or reverse axis direction     --- Type: dictionary.
+    # @status
+    #    
+    def emitSetAxisDirection(self, axis, direction):
+    
+        # Checking input parameters
+        if (direction != "normal" and direction != "reverse"):
+            raise ValueError('direction parameter must be either "normal" or "reversed"')
+            
+        if (axis != 1 and axis != 2 and axis !=3):
+            raise ValueError('axis must either be 1, 2 or 3')
+            
+        if(axis == 1):
+            if(direction == "normal"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
+            elif (direction == "reverse"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis1_steps_mm))
+        elif(axis == 2):
+            if(direction == "normal"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
+            elif (direction == "reverse"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis2_steps_mm))
+        elif(axis == 3):
+            if(direction == "normal"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
+            elif (direction == "reverse"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis3_steps_mm))
+
     #
     # Function to save/persist data in the MachineMotion Controller (key - data pair)
     # @param key --- Description: key is a string that identifies the data to save for future retrieval. --- Type: string or number.

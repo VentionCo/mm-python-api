@@ -1,10 +1,10 @@
 ##################################################
-## Combined Relative Move
+## Combined Absolute Move
 ##################################################
 ## Author: Francois Giguere
 ## Version: 1.6.8
 ## Email: info@vention.cc
-## Status: ready to test
+## Status: tested
 ##################################################
 
 from _MachineMotion_1_6_8 import *
@@ -31,12 +31,12 @@ mm.emitAcceleration(1000)
 print ("Application Message: Acceleration configured \n")
 
 # Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 at home \n")
+mm.emitHomeAll()
+print ("Application Message: Axes at home \n")
 
-# Move the axis one to position 100 mm
-mm.emitCombinedRelativeMove([1,2,3], ["positive","positive","positive"], [100, 200, 300])
-print ("Application Message: Multi-axis move on-going ... \n")
+# Move the axis 1 to position 100 mm
+mm.emitCombinedAxesAbsoluteMove([1, 2, 3], [50, 100, 50])
+print ("Application Message: Motion on-going ... \n")
 
 mm.waitForMotionCompletion()
 print ("Application Message: Motion completed \n")
@@ -44,3 +44,5 @@ print ("Application Message: Motion completed \n")
 print ("Application Message: Program terminating ... \n")
 time.sleep(1)
 sys.exit(0)
+
+

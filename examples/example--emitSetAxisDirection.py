@@ -1,10 +1,10 @@
 ##################################################
-## Combined Absolute Move
+## Axis Direction
 ##################################################
 ## Author: Francois Giguere
 ## Version: 1.6.8
 ## Email: info@vention.cc
-## Status: ready to test
+## Status: tested
 ##################################################
 
 from _MachineMotion_1_6_8 import *
@@ -35,7 +35,22 @@ mm.emitHome(1)
 print ("Application Message: Axis 1 is at home \n")
 
 # Move the axis 1 to position 100 mm
-mm.emitCombinedAbsoluteMove([1, 2, 3], [100, 200, 100])
+mm.emitAbsoluteMove(1, 100)
+print ("Application Message: Motion on-going ... \n")
+
+mm.waitForMotionCompletion()
+print ("Application Message: Motion completed \n")
+
+
+mm.emitSetAxisDirection(1, "reverse")
+print ("Application Message: Axis direction set for axis 1 \n")
+
+# Homing axis 1
+mm.emitHome(1)
+print ("Application Message: Axis 1 is at home \n")
+
+# Move the axis 1 to position 100 mm
+mm.emitAbsoluteMove(1, 100)
 print ("Application Message: Motion on-going ... \n")
 
 mm.waitForMotionCompletion()

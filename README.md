@@ -11,6 +11,10 @@ To set up the MachineMotion Python Library on your computer, follow the steps be
 
 - Download the version of the library that you require on [GitHub](https://github.com/VentionCo/mm-python-api/releases)
 
+
+    - Controllers with software v1.2.11 and earlier are compatible with the Python API v1.6.8 and earlier
+    - Controllers with software v1.12.0+ are compatible with the Python API v2.0+
+
 - Install Python on your computer. The MachineMotion library supports both Python 2.7 and Python 3.6.
 
     - If installing on Windows, make sure to add Python.exe to the PATH environment variable as shown in *Figure 2* and *Figure 3*.

@@ -1,5 +1,5 @@
 ##################################################
-## Absolute Move
+## Combined Relative Move
 ##################################################
 ## Author: Francois Giguere
 ## Version: 1.6.8
@@ -30,31 +30,17 @@ print ("Application Message: Speed configured \n")
 mm.emitAcceleration(1000)
 print ("Application Message: Acceleration configured \n")
 
-# Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 is at home \n")
+# Homing all axes
+mm.emitHomeAll()
+print ("Application Message: Axes at home \n")
 
-# Move the axis 1 to position 100 mm
-mm.emitAbsoluteMove(1, 100)
-print ("Application Message: Motion on-going ... \n")
+# Move the axis one to position 100 mm
+mm.emitCombinedAxisRelativeMove([1, 2, 3], ["positive", "positive", "positive"], [100, 200, 300])
+print ("Application Message: Multi-axis move on-going ... \n")
 
 mm.waitForMotionCompletion()
 print ("Application Message: Motion completed \n")
 
-mm.setAxisDirection(1, "reverse")
-print ("Application Message: Axis 1 direction reverse \n")
-
-# Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 is at home \n")
-
-# Move the axis 1 to position 100 mm
-mm.emitAbsoluteMove(1, 100)
-print ("Application Message: Motion on-going ... \n")
-
-
 print ("Application Message: Program terminating ... \n")
 time.sleep(1)
 sys.exit(0)
-
-
