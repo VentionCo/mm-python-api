@@ -1,4 +1,4 @@
-# How-to Guide: MachineMotion Python SDK
+# MachineMotion Python API
 
 <div style="text-align: center;"><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/021/large/cover_python_guide.png?1550698357" width="80%" /></div>
 
@@ -111,7 +111,9 @@ Step 3: Enter the IP, Netmask & Gateway fields and click on â€œUse Static Modeâ€
 #### Using the PENDANT
 The MachineMotion pendant allows users to have a configuration free connection to the controller. Simply connect the pendant in the PENDANT port using its 8 pin M12 cable.
 
-# Programming an Application
+# API
+
+[link](__documentation/api/machine_motion_python_api--v1.6.8.md)
 
 ## Configuration
 
@@ -238,7 +240,7 @@ sys.exit(0)
 > None
 
 #### Reference Example
-> 
+> example--configAxis.py
 
 ```python
 from _MachineMotion_1_6_8 import *
@@ -255,6 +257,54 @@ print ("Application Message: MachineMotion Controller Connected \n")
 # Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
 mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
 print ("Application Message: MachineMotion axis 1 configured \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
+```
+
+---
+### setPosition(axis, position)
+> Function to force set the position of the motion controller for one specific axis
+
+#### axis {Number}
+> Axis to configure
+
+#### position {Number}
+> Position to set the axis to
+
+
+#### return value
+> none
+
+#### Reference Example
+> example--setPosition.py
+
+```python
+from _MachineMotion_1_6_8 import *
+
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+
+print ("Application Message: MachineMotion Program Starting \n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion axis 1 configured \n")
+
+# Instead of homing we set the position to 100, so we can move the axis in the reverse direction right after power-on.
+mm.setPosition(1, 100)
+print ("Application Message: Position set to 100 mm on axis 1\n")
+
+mm.moveRelative(1, "negative", 50)
+print ("Application Message: Moving in the negative direction ... \n")
+
+mm.waitForMotionCompletion()
+print ("Application Message: Motion completed \n")
 
 print ("Application Message: Program terminating ... \n")
 time.sleep(1)

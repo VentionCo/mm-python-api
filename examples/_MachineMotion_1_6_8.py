@@ -599,6 +599,17 @@ class MachineMotion:
             command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
         self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
+        
+    #
+    # Function to force set the position of the motion controller for one specific axis.
+    # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: string or number.
+    # @param position --- Description: position is the position to set the axis to --- Type: string or number.
+    # @status
+    #
+    def setPosition(self, axis, position):
+        # Transmit move command
+        self.myGCode.__emit__("G92 " + self.myGCode.__getTrueAxis__(axis) + str(position))
+        while self.isReady() != "true": pass
 
     #
     # Function to send a raw G-Code ASCII command
