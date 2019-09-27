@@ -1,15 +1,37 @@
-from _MachineMotion import *
+##################################################
+## Wait for Motion Completion Example
+##################################################
+## Author: Francois Giguere
+## Version: 1.6.8
+## Email: info@vention.cc
+## Status: tested
+##################################################
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+from _MachineMotion_1_6_8 import *
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+    
+print ("Application Message: MachineMotion Program Starting \n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
 # Homing axis one
-machine_motion_example.emitHome(1)
-# Wait for the message to be acknowledged by the motion controller
-while machine_motion_example.isReady() != "true": pass
-machine_motion_example.waitForMotionCompletion()
+mm.emitHome(1)
+print ("Application Message: Axis 1 is at home \n")
 
-print ( "--> This line executes after the motion controller has acknowledged the reception of the command." )
+# Move the axis one to position 100 mm
+mm.emitAbsoluteMove(1, 100)
+print ("Application Message: Motion on-going ... \n")
+
+# This function call waits for the motion to be completed before returning
+mm.waitForMotionCompletion()
+print ("Application Message: Motion has completed \n")
+
+print ("Application Message: Program terminating \n")
+time.sleep(1)
+sys.exit(0)
+
+

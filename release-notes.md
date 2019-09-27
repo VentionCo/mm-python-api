@@ -1,10 +1,20 @@
+# Version 1.6.8
+
+Date: September 24<sup>th</sup>, 2019
+
+## Improvements:
+- Fixed bug that was present in the writeControlDevice function that was using the v2.1 Python version nomenclature in the MQTT topics.
+- Added the multi-axis move commands
+- Revised the entire API document
+- Revised all examples and updated them to reflect all new changes
+
 # Version 1.6.7
 
 Date: July 16<sup>th</sup>, 2019
 
 ## Improvements:
 - Added support for Python3 and Python2.
-
+- Fixed rounding errors in the configAxis function by using floats for incoming parameters
 
 # Version: 1.6.6
 

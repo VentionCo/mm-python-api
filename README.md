@@ -4,64 +4,27 @@
 
 <p>&nbsp;</p>
 
-## Introduction
-
-This guide will cover the setup and use of Vention’s MachineMotion™ Python Software Development Kit (SDK). After reading this guide, you will be ready to deploy custom motion and control applications using Vention’s MachineMotion controller. Before you begin, we recommended reading the <a href="https://www.vention.io/technical_documents/machine_motion_docs/vention_machine_motion_user_guide" target="_blank">MachineMotion Quick Start Guide</a> to get familiar with the technology.
-
-## Overview
-
-The MachineMotion python SDK has been designed to allow user applications to execute:
-
->- internally to MachineMotion; or
->- on an external computer connected to MachineMotion via the USB or Ethernet port.
-
-The Python SDK includes the following core features:
-
->- Simplied interface to all MachineMotion functionality
->- Control of one or multiple MachineMotion from a single program
->- Direct access to the internal motion controller via gCode
-
-<p style="text-align:center;" ><img src="media/python-overview.png" width="65%" height="65%"></p>
-
-<center>
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 1: Structure of a Python program</em></p>
-</center>
-
-
-
-## Host Connection Example
-
-Many systems are built by centralizing application-level software on a host computer. The software interacts with various devices (such as robotic devices, sensors, proprietary products, and data acquisition equipment) and delivers the required application behavior (see Figure 1).
-
-<p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/027/large/auto_HTG0006_typicalApplication.png?1550763014" width="65%" height="65%"></p>
-
-<center>
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 1: Typical system configuration</em></p>
-</center>
-
-Using MachineMotion with Python is ideal for these types of applications, especially where an easy to deploy motion control system is necessary.
-
 ## Installation
 
 ### Windows
 
-To set up the MachineMotion Python library:  
+To set up the MachineMotion Python Library on your computer, follow the steps below:
 
-- Download the latest
-<a href="https://s3.amazonaws.com/ventionblobs/sdk/machineMotionPythonApi_v1.6.2.zip" target="_blank">Python SDK 1.6.2</a>
+- Download the version of the library that you require on [GitHub](https://github.com/VentionCo/mm-python-api/releases)
 
-- Unzip the content on your computer. This location will be your workspace.
+- Install Python on your computer. The MachineMotion library supports both Python 2.7 and Python 3.6.
 
-- Install
-<a href="https://www.python.org/download/releases/2.7/" target="_blank">Python 2.7</a> 
+    - If installing on Windows, make sure to add Python.exe to the PATH environment variable as shown in *Figure 2* and *Figure 3*.
 
-*++Note for Windows users++: Make sure to add Python.exe to the PATH environment variable as shown in *Figure 2*.*
-
-<p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/026/large/auto_HTG0006_pythonInstPathInstruction.png?1550763013" width="45%" height="45%"></p>
+<p style="text-align:center;" ><img src="__documentation/media/python_2.7_install_edited.png" width="45%" height="45%" <img style="border:1px solid grey;"></p>
 
 <p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 2: Make sure to select "Add python.exe to path" if installing on Windows.</em></p>
 
-- Open the command prompt (for Windows) or the terminal (for Mac or Linux users) and run the following installations  
+<p style="text-align:center;" ><img src="__documentation/media/python_3.6_install_edited.png" width="45%" height="45%" <img style="border:1px solid grey;"></p>
+
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 3: Make sure to click "Add Python 3.6 to PATH" if installing on Windows.</em></p>
+
+- Open the command prompt (for Windows) or the terminal (for Mac or Linux) and run the following installations  
 
   ```console
   pip install -U socketIO-client
@@ -75,27 +38,86 @@ To set up the MachineMotion Python library:
   pip install -U paho-mqtt
   ```
 
-- The MachineMotion Python library is now ready to use. Programs can be created and ran from the workspace folder.
+- The MachineMotion Python library is now ready to use. Programs can be created and ran from the examples folder.
 
-## Connectivity Setup
+## Connecting to MachineMotion
 
-MachineMotion has two communication ports, one labeled USB and one labeled ETHERNET. Both use IP connectivity and have their own unique IP addresses, (see *Figure 3*).
+MachineMotion offers several connection options to interact with external devices. More precisely, three communication methods are available.
 
-</br>
+- The 192.168.7.2 port (fomerly labelled DEFAULT ETHERNET)
+- The ETHERNET port
+- The PENDANT port
 
-<p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/025/large/auto_HTG0006_machineMotionFrontPanel.png?1550763012" width="50%" height="50%"></p>
+### Using the 192.168.7.2 port (Formerly labelled DEFAULT ETHERNET)
+This method is mostly used to connect a computer to MachineMotion in a peer-to-peer way (one to one connection). It is also useful to have access to the system in case other ports are not available for use.
+Connecting
+Simply connect an Ethernet cable in the port that is labelled 192.168.7.2 (formerly labelled DEFAULT ETHERNET). If you do not have an Ethernet port on your computer, utilize the Ethernet to USB adapter provided with the controller.
 
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 3: MachineMotion front panel.</em></p>
+<p style="text-align:center;" ><img src="__documentation/media/CE-CL-105-0003_Front_edited_192.168.7.2_port.png" width="45%" height="45%"></p>
 
-The IP address associated with the USB port is static (192.168.7.2 for Windows; 192.168.6.2 for Mac and Linux). It cannot be configured or modified. The USB port should be used for direct computer-to-MachineMotion connectivity.
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 4: The 192.168.7.2 pre-configured Ethernet port on the MachineMotion controller, in the green box.</em></p>
 
-The IP address associated with the ETHERNET port can be modified to suit your network requirements. Refer to the <a href="https://www.vention.io/" target="_blank">How-to Guide: MachineMotion Network Setup</a> for more details.
+By default, the network adapter of your computer should be in DHCP mode and configure itself automatically.
 
-## Configuring the network and axes 
+#### Optional Details
+The MachineMotion controller acts as a DHCP server on this port. When another device is connected, it assigns it the 192.168.7.1 address and auto assigns itself to 192.168.7.2. For this to properly function, your computer adapter settings must be set to DHCP (which is the default).
 
-When creating a Python program to control the MachineMotion controller, the first step is always to create a MachineMotion instance. This will establish communication with the actual controller and expose different functions that can be used to send commands.
+### Using the ETHERNET port
+Using the ETHERNET port is useful when connectiong MachineMotion to a standard, multi-device Ethernet network. This use case becomes necessary when connecting multiple MachineMotion controllers together in multi-controller systems and when connecting MachineMotion on a LAN or WLAN.
 
-After creating the MachineMotion instance, you must configure the network and axis. The functions to perform these steps are covered in this section.
+<p style="text-align:center;" ><img src="__documentation/media/CE-CL-105-0003_Front_edited_Ethernet_port.png" width="45%" height="45%"></p>
+
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 5: The 192.168.7.2 pre-configured Ethernet port on the MachineMotion controller, in the green box.</em></p>
+
+#### Connecting using DHCP
+A DHCP client natively runs on the controller and will respond to DHCP commands from a DHCP server. Follow the steps below to configure your controller in DHCP mode.
+
+- Step 1: Connect a computer to the 192.168.7.2 port (formerly DEFAULT ETHERNET) and browse to 192.168.7.2 using Google Chrome.
+
+<p style="text-align:center;" ><img src="__documentation/media/ControlCenter_main_page.png" width="75%" height="75%" <img style="border:1px solid grey;"></p>
+
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 6: MachineMotion ControlCenter Main Page</em></p>
+ 
+- Step 2: Click on the Network Configuration tab.
+
+<p style="text-align:center;" ><img src="__documentation/media/ControlCenter_network_config.png" width="75%" height="75%" <img style="border:1px solid grey;"></p>
+
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 6: MachineMotion ControlCenter Main Page</em></p>
+ 
+- Step 3: Click on “Use Dynamic Mode”
+
+At this point, you will see the currently active IP address that the ETHERNET port was assigned in the ControlCenter fileds. You can ask your network administrator to assign rules to address your controller using its MAC address. To do the later, you will need to get the MAC address of the controller. Consult *Appendix B*.
+
+
+#### Connecting using Static Mode
+If the application requires the use of fixed IP addresses on your network, you can utilize a similar method to configure the MachineMotion controller.
+In order to do so, some parameters of the Network need to be known. Usually, this is available from your system administrator or from the configuration utility of your network router.
+
+- Step 1: Connect a computer to the 192.168.7.2 port (formerly DEFAULT ETHERNET) and browse to 192.168.7.2 using Google Chrome.
+
+<p style="text-align:center;" ><img src="__documentation/media/ControlCenter_main_page.png" width="75%" height="75%" <img style="border:1px solid grey;"></p>
+
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 8: MachineMotion ControlCenter Main Page</em></p>
+ 
+- Step 2: Click on the Network Configuration tab.
+
+<p style="text-align:center;" ><img src="__documentation/media/ControlCenter_network_config.png" width="75%" height="75%" <img style="border:1px solid grey;"></p>
+
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 9: MachineMotion ControlCenter Main Page</em></p>
+
+ 
+Step 3: Enter the IP, Netmask & Gateway fields and click on “Use Static Mode”.
+
+#### Using the PENDANT
+The MachineMotion pendant allows users to have a configuration free connection to the controller. Simply connect the pendant in the PENDANT port using its 8 pin M12 cable.
+
+# Programming an Application
+
+## Configuration
+
+When creating a Python program to control the MachineMotion controller, the first step is always to create a MachineMotion objcet. This will establish communication with the actual controller and expose different functions that can be used to send commands.
+
+After creating the MachineMotion instance, you must configure its axes. The functions to perform these steps are covered in this section.
 
 ---
 ### MachineMotion(callback, ip)
@@ -103,8 +125,7 @@ After creating the MachineMotion instance, you must configure the network and ax
 Creates a MachineMotion instance and establishes the TCP/IP communication. This function is a constructor.
 
 #### callback {def callbackName(data):}  
-
-> Handle in which incoming messages from the controller can be processed. The data are passed to the callback as a string argument.
+> Handle in which incoming messages from the controller can be processed. The data passed to the callback is of String type.
 
 #### ip {string}
 
@@ -113,38 +134,32 @@ Creates a MachineMotion instance and establishes the TCP/IP communication. This 
 #### return value {MachineMotion}
 > Instance created by the constructor.
 
-#### Example
+#### Reference Example
+> example--MachineMotion.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-print ( "Controller connected" )
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
+
 ```
-
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller connected
-```
-
 ---
 ### configMachineMotionIp(mode, ip, netmask, gateway)
-
-Configures the IP address of the controller Ethernet interface.
+> Configures the IP address of the controller Ethernet interface.
 
 #### mode {NETWORK_MODE}
-> IP configures the network management profile as either static or DHCP.
+> IP configures the network management profile as either static or dhcp.
 
 #### ip {String}
 > Desired static IP address to assign to the MachineMotion controller. Format is "nnn.nnn.nnn.nnnn", where n are numbers.
@@ -158,108 +173,96 @@ Configures the IP address of the controller Ethernet interface.
 #### return value
 > none
 
-####  Example 1
+####  Reference Example
+> example--configMachineMotionIp.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-machine_motion_example = machine_motion_example.configMachineMotionIp(NETWORK_MODE.static, "192.168.0.2", "255.255.255.0", "192.168.0.1")
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-print ( "--> Controller connected & ethernet interface configured (static)" )
+# Setting the ETHERNET port of the controller in static mode
+mm.configMachineMotionIp(NETWORK_MODE.static, "192.168.0.2", "255.255.255.0", "192.168.0.1")
+print ("Application Message: Ethernet Port Configured \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
-#### Output 1
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
---> Controller connected & ethernet interface configured (static)
-```
-
-#### Example 2
+#### Reference Example
+> example--configMachineMotionIp_2.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-machine_motion_example = machine_motion_example.configMachineMotionIp(NETWORK_MODE.dhcp, "", "", "")
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-print ( "--> Controller connected & ethernet interface configured (dhcp)" )
+# Setting the ETHERNET port of the controller in dhcp mode
+mm.configMachineMotionIp(NETWORK_MODE.dhcp, "", "", "")
+print ("Application Message: Ethernet Port Configured \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
-#### Output 2
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
---> Controller connected & ethernet interface configured (dhcp)
-```
 ---
 ### configAxis(axis, u_step, mech_gain)
-
-Configure the axis' mechanical gain and micro-step settings to ensure accurate motion.
+> Configure the axis' mechanical gain and micro-step settings to ensure accurate motion.
 
 #### axis {Number}
 > Axis to configure
 
-u_step {MICRO_STEPS}
+#### u_step {MICRO_STEPS}
 > Micro-step setting
 
 #### mech_gain {MECH_GAIN}
 > Mechanical gain of the axis in mm per turn.
 
 #### return value
-> None.
+> None
 
-#### Example
+#### Reference Example
+> 
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-# Configure the axis number one, 8 uSteps and 150 mm / turn for a timing belt
-machine_motion_example = machine_motion_example.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-print ( "--> Controller axis 1 configured" )
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion axis 1 configured \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 M92 X10*99
-Controller gCode responses ok
---> Controller axis 1 configured
-```
 ---
 ### saveData(key, data)
-
 > Save a key-value pair on the controller.
 
 #### key {String}
@@ -271,27 +274,45 @@ Controller gCode responses ok
 #### return value
 > None.
 
-#### Exampledfd
+#### Reference Example
+> example--saveData_getData.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+    
+print ("Application Message: MachineMotion Program Starting \n")
+    
+# Define a callback to print the data retrieved using the getData function
+def printGetDataResult(data):
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+    dictionary = json.loads(data)
+
+    print ( "Application Message: Retrieved file name = " + dictionary["fileName"] + "\n" )
+    
+    print ( "Application Message: Retrieved data = " + dictionary["data"]  + "\n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
 # Saving a string on the controller
-machine_motion_example = machine_motion_example.saveData("data_1", "save_this_string_on_the_controller")
+mm.saveData("data_1", "save_this_string_on_the_controller")
 
-print ( "--> Data sent on controller" )
+print ("Application Message: Data saved \n")
+
+# Reading a string from the controller
+mm.getData("data_1", printGetDataResult)
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
-
 ---
 ### getData(key, callback)
-
-Retrieve a key-value pair that was saved on the controller.
+> Retrieve a key-value pair that was saved on the controller.
 
 #### key {String}
 > key is a string that identifies the data to retrieve.
@@ -300,208 +321,184 @@ Retrieve a key-value pair that was saved on the controller.
 #### callback {def callbackName(data):}
 > Function to invoke once the data is available. The data will be passed to the callback as an argument—specifically, as a serialized JSON string.
 
-#### Example
+#### Reference Example
+> example--saveData_getData.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+    
+print ("Application Message: MachineMotion Program Starting \n")
+    
 # Define a callback to print the data retrieved using the getData function
 def printGetDataResult(data):
-   print ( "--> Retrieved data = " + data )
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+    dictionary = json.loads(data)
+
+    print ( "Application Message: Retrieved file name = " + dictionary["fileName"] + "\n" )
+    
+    print ( "Application Message: Retrieved data = " + dictionary["data"]  + "\n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
 # Saving a string on the controller
-machine_motion_example.saveData("data_1", "save_this_string_on_the_controller")
+mm.saveData("data_1", "save_this_string_on_the_controller")
 
+print ("Application Message: Data saved \n")
 
-machine_motion_example.getData("data_1", printGetDataResult)
-```
+# Reading a string from the controller
+mm.getData("data_1", printGetDataResult)
 
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
---> Retrieved data = {"data": "save_this_string_on_the_controller", "fileName": "data_1"}
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ## Motion Functions
 
 ---
-### isReady()
-
-Blocking function that waits for the MachineMotion controller to ackowledge the command before continuing code execution. This is a code flow control function.
-
-#### return value
-> None.
-
-#### Example
-
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Homing axis 1
-machine_motion_example.emitHome(1)
-# Wait for the message to be acknowledged by the motion controller
-while machine_motion_example.isReady() != "true": pass
-
-print ( "--> This line executes after the motion controller has acknowledged receipt of the command." )
-
-```
-
-#### Output
-
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 G28 X*105
-Controller gCode responses X:0.00 Y:0.00 Z:0.00 E:0.00 Count X: 0 Y:0 Z:0
-Controller gCode responses ok
---> This line executes after the motion controller has acknowledged the reception of the command.
-```
-
----
 ### waitForMotionCompletion()
-
-Blocking function that prevents program execution until the last motion has been completed. Until the machine has not finished its final movement, the code will not be executed.
+> Blocking function that prevents program execution until last motion has completed. Until the machine has not finished its final movement, the code will not be executed.
 
 #### return value
-> None.
+> none
 
-#### Example
+#### Reference Example
+> example--waitForMotionCompletion.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+    
+print ("Application Message: MachineMotion Program Starting \n")
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-# Homing axis 1
-machine_motion_example.emitHome(1)
-# Wait for the message to be acknowledged by the motion controller
-while machine_motion_example.isReady() != "true": pass
-machine_motion_example.waitForMotionCompletion()
+# Homing axis one
+mm.emitHome(1)
+print ("Application Message: Axis 1 is at home \n")
 
-print ( "--> This line executes after the motion controller has acknowledged the reception of the command." )
+# Move the axis one to position 100 mm
+mm.emitAbsoluteMove(1, 100)
+print ("Application Message: Motion on-going ... \n")
 
-```
+# This function call waits for the motion to be completed before returning
+mm.waitForMotionCompletion()
+print ("Application Message: Motion has completed \n")
 
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 G28 X*105
-Controller gCode responses X:0.00 Y:0.00 Z:0.00 E:0.00 Count X: 0 Y:0 Z:0
-Controller gCode responses ok
-Controller gCode responses echo:N3 V0*59
-A motion status was requested
-move is in progress
-Controller gCode responses Motion Status = COMPLETED
-Controller gCode responses ok
-Controller gCode responses echo:N4 V0*60
-A motion status was requested
-Move was completed
-Controller gCode responses Motion Status = COMPLETED
---> This line executes after the motion controller has acknowledged receipt of the command.
-Controller gCode responses ok
+print ("Application Message: Program terminating \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
 ### emitStop()
-
-Immediately stops motion on all axes.
+ > Immediately stops motion on all axes.
 
 #### return value
 > none
 
 
-#### Example
+#### Reference Example
+> example--emitStop.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+import datetime
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-# Send a stop command to the machine (this works even if the machine has not started moving yet)
-machine_motion_example.emitStop()
+print ("Application Message: MachineMotion Program Starting \n")
+    
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-print ( "--> Machine Stopped" )
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, 150)
+print ("Application Message: MachineMotion axis 1 configured \n")
 
-```
+# Homing axis 1
+mm.emitHome(1)
+print ("Application Message: Axis 1 at home \n")
 
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 M410*36
-Controller gCode responses ok
---> Machine Stopped
+# Configuring the travel speed to 100 mm / minute
+mm.emitSpeed(100)
+print ("Application Message: Speed configured \n")
+
+# Move the axis one to position 100 mm
+mm.emitRelativeMove(1, "positive", 100)
+print ("Application Message: Move on-going ... \n")
+
+time.sleep(2)
+print ("Application Message: Waiting for 2 seconds ... \n")
+
+# Instruct the controller to stop all motion immediately
+mm.emitStop()
+print ("Application Message: Motion stopped! \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
 ### emitHomeAll()
-
-Moves all carriages to their home location sequentially, axis 1 to axis 3.
+> Moves all carriages to their home location sequentially, axis 1 to axis 3. This is a blocking function and will return only on completion of the operation on the machine.
 
 #### return value
 > none
 
-#### Example
+#### Reference Example
+> _example--emitHomeAll.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: Axis 1 configured \n")
+
+# Configure the axis number 2, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(2, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: Axis 2 configured \n")
+
+# Configure the axis number 3, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(3, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: Axis 3 configured \n")
 
 # Homing all the axes of the controller sequentially
-machine_motion_example.emitHomeAll()
-machine_motion_example.waitForMotionCompletion()
+mm.emitHomeAll()
+print ("Application Message: All axes are at home \n")
 
-print ( "--> All axes are now at home position." )
-
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
 ### emitHome(axis)
 
-Moves the carriage of the corresponding axis to its home location.
+Moves the carriage of the corresponding axis to its home location. This is a blocking function and will return only on completion of the operation on the machine.
 
 
 #### axis {AXIS_NUMBER}
@@ -510,47 +507,32 @@ Moves the carriage of the corresponding axis to its home location.
 #### return value
 > none
 
-#### Example
+#### Reference Example
+> example--emitHome.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: Axis 1 configured \n")
 
 # Homing axis 1
-machine_motion_example.emitHome(1)
-machine_motion_example.waitForMotionCompletion()
+mm.emitHome(1)
+print ("Application Message: Axis 1 at home \n")
 
-print ( "--> Axis 1 is now at home position." )
-
-```
-
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 G28 X*105
-Controller gCode responses X:0.00 Y:0.00 Z:0.00 E:0.00 Count X: 0 Y:0 Z:0
-Controller gCode responses ok
-Controller gCode responses echo:N3 V0*59
-A motion status was requested
-Movement is in progress
-Controller gCode responses Motion Status = COMPLETED
-Controller gCode responses ok
-Controller gCode responses echo:N4 V0*60
-A motion status was requested
-Move was completed
-Controller gCode responses Motion Status = COMPLETED
---> Axis 1 is now at home position.
-Controller gCode responses ok
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
@@ -567,19 +549,24 @@ Configures the travel speed. Travel speed applies to combined axis moves and sin
 #### Example
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-# Configuring the travel speed to 10,000 mm / min
-machine_motion_example.emitSpeed(10000)
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-print ( "--> Machine moves are not set to 10 000 mm / min" )
+# Configuring the travel speed to 1000 mm / minute
+mm.emitSpeed(1000)
+print ("Application Message: Speed configured \n")
 
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
@@ -596,33 +583,28 @@ Configures travel acceleration. Travel acceleration applies to combined axis mov
 #### Example
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-# Configuring the travel speed to 1000 mm / second^2
-machine_motion_example.emitAcceleration(1000)
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-print ( "--> Machine moves are not set to accelerate @ 1000 mm / second^2" )
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion Axis 1 Configured \n")
 
-```
+# Configuring the travel acceleration to 100 mm / second^2
+mm.emitAcceleration(100)
+print ("Application Message: Acceleration configured \n")
 
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 M204 T1000*82
-Controller gCode responses Setting Travel Acceleration: 1000.00
-Controller gCode responses ok
---> Machine moves are not set to accelerate @ 1000 mm / second^2
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
@@ -642,54 +624,43 @@ Configures the travel acceleration. Travel acceleration applies to combined axis
 #### Example
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print "Controller gCode responses " + data
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-# Configuring the travel speed to 10 000 mm / min
-machine_motion_example.emitSpeed(10000)
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion Axis 1 Configured \n")
+
+# Configuring the travel speed to 10000 mm / min
+mm.emitSpeed(10000)
+print ("Application Message: Speed configured \n")
 
 # Configuring the travel speed to 1000 mm / second^2
-machine_motion_example.emitAcceleration(1000)
+mm.emitAcceleration(1000)
+print ("Application Message: Acceleration configured \n")
 
 # Homing axis 1
-machine_motion_example.emitHome(1)
-machine_motion_example.waitForMotionCompletion()
+mm.emitHome(1)
+print ("Application Message: Axis 1 is at home \n")
 
-# Move axis 1 to position "100 mm"
-machine_motion_example.emitAbsoluteMove(1, 100)
-machine_motion_example.waitForMotionCompletion()
+# Move the axis 1 to position 100 mm
+mm.emitAbsoluteMove(1, 100)
+print ("Application Message: Motion on-going ... \n")
 
-print ( "--> Example completed." )
+mm.waitForMotionCompletion()
+print ("Application Message: Motion completed \n")
 
-```
-
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 G0 F10000*124
-Controller gCode responses ok
-Controller gCode responses echo:N3 M204 T1000*83
-Controller gCode responses Setting Travel Acceleration: 1000.00
-Controller gCode responses ok
-Controller gCode responses echo:N4 G28 X*111
-Controller gCode responses echo:busy:processing
-Controller gCode responses X:0.00 Y:0.00 Z:0.00 E:0.00 Count X: 0 Y:0 Z:0
-Controller gCode responses ok
-Controller gCode responses echo:N5 G90*21
-Controller gCode responses ok
-Controller gCode responses echo:N6 G0 X100*102
-Controller gCode responses ok
---> Example completed.
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
@@ -712,60 +683,43 @@ Moves the gantry to a position relative to its current location.
 #### Example
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-# Configuring the travel speed to 10 000 mm / min
-machine_motion_example.emitSpeed(10000)
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion Axis 1 Configured \n")
+
+# Configuring the travel speed to 10000 mm / min
+mm.emitSpeed(10000)
+print ("Application Message: Speed configured \n")
 
 # Configuring the travel speed to 1000 mm / second^2
-machine_motion_example.emitAcceleration(1000)
+mm.emitAcceleration(1000)
+print ("Application Message: Acceleration configured \n")
 
 # Homing axis 1
-machine_motion_example.emitHome(1)
+mm.emitHome(1)
+print ("Application Message: Axis 1 at home \n")
 
-# Move axis 1 to position 100 mm
-machine_motion_example.emitAbsoluteMove(1, 100)
-machine_motion_example.waitForMotionCompletion()
+# Move the axis one to position 100 mm
+mm.emitRelativeMove(1, "positive", 100)
+print ("Application Message: Move on-going ... \n")
 
-# Move axis 1 by an increment of negative 100 mm
-machine_motion_example.emitRelativeMove(1, "negative", 100)
-machine_motion_example.waitForMotionCompletion()
+mm.waitForMotionCompletion()
+print ("Application Message: Motion completed \n")
 
-print ( "--> Example completed." )
-
-```
-
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 G0 F10000*124
-Controller gCode responses ok
-Controller gCode responses echo:N3 M204 T1000*83
-Controller gCode responses Setting Travel Acceleration: 1000.00
-Controller gCode responses ok
-Controller gCode responses echo:N4 G28 X*111
-Controller gCode responses X:0.00 Y:0.00 Z:0.00 E:0.00 Count X: 0 Y:0 Z:0
-Controller gCode responses ok
-Controller gCode responses echo:N5 G90*21
-Controller gCode responses ok
-Controller gCode responses echo:N6 G0 X100*102
-Controller gCode responses ok
-Controller gCode responses echo:N7 G91*22
-Controller gCode responses ok
-Controller gCode responses echo:N8 G0 X-100*69
---> Example completed.
-Controller gCode responses ok
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
@@ -782,81 +736,116 @@ Sends a direct G-Code string command. See the G-Code Commands section for more d
 #### Example
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Program Starting \n")
 
-# Configuring travel speed to 10 000 mm / min
-machine_motion_example.emitSpeed(10000)
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-# Configuring travel speed to 1000 mm / second^2
-machine_motion_example.emitAcceleration(1000)
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion axis 1 configured \n")
+
+# Configure the axis number 2, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(2, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion axis 2 configured \n")
+
+# Configuring the travel speed to 10000 mm / min
+mm.emitSpeed(10000)
+print ("Application Message: Speed configured \n")
+
+# Configuring the travel speed to 1000 mm / second^2
+mm.emitAcceleration(1000)
+print ("Application Message: Acceleration Configured \n")
 
 # Homing axis 1
-machine_motion_example.emitHome(1)
-machine_motion_example.waitForMotionCompletion()
+mm.emitHome(1)
+print ("Application Message: Axis 1 at home \n")
 
-# Use the G0 command to move both axis 1 and two by 500mm at a travel speed of 10 000 mm / minute
-machine_motion_example.emitgCode("G0 X500 Y500 F10000")
-machine_motion_example.waitForMotionCompletion()
+# Homing axis 2
+mm.emitHome(2)
+print ("Application Message: Axis 2 at home \n")
 
-print ( "--> Example completed." )
+# Use the G0 command to move both axis 1 and 2 by 50mm at a travel speed of 10000 mm / minute
+mm.emitgCode("G0 X50 Y50 F10000")
+print ("Application Message: Motion on-going ... \n")
 
-```
+mm.waitForMotionCompletion()
+print ("Application Message: Motion completed \n")
 
-#### Output
-```
-Controller gCode responses MachineMotion Session Start
-Controller gCode responses echo:N0 M110 N0*125
-Controller gCode responses ok
-Controller gCode responses echo:N1 M111 S247*97
-Controller gCode responses echo:DEBUG:ECHO,INFO,ERRORS,COMMUNICATION
-Controller gCode responses ok
-Controller gCode responses echo:N2 G0 F10000*124
-Controller gCode responses ok
-Controller gCode responses echo:N3 M204 T1000*83
-Controller gCode responses Setting Travel Acceleration: 1000.00
-Controller gCode responses ok
-Controller gCode responses echo:N4 G28 X*111
-Controller gCode responses echo:busy: processing
-Controller gCode responses X:0.00 Y:3000.00 Z:0.00 E:0.00 Count X: 0 Y:24000 Z:0
-Controller gCode responses ok
-Controller gCode responses echo:N5 V0*61
-Controller gCode responses Motion Status = COMPLETED
-Controller gCode responses ok
-Controller gCode responses echo:N6 V0*62
-Controller gCode responses Motion Status = COMPLETED
-Controller gCode responses ok
-Controller gCode responses echo:N7 G0 X50 Y50 F10000*120
-Controller gCode responses ok
-Controller gCode responses echo:N8 V0*48
-Controller gCode responses Motion Status = IN_PROGRESS
-Controller gCode responses ok
-Controller gCode responses echo:N9 V0*49
-Controller gCode responses Motion Status = IN_PROGRESS
-Controller gCode responses ok
-Controller gCode responses echo:N10 V0*9
-Controller gCode responses Motion Status = IN_PROGRESS
-Controller gCode responses ok
-Controller gCode responses echo:N11 V0*8
-Controller gCode responses Motion Status = IN_PROGRESS
-Controller gCode responses ok
-Controller gCode responses echo:N12 V0*11
-Controller gCode responses Motion Status = IN_PROGRESS
-Controller gCode responses ok
-Controller gCode responses echo:N13 V0*10
-Controller gCode responses Motion Status = COMPLETED
---> Example completed.
-Controller gCode responses ok
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ## Control Device Functions
 
 Functions that exchange data with the MachineMotion controller (no movement involved).
+
+#### Important Notes: Digital IO Module
+
+##### Address vs Port 
+
+<div class="markdown-body" style="font-family:Larsseit; display: table;">
+
+| **Digital IO Module Address** | **Port to Utilize** | 
+| :---: | :---: |
+| 1 | SENSOR4 |
+| 2 | SENSOR5 |
+| 3 | SENSOR6 |
+
+</div>
+
+##### Inputs vs Signal
+
+<div class="markdown-body" style="font-family:Larsseit; display: table;">
+
+| **Input Number to Read** | **Signal to Utilize** | 
+| :---: | :---: |
+| 1 | SIGNAL4 |
+| 2 | SENSOR5 |
+| 3 | SENSOR6 |
+| 4 | SENSOR7 |
+
+</div>
+
+##### Outputs vs Signal
+
+<div class="markdown-body" style="font-family:Larsseit; display: table;">
+
+| **Output Number to Write** | **Signal to Utilize** | 
+| :---: | :---: |
+| 1 | SIGNAL0 |
+| 2 | SENSOR1 |
+| 3 | SENSOR2 |
+| 4 | SENSOR3 |
+
+</div>
+
+#### Important Notes: Encoders
+
+##### Port Selection
+
+If your controller's blue front panel ports are labelled SENSOR4,SENSOR5, SENSOR6, simply use the port that the encoder is connected to.
+
+If your controller's blue front panel ports are labelled AUX1, AUX2, AUX3 use the port mapping below.
+
+<div class="markdown-body" style="font-family:Larsseit; display: table;">
+
+| **Output Number to Write** | **Signal to Utilize** | 
+| :---: | :---: |
+| AUX1 | SENSOR4 |
+| AUX2 | SENSOR5 |
+| AUX3 | SENSOR6 |
+
+</div>
+
+When reading an encoder position value use SIGNAL0.
 
 ---
 ### attachControlDevice(port, device, callback)
@@ -878,26 +867,6 @@ Configures a control device on a specific MachineMotion port.
 #### callback argument {String}
 > Status message
 
-#### Example
-
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-   
-# Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )     
-
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Attach a control device (in this case, an encoder) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","ENCODER", attachControlDeviceCallback)
-
-```
-
 ---
 ### detachControlDevice(port, callback)
 
@@ -914,35 +883,6 @@ Deconfigure a control device on a specific MachineMotion port.
 
 #### callback argument {String}
 > Status message 
-
-#### Example
-
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-   
-# Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )  
-
-# Define a callback to invoke when a control device is detached from the controller    
-def detachControlDeviceCallback(data):
-    print "Detach control device callback: " + data     
-
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Attach a control device (an encoder in this case) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","ENCODER", attachControlDeviceCallback)
-
-# Some other code here ...
-
-# Detach (deconfigure) a control device that was previously attached to the MachineMotion controller.
-machine_motion_controller.detachControlDevice("SENSOR4", detachControlDeviceCallback)
-
-```
 
 ---
 ### readControlDevice(port, signal, callback)
@@ -967,44 +907,205 @@ Read a given signal on a control device on a specific MachineMotion port.
     value:  "value read",
     error:  "error message“}
 
-#### Example
+#### Reference Example (Encoder)
+> example--readControlDevice--writeControlDevice--encoder.py
 
 ```python
-from _MachineMotion import *
+from _MachineMotion_1_6_8 import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
    
 # Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )  
+def attachCallback(data):
+    print ("Application Message: attachCallback invoked. Message received = " + json.loads(data)["message"] + " \n");
 
 # Define a callback to invoke when a control device is detached from the controller    
-def detachControlDeviceCallback(data):
-    print ( "Detach control device callback: " + data )    
+def detachCallback(data):
+    print ("Application Message: detachCallback invoked. Message received = " + json.loads(data)["message"] + " \n");
 
 # Define a callback to invoke when a control device is read    
-def readControlDeviceCallback(data):
-    print ( "Read control device callback: " + data )     
+def readCallback(data):    
+    print ( "Application Message: readCallback invoked. Message received = " + data + " \n" )
+    
+print ("Application Message: MachineMotion Program Starting \n")
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+# Creating a MachineMotion instance
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
 
-# Attach a control device (in this case, and encoder) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","ENCODER", attachControlDeviceCallback)
+# Attach a control device (in this case an encoder) to the MachineMotion controller.
+# Encoder connected to port "SENSOR4" (now labelled "AUX1" on new controllers)
+mm.attachControlDevice("SENSOR4",CONTROL_DEVICE_TYPE.ENCODER, attachCallback)
+print ("Application Message: Encoder attached \n")
+
+def readPosition():
+    # SIGNAL0 corresponds to the number of rotations
+    mm.readControlDevice("SENSOR4", "SIGNAL0", readCallback)
+    time.sleep(0.1)
+
+# Configuring the travel speed to 600 mm / min
+mm.emitSpeed(600)
+print ("Application Message: Speed configured \n")
+
+# Configuring the travel speed to 1000 mm / second^2
+mm.emitAcceleration(1000)
+print ("Application Message: Acceleration configured \n")
+
+# Homing axis 1
+mm.emitHome(1)
+print ("Application Message: Axis 1 at home \n")
+
+time.sleep(0.5)
+
+readPosition()
+
+# Move the axis one to position 100 mm
+mm.emitRelativeMove(1, "positive", 100)
+print ("Application Message: Move on-going ... \n")
 
 count = 0
 
-for count in range (0, 100):
+for count in range (0, 10):
 
-    # Read the signal of a control device. SIGNAL0 of the encoder returns the relative position in turns. The encoder resets its position to 0 at power-on. Position is given in turns.
-    machine_motion_controller.readControlDevice("SENSOR4", "SIGNAL0", readControlDeviceCallback)
-
+    readPosition()
+    
     time.sleep(1)
 
 # Detach (deconfigure) a control device that was previously attached to the MachineMotion controller.
-machine_motion_controller.detachControlDevice("SENSOR4", detachControlDeviceCallback)
+mm.detachControlDevice("SENSOR4", detachCallback)
 
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
+```
+
+#### Reference Example (Digital IO Module)
+> example--readControlDevice--writeControlDevice--digital_io_module.py
+
+```python
+from _MachineMotion_1_6_8 import *
+
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
+   
+# Define a callback to invoke when a control device is attached to the controller
+def attachCallback(data):
+    print ("Application Message: attachCallback invoked. Message received = " + json.loads(data)["message"] + " \n");
+
+# Define a callback to invoke when a control device is detached from the controller    
+def detachCallback(data):
+    print ("Application Message: detachCallback invoked. Message received = " + json.loads(data)["message"] + " \n");
+
+# Define a callback to invoke when a control device is read    
+def readCallback(data):    
+    print ( "Application Message: readCallback invoked. Message received = " + data + " \n" )
+
+# Define a callback to invoke when a control device is written    
+def writeCallback(data):
+    print ( "Application Message: writeCallback invoked. Message received = " + data + " \n" )
+
+print ("Application Message: MachineMotion Program Starting \n")
+
+# Creating a MachineMotion instance
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Attach a control device (in this case a digital IO module) to the MachineMotion controller
+# Digital IO Module connected to port "SENSOR4" which corresponds to address 1
+mm.attachControlDevice("SENSOR4",CONTROL_DEVICE_TYPE.IO_EXPANDER_GENERIC, attachCallback)
+print ("Application Message: Digital IO Module configured \n")
+
+count = 0
+
+def readInputs():
+    # Read a control device (in this case a digital IO module)
+    # Port "SENSOR4" corresponds to address 1
+    # SIGNAL4 corresponds to INPUT1
+    mm.readControlDevice("SENSOR4", "SIGNAL4", readCallback)
+    time.sleep(0.1)
+
+    # SIGNAL5 corresponds to INPUT2
+    mm.readControlDevice("SENSOR4", "SIGNAL5", readCallback)
+    time.sleep(0.1)
+
+    # SIGNAL6 corresponds to INPUT3
+    mm.readControlDevice("SENSOR4", "SIGNAL6", readCallback)
+    time.sleep(0.1)
+    
+    # SIGNAL7 corresponds to INPUT4
+    mm.readControlDevice("SENSOR4", "SIGNAL7", readCallback)
+    time.sleep(0.1)
+
+def readOutputs():
+    # Read a control device (in this case a digital IO module)
+    # Port "SENSOR4" corresponds to address 1
+    # SIGNAL4 corresponds to INPUT1
+    mm.readControlDevice("SENSOR4", "SIGNAL0", readCallback)
+    time.sleep(0.1)
+
+    # SIGNAL5 corresponds to INPUT2
+    mm.readControlDevice("SENSOR4", "SIGNAL1", readCallback)
+    time.sleep(0.1)
+
+    # SIGNAL6 corresponds to INPUT3
+    mm.readControlDevice("SENSOR4", "SIGNAL2", readCallback)
+    time.sleep(0.1)
+    
+    # SIGNAL7 corresponds to INPUT4
+    mm.readControlDevice("SENSOR4", "SIGNAL3", readCallback)
+    time.sleep(0.1)
+
+def writeOutputs():
+
+    # SIGNAL0 corresponds to OUTPUT1
+    mm.writeControlDevice("SENSOR4", "SIGNAL0", False, writeCallback)
+    
+    # SIGNAL1 corresponds to OUTPUT2
+    mm.writeControlDevice("SENSOR4", "SIGNAL1", False, writeCallback)
+    
+    # SIGNAL2 corresponds to OUTPUT3
+    mm.writeControlDevice("SENSOR4", "SIGNAL2", False, writeCallback)
+    
+    # SIGNAL3 corresponds to OUTPUT4
+    mm.writeControlDevice("SENSOR4", "SIGNAL3", False, writeCallback)
+    
+    time.sleep(1)
+    
+    # SIGNAL0 corresponds to OUTPUT1
+    mm.writeControlDevice("SENSOR4", "SIGNAL0", True, writeCallback)
+    
+    # SIGNAL1 corresponds to OUTPUT2
+    mm.writeControlDevice("SENSOR4", "SIGNAL1", True, writeCallback)
+    
+    # SIGNAL2 corresponds to OUTPUT3
+    mm.writeControlDevice("SENSOR4", "SIGNAL2", True, writeCallback)
+    
+    # SIGNAL3 corresponds to OUTPUT4
+    mm.writeControlDevice("SENSOR4", "SIGNAL3", True, writeCallback)
+
+for count in range (0, 5):
+
+    readInputs()
+    
+    time.sleep(2)
+    
+    readOutputs()
+    
+    time.sleep(2)
+    
+    writeOutputs()
+    
+    time.sleep(2)
+
+# Detach (deconfigure) a control device that was previously attached to the MachineMotion controller.
+mm.detachControlDevice("SENSOR4", detachCallback)
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
 ```
 
 ---
@@ -1024,61 +1125,19 @@ Deconfigures a control device at a specific MachineMotion port.
     value: "value read",
     error: "error message“}
 
-#### Example
+#### Reference Example (Encoder)
+> example--readControlDevice--writeControlDevice--encoder.py *(see example for the readControlDevice function above)*
 
-```python
-from _MachineMotion import *
-
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-   
-# Define a callback to invoke when a control device is attached to the controller
-def attachControlDeviceCallback(data):
-    print ( "Attach control device callback: " + data )  
-
-# Define a callback to invoke when a control device is detached from the controller    
-def detachControlDeviceCallback(data):
-    print ( "Detach control device callback: " + data )   
-    
-# Define a callback to invoke when a control device is read    
-def readControlDeviceCallback(data):
-    print ( "Read control device callback: " + data )  
-
-# Define a callback to invoke when a control device is written
-def writeControlDeviceCallback(data):
-    print ( "Write control device callback: " + data )
-
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Attach a control device (in this case, an encoder) to the MachineMotion controller.
-machine_motion_controller.attachControlDevice("SENSOR4","IO_EXPANDER_GENERIC", attachControlDeviceCallback)
-
-count = 0
-
-for count in range (0, 100):
-
-    # Read the signal of a control device. SIGNAL0 of the IO expander, which returns True or False depending on the state of the IO.
-    machine_motion_controller.readControlDevice("SENSOR4", "SIGNAL0", readControlDeviceCallback)
-
-    time.sleep(1)
-    
-    # Write the signal of a control device (here, SIGNAL0 of the IO expander).
-    machine_motion_controller.writeControlDevice("SENSOR4", "SIGNAL0", writeControlDeviceCallback)    
-    
-    time.sleep(1)
-
-# Detach (deconfigure) a control device that was previously attached to the MachineMotion controller.
-machine_motion_controller.detachControlDevice("SENSOR4", detachControlDeviceCallback)
-
-```
-
+#### Example (Digital IO Module)
+> example--readControlDevice--writeControlDevice--digital_io_module.py *(see example for the readControlDevice function above)*
 
 ## Executing Python Programs
 
+- To execute a MachineMotion Python program, the library file *_MachineMotion_1_6_8.py* must be located in the same folder as your program.   
+
 - Open the command prompt (for Windows) or terminal (for Mac and Linux).
 
-- Browse to the directory where you program is saved. 
+- Browse to the directory where you program is saved with the library file
 
 - Execute your program.
     ```bash 
@@ -1087,7 +1146,7 @@ machine_motion_controller.detachControlDevice("SENSOR4", detachControlDeviceCall
 
 - The console or terminal will display various status messages while the program runs.
 
-- To stop the execution of the program, press CRTL + c
+- To stop the execution of the program you can always press CRTL + c
 
 ## G-Code
 

@@ -18,10 +18,24 @@ import paho.mqtt.client as mqtt
 motion_completed = "false"
 waiting_motion_status = "false"
 
+display_connection_debug_messages = False
+display_motion_controller_raw_messages = False
+
 machineMotionRef = None
 gCodeCallbackRef = None
 lastSendTimeStamp = None
 
+# Control device signal names on controllers that have hardware version of v1B0 or more recent
+class CONTROL_DEVICE_SIGNALS_V1B0_plus:
+    OUTPUT1 = "SIGNAL0"
+    OUTPUT2 = "SIGNAL1"
+    OUTPUT3 = "SIGNAL2"
+    OUTPUT4 = "SIGNAL3"
+    INPUT1 = "SIGNAL4"
+    INPUT2 = "SIGNAL5"
+    INPUT3 = "SIGNAL6"
+    INPUT4 = "SIGNAL7"
+# Control device signal names on controllers that have hardware version older than v1B0
 class CONTROL_DEVICE_SIGNALS:
     SIGNAL0 = "SIGNAL0"
     SIGNAL1 = "SIGNAL1"
@@ -33,12 +47,24 @@ class CONTROL_DEVICE_SIGNALS:
 
 class CONTROL_DEVICE_TYPE:
     IO_EXPANDER_GENERIC = "IO_EXPANDER_GENERIC"
-    ENCODER             = "ENCODER"
+    ENCODER           = "ENCODER"
 
+# Port names on controllers that have hardware version of v1B0 or more recent
+class CONTROL_DEVICE_PORTS_V1B0_plus:
+    AUX1 = "SENSOR4"
+    AUX2 = "SENSOR5"
+    AUX3 = "SENSOR6"
+    
+# Port names on controllers that have hardware version older than v1B0-    
 class CONTROL_DEVICE_PORTS:
     SENSOR4 = "SENSOR4"
     SENSOR5 = "SENSOR5"
     SENSOR6 = "SENSOR6"
+    
+class DIGITAL_IO_MODULE_ADDRESS:
+    ADDRESS1 = "SENSOR4"
+    ADDRESS2 = "SENSOR5"
+    ADDRESS3 = "SENSOR6"
 
 class DIRECTION:
     positive = "positive"
@@ -72,6 +98,7 @@ class MECH_GAIN:
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
     conveyor_mm_turn                = 157
+    rack_pinion_mm_turn             = 157.08
 
 def fastMotionStatusCallback(data, mm):
     global motion_completed
@@ -255,6 +282,8 @@ class GCode:
 
         global waiting_motion_status
         global lastSendTimeStamp
+        
+        if(display_motion_controller_raw_messages) : print ("Motion Controller Message: " + data + " \n")
 
         # print "DEBUG---Last command sent: " + str(self.lastPacket)
         # print "DEBUG---Last received data: " + data
@@ -443,6 +472,7 @@ class MachineMotion:
         motion_completed = "false"
 
         self.myGCode.__emit__("G28")
+        while self.isReady() != "true": pass
 
     #
     # Function that will initiate the homing sequence for the axis specified. The sequence will home the axis using the endstops signals.
@@ -455,6 +485,7 @@ class MachineMotion:
         motion_completed = "false"
 
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
+        while self.isReady() != "true": pass
 
     #
     # Function to send a displacement speed configuration command
@@ -492,6 +523,31 @@ class MachineMotion:
         # Transmit move command
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
         while self.isReady() != "true": pass
+        
+            #
+    # Function to send an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param positions --- Description: positions are the positions from their home location where the axes will go. --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxesAbsoluteMove(self, axes, positions):
+        if (not isinstance(axes, list) or not isinstance(positions, list)):
+            raise TypeError("Axes and Postions must be lists")
+
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to absolute motion mode
+        self.myGCode.__emit__("G90")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, position in zip(axes, positions):
+            command += self.myGCode.__getTrueAxis__(axis) + str(position) + " "
+        self.myGCode.__emit__(command)
+        while self.isReady() != "true": pass
 
     #
     # Function to send a relative move command to the MachineMotion controller
@@ -514,6 +570,34 @@ class MachineMotion:
 
         # Transmit move command
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+        while self.isReady() != "true": pass
+        
+    #
+    # Function to send a relative move command to the MachineMotion controller
+    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
+    # @param directions --- Description: direction are the directions in which the relative moves will be conducted. --- Type: list of strings of value equal to "positive" or "negative"
+    # @param distances are the distances of the relative moves --- Type: list of strings or numbers.
+    # @status
+    #
+    def emitCombinedAxisRelativeMove(self, axes, directions, distances):
+        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
+            raise TypeError("Axes and Postions must be lists")
+        
+        global motion_completed
+
+        motion_completed = "false"
+
+        # Set to relative motion mode
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
+
+        # Transmit move command
+        command = "G0 "
+        for axis, direction, distance in zip(axes, directions, distances):
+            if direction == "positive": distance = "" + str(distance)
+            elif direction  == "negative": distance = "-" + str(distance)
+            command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
+        self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
 
     #
@@ -682,7 +766,7 @@ class MachineMotion:
             if port not in self.attachedDevices.keys() or self.attachedDevices[port] == "IO_EXPANDER_GENERIC":
                 portNumber = self.validPorts.index(port) + 1
                 signalNumber = self.validSignals.index(signal) - 4
-                self.myMqttClient.publish('devices/io-expander/' + str(portNumber) + '/digitalOutput/' +  str(signalNumber), '1' if value else '0')
+                self.myMqttClient.publish('digitalOutput/' + str(portNumber) + '/' + str(signalNumber), '1' if value else '0')
                 callback("true" if value else "false")
             # Legacy devices
             else :
@@ -700,16 +784,16 @@ class MachineMotion:
 
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/digitalInput')
+            self.myMqttClient.subscribe('digitalInput/#')
 
     def __onMessage(self, client, userData, msg):
-        device = int(msg.topic.replace('devices/io-expander/', '').replace('/digitalInput', '')) - 1
+        port = int(msg.topic.replace('digitalInput/', '')) - 1
         values = int(msg.payload, 16)
-        if(device >= 0 and device < len(self.validPorts)) :
-            self.portInputs[self.validPorts[device]] = values
+        if(port >= 0 and port < len(self.validPorts)) :
+            self.portInputs[self.validPorts[port]] = values
 
     def __onDisconnect(self, client, userData, rc):
-       print( "Disconnected with rtn code [%d]"% (rc) )
+       print("Disconnected with rtn code [%d]"% (rc) )
 
     def __establishConnection(self, isReconnection):
         global gCodeCallbackRef
@@ -760,10 +844,10 @@ class MachineMotion:
 class MySocketCallbacks(BaseNamespace):
 
     def on_connect(self):
-        print('[SocketIO Connected]')
+        if(display_connection_debug_messages): print('[SocketIO Connected]')
 
     def on_reconnect(self):
-        print('[SocketIO Reconnected]')
+        if(display_connection_debug_messages): print('[SocketIO Reconnected]')
         global lastSendTimeStamp
         global machineMotionRef
 
@@ -771,4 +855,4 @@ class MySocketCallbacks(BaseNamespace):
         machineMotionRef.myGCode.__setLineNumber__(1)
 
     def on_disconnect(self):
-        print('[SocketIO Disconnected]')
+        if(display_connection_debug_messages): print('[SocketIO Disconnected]')
