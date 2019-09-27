@@ -2,11 +2,26 @@
 
 Date: September 24<sup>th</sup>, 2019
 
+## Compatibility
+
+### Interface Changes
+- No Interface changes in this release
+
+#### Obsoleted Interfaces
+- none
+
+#### New Interfaces
+- setPosition
+- emitCombinedAxisRelativeMove
+- emitCombinedAxesAbsoluteMove
+
 ## Improvements:
-- Fixed bug that was present in the writeControlDevice function that was using the v2.1 Python version nomenclature in the MQTT topics.
 - Added the multi-axis move commands
 - Revised the entire API document
 - Revised all examples and updated them to reflect all new changes
+
+## Bug Fixes:
+- Fixed bug that was present in the writeControlDevice function that was using the v2.1 Python version nomenclature in the MQTT topics.
 
 # Version 1.6.7
 
