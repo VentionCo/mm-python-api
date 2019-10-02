@@ -1,5 +1,0 @@
-#Ignore python compiled files
-*.pyc
-
-/examples/_MachineMotion.pyc
-/examples/__pycache__
