@@ -396,6 +396,26 @@ class MachineMotion:
     validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
 
+    # Class constructor
+    def __init__(self, gCodeCallback, machineIp):
+        global machineMotionRef
+        global gCodeCallbackRef
+
+        self.myConfiguration['machineIp'] = machineIp
+
+        # MQTT
+        self.myMqttClient = mqtt.Client()
+        self.myMqttClient.on_connect = self.__onConnect
+        self.myMqttClient.on_message = self.__onMessage
+        self.myMqttClient.on_disconnect = self.__onDisconnect
+        self.myMqttClient.connect_async(machineIp)
+        self.myMqttClient.loop_start()
+
+        machineMotionRef = self
+        gCodeCallbackRef = gCodeCallback
+
+        self.__establishConnection(False)
+
     # ------------------------------------------------------------------------
     # Determines if the given id is valid for an IO Exapnder.
     #
@@ -405,7 +425,7 @@ class MachineMotion:
         if (id < 1 or id > 3):
             return False
         return True
-        
+
     # ------------------------------------------------------------------------
     # Determines if the given input pin identifier is valid for an IO Exapnder.
     #
@@ -418,7 +438,7 @@ class MachineMotion:
         if (pinId < 0 or pinId > 3):
             return False
         return True
-        
+
     # ------------------------------------------------------------------------
     # Determines if the given output pin identifier is valid for an IO Exapnder.
     #
@@ -431,7 +451,7 @@ class MachineMotion:
         if (pinId < 0 or pinId > 3):
             return False
         return True
-        
+
     # ------------------------------------------------------------------------
     # Determines if the given id is valid for an encoder.
     #
@@ -478,7 +498,7 @@ class MachineMotion:
         motion_completed = "false"
 
         self.myGCode.__emit__("G28")
-        
+
         while self.isReady() != "true": pass
 
     #
@@ -492,7 +512,7 @@ class MachineMotion:
         motion_completed = "false"
 
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
-        
+
         while self.isReady() != "true": pass
 
     #
@@ -590,7 +610,7 @@ class MachineMotion:
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
         if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
             raise TypeError("Axes and Postions must be lists")
-        
+
         global motion_completed
 
         motion_completed = "false"
@@ -728,8 +748,8 @@ class MachineMotion:
     # @return.      - True if the io-expander exists; False otherwise
     def isIoExpanderAvailable(self, device):
         return self.myIoExpanderAvailabilityState[ device-1 ]
-    
-    
+
+
     # ------------------------------------------------------------------------
     # Read the digital input from a pin a given device.
     #
@@ -747,7 +767,7 @@ class MachineMotion:
         if (not pin in self.digitalInputs[device]):
             self.digitalInputs[device][pin] = 0
         return self.digitalInputs[device][pin]
-        
+
     # ------------------------------------------------------------------------
     # Modify the digital output of the given pin a the specified device.
     #
@@ -759,7 +779,7 @@ class MachineMotion:
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
         self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
-            
+
     # ------------------------------------------------------------------------
     # Returns the last received encoder position.
     #
@@ -784,7 +804,7 @@ class MachineMotion:
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return
         return self.myEncoderRealtimePositions[encoder]
-        
+
 
     # ------------------------------------------------------------------------
     # Register to the MQTT broker on each connection.
@@ -861,25 +881,7 @@ class MachineMotion:
         self.emitgCode("M111 S247")
         while self.isReady() != "true": pass
 
-    # Class constructor
-    def __init__(self, gCodeCallback, machineIp):
-        global machineMotionRef
-        global gCodeCallbackRef
 
-        self.myConfiguration['machineIp'] = machineIp
-
-        # MQTT
-        self.myMqttClient = mqtt.Client()
-        self.myMqttClient.on_connect = self.__onConnect
-        self.myMqttClient.on_message = self.__onMessage
-        self.myMqttClient.on_disconnect = self.__onDisconnect
-        self.myMqttClient.connect_async(machineIp)
-        self.myMqttClient.loop_start()
-
-        machineMotionRef = self
-        gCodeCallbackRef = gCodeCallback
-
-        self.__establishConnection(False)
 
 class MySocketCallbacks(BaseNamespace):
 
