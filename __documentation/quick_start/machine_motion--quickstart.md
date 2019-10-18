@@ -45,7 +45,7 @@ A DHCP client natively runs on the controller and will respond to DHCP commands 
 <p style="text-align:center;" ><img src="media/ControlCenter_network_config.png" width="75%" height="75%" <img style="border:1px solid grey;"></p>
 
 <p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 6: MachineMotion ControlCenter Main Page</em></p>
- file
+
 - Step 3: Click on “Use Dynamic Mode”
 
 At this point, you will see the currently active IP address that the ETHERNET port was assigned in the ControlCenter fields. You can ask your network administrator to assign rules to address your controller using its MAC address. To do the latter, you will need to get the MAC address of the controller. 

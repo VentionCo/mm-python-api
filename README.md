@@ -45,7 +45,7 @@ To set up the MachineMotion Python Library on your computer, follow the steps be
 
 ## Connecting to MachineMotion
 
-If you require more information about how to setup you controller to communicate with your computer or network, consult the ressource below.
+If you require more information about how to setup you controller to communicate with your computer or network, consult the resource below.
 
 [QuickStart: Connecting to MachineMotion](__documentation/quick_start/machine_motion--quickstart.md)
 
