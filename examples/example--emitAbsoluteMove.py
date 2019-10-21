@@ -43,6 +43,8 @@ print ("Application Message: Motion on-going ... \n")
 mm.waitForMotionCompletion()
 print ("Application Message: Motion completed \n")
 
+
+
 print ("Application Message: Program terminating ... \n")
 time.sleep(1)
 sys.exit(0)

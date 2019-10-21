@@ -14,8 +14,8 @@ import userInput
 def debug(data):
     pass
 
-axis = 1
-end_stop_sensors = check_both_end_stops(axis)
+# Opens a command line UI where users confirm which end stops are implemented in their system
+end_stop_sensors = check_both_end_stops(1)
    
     
 print ("Application Message: MachineMotion Program Starting \n")
