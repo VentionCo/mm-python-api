@@ -32,6 +32,8 @@ print ("Application Message: Acceleration configured \n")
 
 # Homing axis 1
 mm.emitHome(1)
+print ("Application Message: Axis 1 is going home \n")
+mm.waitForMotionCompletion()
 print ("Application Message: Axis 1 at home \n")
 
 # Move the axis one to position 100 mm

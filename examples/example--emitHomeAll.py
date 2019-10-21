@@ -32,7 +32,9 @@ print ("Application Message: Axis 3 configured \n")
 
 # Homing all the axes of the controller sequentially
 mm.emitHomeAll()
-print ("Application Message: All axes are at home \n")
+print ("Application Message: Axes are going home\n")
+mm.waitForMotionCompletion()
+print("Application Message: Axes are home\n")
 
 print ("Application Message: Program terminating ... \n")
 time.sleep(1)
