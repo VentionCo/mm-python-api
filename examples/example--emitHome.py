@@ -24,7 +24,9 @@ print ("Application Message: Axis 1 configured \n")
 
 # Homing axis 1
 mm.emitHome(1)
-print ("Application Message: Axis 1 at home \n")
+print ("Application Message: Axis 1 is going home\n")
+mm.waitForMotionCompletion()
+print("Application Message: Axis 1 is at home \n")
 
 print ("Application Message: Program terminating ... \n")
 time.sleep(1)

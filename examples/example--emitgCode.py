@@ -1,5 +1,5 @@
 ##################################################
-## Wait for Motion Completion
+## Emit G Code
 ##################################################
 ## Author: Francois Giguere
 ## Version: 1.6.8

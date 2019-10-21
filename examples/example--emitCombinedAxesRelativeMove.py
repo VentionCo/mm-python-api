@@ -34,7 +34,10 @@ print ("Application Message: Acceleration configured \n")
 mm.emitHomeAll()
 print ("Application Message: Axes at home \n")
 
-# Move the axis one to position 100 mm
+# Simultaneously moves three axis:
+#   Moves axis 1 in the positive direction by 100 mm
+#   Moves axis 2 in the positive direction by 200 mm
+#   Moves axis 3 in the positive direction by 300 mm
 mm.emitCombinedAxisRelativeMove([1, 2, 3], ["positive", "positive", "positive"], [100, 200, 300])
 print ("Application Message: Multi-axis move on-going ... \n")
 
