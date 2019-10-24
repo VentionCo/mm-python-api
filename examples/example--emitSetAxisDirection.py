@@ -8,7 +8,7 @@
 ##################################################
 
 from _MachineMotion_1_6_8 import *
-import userInput
+import configWizard
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
