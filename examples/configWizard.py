@@ -8,6 +8,8 @@ import collections
 #
 def user_input(question, valid):
     choice = ""
+    exitCommands = ["Q","q","exit","Exit"]
+
     while True:
         print(question + " [" + " / ".join(valid.keys()) + "]")
         if sys.version_info[0] == 2:
@@ -20,6 +22,8 @@ def user_input(question, valid):
 
         if choice in valid:
             return valid[choice]
+        elif choice in exitCommands:
+            raise Exception("Wizard Exited Prematurely")
         else:
             print("Please respond with [" + " or ".join(valid.keys()) + "] \n")
 
@@ -52,3 +56,12 @@ def check_both_end_stops(axes):
 
     return output
 
+
+# Demo of configWizard that is executed when module is run as a script
+if __name__ == "__main__":
+    print("Launching wizard demo quesions. Press q to quit")
+    question = "Do you like green eggs and ham?"
+    valid = {"y":"I Do! I like them, Sam-I-Am!", "n":"I do not like them, Sam I am"}
+    response = user_input(question, valid)
+    print(response)
+        
