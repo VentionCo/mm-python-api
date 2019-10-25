@@ -1,14 +1,14 @@
 ##################################################
 ## Absolute Move Interactive
 ##################################################
-## Author: Francois Giguere
+## Author: Jack Dundas
 ## Version: 1.6.8
 ## Email: info@vention.cc
 ## Status: tested
 ##################################################
 
 from _MachineMotion_1_6_8 import *
-import configWizard
+import configWizard 
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
@@ -24,28 +24,38 @@ mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
 print ("Application Message: MachineMotion Axis 1 Configured \n")
 
 
-
+cw = configWizard.configWizard()
 
 # Configuring the travel speed to 10000 mm / min
-mm.emitSpeed(10000)
-print ("Application Message: Speed configured \n")
+speed = cw.user_input("Please enter a travel speed")
+mm.emitSpeed(speed)
+cw.write("Speed Configured")
 
 # Configuring the travel speed to 1000 mm / second^2
+accel = cw.user_input("Please enter a travel acceleration")
 mm.emitAcceleration(1000)
-print ("Application Message: Acceleration configured \n")
+cw.write("Application Message: Acceleration configured \n")
 
 # Homing axis 1
 mm.emitHome(1)
-print ("Application Message: Axis 1 going home \n")
+cw.write("Application Message: Axis 1 going home \n")
 mm.waitForMotionCompletion()
-print ("Application Message: Axis 1 is at home \n")
+cw.write("Application Message: Axis 1 is at home \n")
 
-# Move the axis 1 to position 100 mm
-mm.emitAbsoluteMove(1, 100)
-print ("Application Message: Motion on-going ... \n")
 
-mm.waitForMotionCompletion()
-print ("Application Message: Motion completed \n")
+while True:
+    # Move the axis 1 to position 100 mm
+    distanceToMove = cw.user_input("Please enter a distance to move:")
+    if distanceToMove is not None:
+        mm.emitAbsoluteMove(1, distanceToMove)
+        cw.write("Application Message: Motion on-going ... \n")
+
+        mm.waitForMotionCompletion()
+        cw.write("Application Message: Motion completed \n")
+    else:
+        cw.quit()
+        break
+
 
 
 

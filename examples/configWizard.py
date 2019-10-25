@@ -17,6 +17,9 @@ class configWizard:
     def quit(self):
         print(">>>\n>>>\tApplication Quit")
         raise self.userQuit
+
+
+
     #
     # Handles user interaction and logic for asking users yes/no or multiple choice questions.
     # @param question --- Description: A question for the user in string format
@@ -44,8 +47,32 @@ class configWizard:
                 else:
                     self.write("Please respond with [" + " or ".join(valid.keys()) + "] \n")
         except self.userQuit:
-            pass
+            return 
+    
+    #
+    # Handles user interaction and logic for asking users questions that return numbers
+    # @param question --- Description: A question for the user in string format
+    #
+    def user_input(self, question):
+    # Starts loop that exits when user either quits or enters a numeric answer or quits
+        try:
+            while True:
+                self.write(question)
+                if sys.version_info[0] == 2:
+                    answer = raw_input().lower()
+                elif sys.version_info[0] == 3:
+                    answer = input().lower()
+                else:
+                    self.write("Application Error: Could not detect which python version is running")
+                    raise Exception
 
+                if answer.isnumeric():
+                    return answer
+                else:
+                    self.write("Please enter a number value")
+
+        except self.userQuit:
+            return 
     #
     # Prompts the user to check and confirm that sensor sensor xA and sensor xB are installed, where x represents a subset of axes 1,2,3
     # @param axis --- Description: represent which axes need to be checked. It can be a single axis or a set of 2 or 3 axes.
@@ -74,7 +101,6 @@ class configWizard:
             output[str(axis) + "B"] = user_input(question, valid)
 
         return output
-
 
 
 
