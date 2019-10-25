@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import collections
 
@@ -8,37 +9,40 @@ class configWizard:
     class userQuit(Exception): pass
 
     def __init__(self):
+        self.pythonVersion = sys.version_info[0]
         print("\n>>>\tMachine Motion Wizard Started - Press Q to quit at anytime")
         print(">>>\t----------------------------------------------------------\n>>>")
 
     def write(self, msg):
-        print(">>>\t" + msg , end = "\n>>>\t")
+        print(">>>\t" + msg, end = "\n>>>\t")
+            
         
     def quit(self):
         print(">>>\n>>>\tApplication Quit")
         raise self.userQuit
 
-
+    def getUserInput(self):
+        if self.pythonVersion == 2:
+            return raw_input().lower()
+        elif self.pythonVersion == 3:
+            return input().lower()
+        else:
+            self.write("Application Error: Could not detect which python version is running")
+            return "Error"
 
     #
     # Handles user interaction and logic for asking users yes/no or multiple choice questions.
     # @param question --- Description: A question for the user in string format
     # @param valid --- Description: A set of valid answers to the question (such as {y,n} or {true, false} or {a,b,c,d})
     #
-    def user_input(self, question, valid):
+    def askMultipleChoice(self, question, valid):
         choice = ""
 
         # Starts loop that exits when user either quits or enters a valid choice
         try:
             while True:
                 self.write(question + " [" + " / ".join(valid.keys()) + "]")
-                if sys.version_info[0] == 2:
-                    choice = raw_input().lower()
-                elif sys.version_info[0] == 3:
-                    choice = input().lower()
-                else:
-                    self.write("Application Error: Could not detect which python version is running")
-                    return "Error"
+                choice = self.getUserInput()
 
                 if choice in valid:
                     return valid[choice]
@@ -53,18 +57,11 @@ class configWizard:
     # Handles user interaction and logic for asking users questions that return numbers
     # @param question --- Description: A question for the user in string format
     #
-    def user_input(self, question):
-    # Starts loop that exits when user either quits or enters a numeric answer or quits
+    def askNumeric(self, question):
         try:
             while True:
                 self.write(question)
-                if sys.version_info[0] == 2:
-                    answer = raw_input().lower()
-                elif sys.version_info[0] == 3:
-                    answer = input().lower()
-                else:
-                    self.write("Application Error: Could not detect which python version is running")
-                    raise Exception
+                answer = self.getUserInput()
 
                 if answer.isnumeric():
                     return answer
@@ -96,9 +93,9 @@ class configWizard:
 
         for axis in axes:
             question = "Application Message: Is Sensor " + str(axis) + "A plugged in?"
-            output[str(axis) + "A"] = user_input(question, valid)
+            output[str(axis) + "A"] = self.askMultipleChoice(question, valid)
             question = "Application Message: Is Sensor " + str(axis) + "B plugged in?"
-            output[str(axis) + "B"] = user_input(question, valid)
+            output[str(axis) + "B"] = self.askMultipleChoice(question, valid)
 
         return output
 
@@ -120,6 +117,6 @@ if __name__ == "__main__":
     cw = configWizard.configWizard()
     question = "Do you like green eggs and ham?"
     valid = {"y":"I Do! I like them, Sam-I-Am!", "n":"I do not like them, Sam I am"}
-    response = cw.user_input(question, valid)
+    response = cw.askMultipleChoice(question, valid)
     print(response)
         
