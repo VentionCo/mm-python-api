@@ -27,12 +27,12 @@ print ("Application Message: MachineMotion Axis 1 Configured \n")
 cw = configWizard.configWizard()
 
 # Configuring the travel speed to 10000 mm / min
-speed = cw.user_input("Please enter a travel speed")
+speed = cw.askNumeric("Please enter a travel speed")
 mm.emitSpeed(speed)
 cw.write("Speed Configured")
 
 # Configuring the travel speed to 1000 mm / second^2
-accel = cw.user_input("Please enter a travel acceleration")
+accel = cw.askNumeric("Please enter a travel acceleration")
 mm.emitAcceleration(1000)
 cw.write("Application Message: Acceleration configured \n")
 
@@ -45,7 +45,7 @@ cw.write("Application Message: Axis 1 is at home \n")
 
 while True:
     # Move the axis 1 to position 100 mm
-    distanceToMove = cw.user_input("Please enter a distance to move:")
+    distanceToMove = cw.askNumeric("Please enter a distance to move:")
     if distanceToMove is not None:
         mm.emitAbsoluteMove(1, distanceToMove)
         cw.write("Application Message: Motion on-going ... \n")

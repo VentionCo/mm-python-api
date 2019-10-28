@@ -7,23 +7,28 @@ class configWizard:
     validYN = {"Y":True, "N":False}
     exitCommands = ["q"]
     class userQuit(Exception): pass
+    delimiter = ">>\t"
 
     def __init__(self):
         self.pythonVersion = sys.version_info[0]
-        print("\n>>>\tMachine Motion Wizard Started - Press Q to quit at anytime")
-        print(">>>\t----------------------------------------------------------\n>>>")
+        print("\n" + self.delimiter + "Machine Motion Wizard Started - Press Q to quit at anytime")
+        print(self.delimiter + "----------------------------------------------------------")
+        print(self.delimiter)
 
     def write(self, msg):
-        print(">>>\t" + msg, end = "\n>>>\t")
+        print(self.delimiter + msg, end = "\n")
             
         
     def quit(self):
-        print(">>>\n>>>\tApplication Quit")
+        print(self.delimiter + "\n" + self.delimiter + "Application Quit")
         raise self.userQuit
 
     def getUserInput(self):
+        print(self.delimiter, end = '')
         if self.pythonVersion == 2:
-            return raw_input().lower()
+            input = raw_input()
+            input = input[0:-1]
+            return input
         elif self.pythonVersion == 3:
             return input().lower()
         else:
@@ -37,7 +42,6 @@ class configWizard:
     #
     def askMultipleChoice(self, question, valid):
         choice = ""
-
         # Starts loop that exits when user either quits or enters a valid choice
         try:
             while True:
@@ -58,6 +62,7 @@ class configWizard:
     # @param question --- Description: A question for the user in string format
     #
     def askNumeric(self, question):
+
         try:
             while True:
                 self.write(question)
@@ -65,11 +70,15 @@ class configWizard:
 
                 if answer.isnumeric():
                     return answer
+                elif answer in self.exitCommands:
+                    self.quit()
                 else:
                     self.write("Please enter a number value")
 
         except self.userQuit:
             return 
+        except ValueError:
+            self.write("Function only accepts number values.")
     #
     # Prompts the user to check and confirm that sensor sensor xA and sensor xB are installed, where x represents a subset of axes 1,2,3
     # @param axis --- Description: represent which axes need to be checked. It can be a single axis or a set of 2 or 3 axes.
@@ -118,5 +127,25 @@ if __name__ == "__main__":
     question = "Do you like green eggs and ham?"
     valid = {"y":"I Do! I like them, Sam-I-Am!", "n":"I do not like them, Sam I am"}
     response = cw.askMultipleChoice(question, valid)
-    print(response)
-        
+    cw.write(response)
+    
+    question = "Would you eat them here or there?"
+    valid = {"here":"I would not like them here", "there": "I would not like them there"}
+    response = cw.askMultipleChoice(question, valid)
+    cw.write(response)
+
+    question = "Would you like them in a house? Would you like them with a mouse?"
+    valid = {"no":"I do not like them in a house, I do not like them with a mouse", "house":"I will eat them in a hosue", "mouse":"I will eat them with a mouse"}
+    response = cw.askMultipleChoice(question, valid)
+    cw.write(response)
+
+    question = "On a scale of 1-10 how much do you like green eggs and ham?"
+    response = cw.askNumeric(question)
+    if response > 10:
+        cw.write("Say! I do so like green eggs and ham")
+    elif response > 5:
+        cw.write("I guess they're okay")
+    else:
+        cw.write("I still hate green eggs and ham")
+
+    cw.quit()
