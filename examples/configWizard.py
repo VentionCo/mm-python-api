@@ -38,7 +38,7 @@ class configWizard:
         print(self.delimiter, end = '')
         if self.pythonVersion == 2:
             userinput = raw_input()
-            userinput = userinput[0:-1]
+
             return userinput
         elif self.pythonVersion == 3:
             userinput = input()
@@ -78,7 +78,7 @@ class configWizard:
         self.write("")
         self.write(question)
         answer = self.getUserInput()
-
+        print("echo " + answer)
         if answer in self.exitCommands:
             self.quit()
         else:
