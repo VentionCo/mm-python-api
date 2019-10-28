@@ -45,7 +45,7 @@ cw.write("Application Message: Axis 1 is at home")
 
 while True:
     # Move the axis 1 to position 100 mm
-    distanceToMove = cw.askNumeric("Please enter a distance to move:")
+    distanceToMove = cw.askNumeric("Please enter the absolute position you'd like to move to [mm]:")
     if distanceToMove is not None:
         mm.emitAbsoluteMove(1, distanceToMove)
         cw.write("Application Message: Motion on-going ...")
