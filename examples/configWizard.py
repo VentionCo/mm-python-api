@@ -4,33 +4,45 @@ import collections
 
 class configWizard:
 
-    validYN = {"Y":True, "N":False}
     exitCommands = ["q"]
     class userQuit(Exception): pass
     delimiter = ">>\t"
 
+    #Initializes variables and starts the command line interface
     def __init__(self):
         self.pythonVersion = sys.version_info[0]
         print("\n" + self.delimiter + "Machine Motion Wizard Started - Press Q to quit at anytime")
         print(self.delimiter + "----------------------------------------------------------")
         print(self.delimiter)
 
+    #
+    # Styles the print messages while in the command line interface
+    #
     def write(self, msg):
-        print(self.delimiter + msg, end = "\n")
-            
-        
+        if msg is not None:
+            print(self.delimiter + msg, end = "\n")
+        else: 
+            print(self.delimiter + "User Quit Application Early")    
+
+    #
+    #Raises the 'user quit' error for error handling
+    #
     def quit(self):
         print(self.delimiter + "\n" + self.delimiter + "Application Quit")
         raise self.userQuit
-
+    
+    #
+    # Handles the user input into the command line interface.
+    #
     def getUserInput(self):
         print(self.delimiter, end = '')
         if self.pythonVersion == 2:
-            input = raw_input()
-            input = input[0:-1]
-            return input
+            userinput = raw_input()
+            userinput = userinput[0:-1]
+            return userinput
         elif self.pythonVersion == 3:
-            return input().lower()
+            userinput = input()
+            return userinput.lower()
         else:
             self.write("Application Error: Could not detect which python version is running")
             return "Error"
@@ -63,22 +75,22 @@ class configWizard:
     #
     def askNumeric(self, question):
 
-        try:
-            while True:
-                self.write(question)
-                answer = self.getUserInput()
+        self.write("")
+        self.write(question)
+        answer = self.getUserInput()
 
-                if answer.isnumeric():
-                    return answer
-                elif answer in self.exitCommands:
-                    self.quit()
-                else:
-                    self.write("Please enter a number value")
+        if answer in self.exitCommands:
+            self.quit()
+        else:
+            try:
+                return int(answer)
+            except ValueError:
+                self.write("Please enter a number")
+                return self.askNumeric(question)
+        
 
-        except self.userQuit:
-            return 
-        except ValueError:
-            self.write("Function only accepts number values.")
+
+
     #
     # Prompts the user to check and confirm that sensor sensor xA and sensor xB are installed, where x represents a subset of axes 1,2,3
     # @param axis --- Description: represent which axes need to be checked. It can be a single axis or a set of 2 or 3 axes.
@@ -147,5 +159,3 @@ if __name__ == "__main__":
         cw.write("I guess they're okay")
     else:
         cw.write("I still hate green eggs and ham")
-
-    cw.quit()

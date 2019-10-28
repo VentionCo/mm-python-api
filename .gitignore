@@ -1,3 +1,4 @@
 .vscode
-examples/_pycache
-*.pyc
+examples/_pycache/*
+
+testbasicPdoc.md

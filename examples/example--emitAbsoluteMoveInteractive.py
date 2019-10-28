@@ -34,13 +34,13 @@ cw.write("Speed Configured")
 # Configuring the travel speed to 1000 mm / second^2
 accel = cw.askNumeric("Please enter a travel acceleration")
 mm.emitAcceleration(1000)
-cw.write("Application Message: Acceleration configured \n")
+cw.write("Application Message: Acceleration configured")
 
 # Homing axis 1
 mm.emitHome(1)
-cw.write("Application Message: Axis 1 going home \n")
+cw.write("Application Message: Axis 1 going home")
 mm.waitForMotionCompletion()
-cw.write("Application Message: Axis 1 is at home \n")
+cw.write("Application Message: Axis 1 is at home")
 
 
 while True:
@@ -48,10 +48,10 @@ while True:
     distanceToMove = cw.askNumeric("Please enter a distance to move:")
     if distanceToMove is not None:
         mm.emitAbsoluteMove(1, distanceToMove)
-        cw.write("Application Message: Motion on-going ... \n")
+        cw.write("Application Message: Motion on-going ...")
 
         mm.waitForMotionCompletion()
-        cw.write("Application Message: Motion completed \n")
+        cw.write("Application Message: Motion completed")
     else:
         cw.quit()
         break
