@@ -38,7 +38,6 @@ class configWizard:
         print(self.delimiter, end = '')
         if self.pythonVersion == 2:
             userinput = raw_input()
-
             return userinput
         elif self.pythonVersion == 3:
             userinput = input()
