@@ -49,7 +49,7 @@ try:
     mm.waitForMotionCompletion()
 
     machineSpeed = cw.askNumeric("Please set the machine speed in mm/s")
-    mm.emitSpeed(1,machineSpeed)
+    mm.emitSpeed(machineSpeed)
 
     cw.write("Machine Motion is waving!")
 

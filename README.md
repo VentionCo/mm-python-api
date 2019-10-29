@@ -92,11 +92,47 @@ Follow the download link above and unzip the contents in your directory of choic
 
 The MachineMotion Python library is now installed and ready to use! Continue below to start your first custom program. 
 
+<div>&nbsp;</div>
+
 ## Connecting to MachineMotion
 
-If you require more information about how to setup you controller to communicate with your computer or network, consult the ressource below.
+MachineMotion connects to a laptop through Ethernet. If your laptop does not have an ethernet port, use the USB to ethernet converter included with the MachineMotion. 
+
 
 [QuickStart: Connecting to MachineMotion](__documentation/quick_start/machine_motion--quickstart.md)
+
+<div>&nbsp;</div>
+
+## Loading programs onto MachineMotion
+There are 2 ways to load a custom python script onto MachineMotion, with the command line or with the cloud9 IDE.
+
+### Using Command Line
+
+<p style="text-align:center;" ><img src="__documentation/_media/command_Line_Demo.png" width="90%" height="90%" style="border:1px solid grey;"></p>
+
+   - Open the command prompt (for windows) or terminal (for Mac and Linux)
+   - Browse to the directory where the MachineMotion API library is saved
+   - Execute the demo program with the following line of code:
+      - `python examples/example--demo.py`
+   - The demo program will launch. Press q or Cntrl+C to quit at anytime. 
+
+### Using Cloud9 IDE
+
+- Open up the Cloud9 IDE: [http://192.168.7.2:3000/ide.html](http://192.168.7.2:3000/ide.html)
+<p style="text-align:center;" ><img src="__documentation/_media/cloud9_0.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+
+- Copy and paste the `mm-python-api` folder into the cloud9 IDE
+<p style="text-align:center;" ><img src="__documentation/_media/cloud9_1.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+
+- Navigate to `examples/example--demo.py`
+<p style="text-align:center;" ><img src="__documentation/_media/cloud9_2.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+
+- Press "Run" in the top of the cloud9 IDE
+<p style="text-align:center;" ><img src="__documentation/_media/cloud9_3.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+
+
+
+
 
 ## API Documentation
 

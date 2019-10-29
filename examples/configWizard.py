@@ -92,7 +92,7 @@ class configWizard:
         self.write("")
         self.write(question)
         answer = self.getUserInput()
-        print("echo " + answer)
+
         if answer in self.exitCommands:
             self.quit()
         else:
