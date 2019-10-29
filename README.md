@@ -134,9 +134,14 @@ There are 2 ways to load a custom python script onto MachineMotion, with the com
 
 
 
-## API Documentation
+## Explore the Docs!
 
+Congratulations on loading your Python API script!
+
+Continue your journey by reading the docs and reading the example codes.
 [Application Programming Interface: Python v1.6.8](__documentation/api/machine_motion_python_api--v1.6.8.md)
 
 ## Release Notes
 [Release Notes: Python v1.6.8](release-notes.md)
+
+###### Please send any technical documnetation feedback to info@vention.cc with the subject "Technical Documentation"
