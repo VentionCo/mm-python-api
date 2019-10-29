@@ -7,6 +7,8 @@ class configWizard:
     exitCommands = ["q"]
     class userQuit(Exception): pass
     delimiter = ">>\t"
+    validYN = {"y":True, "n":False}
+    debugMode = False
 
     #Initializes variables and starts the command line interface
     def __init__(self):
@@ -14,6 +16,10 @@ class configWizard:
         print("\n" + self.delimiter + "Machine Motion Wizard Started - Press Q to quit at anytime")
         print(self.delimiter + "----------------------------------------------------------")
         print(self.delimiter)
+
+    def setDebugMode(self):
+        self.debugMode =True
+        return
 
     #
     # Styles the print messages while in the command line interface
@@ -38,9 +44,17 @@ class configWizard:
         print(self.delimiter, end = '')
         if self.pythonVersion == 2:
             userinput = raw_input()
+
+            if(self.debugMode):
+                print(userinput)
+
             return userinput
         elif self.pythonVersion == 3:
             userinput = input()
+            
+            if(self.debugMode):
+                print(userinput)
+            
             return userinput.lower()
         else:
             self.write("Application Error: Could not detect which python version is running")
@@ -66,6 +80,7 @@ class configWizard:
                 else:
                     self.write("Please respond with [" + " or ".join(valid.keys()) + "] \n")
         except self.userQuit:
+            
             return 
     
     #
@@ -87,7 +102,8 @@ class configWizard:
                 self.write("Please enter a number")
                 return self.askNumeric(question)
         
-
+    def askYesNo(self, question):
+        return self.askMultipleChoice(question, self.validYN)
 
 
     #
