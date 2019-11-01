@@ -1,12 +1,37 @@
-#!/usr/bin/python
-from _MachineMotion import *
+##################################################
+## Ethernet Port Static Configuration
+##################################################
+## Author: Francois Giguere
+## Version: 1.6.8
+## Email: info@vention.cc
+## Status: tested
+##################################################
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+from _MachineMotion_1_6_8 import *
 
-machine_motion_example = MachineMotion(templateCallback, "192.168.7.2",)
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    pass
 
-machine_motion_example = machine_motion_example.configMachineMotionIp(NETWORK_MODE.static, "192.168.0.2", "255.255.255.0", "192.168.0.1")
+print ("Application Message: MachineMotion Program Starting \n")
 
-print ( "--> Controller connected & ethernet interface configured (static)" )
+# TODO: Uncomment the appropriate default static IP Address
+#ip_address = DEFAULT_IP_ADDRESS.usb_windows 
+#ip_address = DEFAULT_IP_ADDRESS.usb_mac_linux
+#ip_address = DEFAULT_IP_ADDRESS.ethernet
+
+mm = MachineMotion(debug, ip_address)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Setting the ETHERNET port of the controller in static mode
+mode = NETWORK_MODE.static
+machineIp = "192.168.0.2"
+machineNetmask="255.255.255.0"
+machineGateway = "192.168.0.1"
+mm.configMachineMotionIp(mode, machineIp, machineNetmask, machineGateway)
+
+print ("Application Message: Ethernet Port Configured \n")
+
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
