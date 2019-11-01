@@ -1,7 +1,7 @@
-# Controlling MachineMotion with Python
 
-<p style="text-align:center;" ><img src="__documentation/_media/CE-CL-105-0003_+python.png" width="60%" height="60%"></p>
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 1: MachineMotion Controller.</em></p>
+
+<p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/021/large/cover_python_guide.png?1550698357" ></p>
+
 
 <p>&nbsp;</p>
 
@@ -9,7 +9,8 @@ The MachineMotion Python API simplifies motion control and provides an intuitive
 
 Inexperienced programmers should consider using [MachineLogic's](https://www.vention.io/technical-documents/in-cad-automation-with-machinelogic-24) code-free visual sequence editor to create simple motion programs. 
 
-However, MachineLogic is not suitable for developing complex applications. The Python API is generally required if:
+However, this Python API is better suited to developing complex applications. 
+The API should be your development tool if:
 * The application must communicate with custom hardware
 * The application requires complex logic
 * The application must integrate with third party software and tools
