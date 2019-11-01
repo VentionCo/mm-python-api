@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Version 1.6.8
 
 - Date:         September 27<sup>th</sup>, 2019
@@ -23,6 +24,30 @@
 
 ## Bug Fixes:
 - Fixed bug that was present in the writeControlDevice function that was using the v2.1 Python version nomenclature in the MQTT topics.
+=======
+# Version 2.0
+
+The MachineMotion Python API V2.0 aims at simplifying the interfaces to the digital input / outputs and the encoder position.
+
+## Compatibility
+
+ The Python API V2 requires MachineMotion version V1.12 or newer.
+ 
+ Please use [mm-python-api V1.6.7](https://github.com/VentionCo/mm-python-api/releases/tag/v1.6.7) for prior version of MachineMotion software.
+
+## Interface changes
+- **Obsoleted interfaces**
+    - attachControlDevice
+    - dettachControlDevice
+    - readControlDevice
+    - writecontrolDevice
+- **New interfaces:**
+    - isIoExpanderAvailable(device)
+    - digitalRead(device, pin)
+    - digitalWrite(device, pin, value)
+    - readEncoderRealtimePosition(device)
+
+>>>>>>> v2.1
 
 # Version 1.6.7
 
@@ -30,7 +55,12 @@ Date: July 16<sup>th</sup>, 2019
 
 ## Improvements:
 - Added support for Python3 and Python2.
+<<<<<<< HEAD
 - Fixed rounding errors in the configAxis function by using floats for incoming parameters
+=======
+- Updated the REAMDME to include the new MQTT library dependency.
+
+>>>>>>> v2.1
 
 # Version: 1.6.6
 

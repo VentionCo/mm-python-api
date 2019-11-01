@@ -1,3 +1,5 @@
 .vscode
 examples/_pycache/*
 testbasicPdoc.md
+/examples/_MachineMotion.pyc
+/examples/__pycache__

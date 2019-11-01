@@ -32,7 +32,7 @@ To get started with the MachineMotion Python API:
 
 ### Install Python On Your Computer
 
-The MachineMotion library supports both Python 2.7 and Python 3.6.
+## Compatibility
 
 - If installing on Windows, make sure to add Python.exe to the PATH environment variable as shown in *Figure 2* and *Figure 3*.
 
@@ -141,7 +141,6 @@ Congratulations on loading your Python API script!
 Continue your journey by reading the docs and reading the example codes.
 [Application Programming Interface: Python v1.6.8](__documentation/api/machine_motion_python_api--v1.6.8.md)
 
-## Release Notes
-[Release Notes: Python v1.6.8](release-notes.md)
 
 ###### Please send any technical documnetation feedback to info@vention.cc with the subject "Technical Documentation"
+###### [Release Notes: Python v1.6.8](release-notes.md)
