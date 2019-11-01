@@ -1,5 +1,11 @@
-
-
+[installPython1]: __documentation/_media/python_2.7_download.png
+[installPython2]: __documentation/_media/python_2.7_install_edited.png
+[installPython3]: __documentation/_media/python_3.6_install_edited.png
+[commandLine]: __documentation/_media/command_Line_Demo.png
+[cloud91]: __documentation/_media/cloud9_0.png
+[cloud92]: __documentation/_media/cloud9_1.png
+[cloud93]: __documentation/_media/cloud9_2.png
+[cloud94]: __documentation/_media/cloud9_3.png
 <p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/021/large/cover_python_guide.png?1550698357" ></p>
 
 
@@ -19,31 +25,31 @@ The API should be your development tool if:
 
 <div>&nbsp;</div>
 
+## Quick Start
+Wire up the MachineMotion controller ([How-To](#connecting-to-machinemotion)) then type the following commands in the terminal:
+```console
+$ git clone https://github.com/VentionCo/mm-python-api
+$ python mm-python-api/examples/demo
+```
+
 ## Getting Started
 
 To get started with the MachineMotion Python API:
 
-* Install Python on your computer [(link)](#install-python-on-your-computer)
-* Download the MachineMotion API  [(link)](#install-python-on-your-computer)
-* Download the required libraries [(link)](#install-python-on-your-computer)
+* Install Python [(link)](#install-python-on-your-computer)
+* Download MachineMotion API  [(link)](#install-python-on-your-computer)
+* Download required libraries [(link)](#install-python-on-your-computer)
 * Connect to MachineMotion [(link)](#install-python-on-your-computer)
 * Run your first program [(link)](#install-python-on-your-computer)
 
 <div>&nbsp;</div>
 
-### Install Python On Your Computer
+### Install Python
+| | |
+|---|---|
+|![installPython1]|1. Go to https://www.python.org/downloads/ to download the latest version of python |
+|![installPython3]|2. Open and run the installer. If using Windows, ensure "Add python to path" option is selected |
 
-## Compatibility
-
-- If installing on Windows, make sure to add Python.exe to the PATH environment variable as shown in *Figure 2* and *Figure 3*.
-
-<p style="text-align:center;" ><img src="__documentation/_media/python_2.7_install_edited.png" width="45%" height="45%" <img style="border:1px solid grey;"></p>
-
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 2: Make sure to select "Add python.exe to path" if installing on Windows.</em></p>
-
-<p style="text-align:center;" ><img src="__documentation/_media/python_3.6_install_edited.png" width="45%" height="45%" <img style="border:1px solid grey;"></p>
-
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 3: Make sure to click "Add Python 3.6 to PATH" if installing on Windows.</em></p>
 
 <div>&nbsp;</div>
 
@@ -57,19 +63,16 @@ The MachineMotion controller software comes pre-installed on the MachineMotion c
 | v1.2.11 and earlier    | Python API v1.6.8 | `git clone https://github.com/VentionCo/mm-python-api/tree/release/v1.6.8` | [v1.6.8](https://github.com/VentionCo/mm-python-api/tree/release/v1.6.8) |
 | v1.12.0 and later    | Python API v2.0+     | `git clone https://github.com/VentionCo/mm-python-api/tree/release/v2.0`) | [v1.12.0](https://github.com/VentionCo/mm-python-api/tree/release/v2.0)
 
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Check your controller software version <a href="">here</a></em></p>
+###### If your machine motion is connected, you can check your controller software vesion <a href="http://192.168.7.2/">here</a> at the top of the page
 
-<b>To Download the API library</b>:
-<hr>
 
-<div style="text-align: center">
+
 Open the command prompt (for Windows) or the terminal (for Mac or Linux), navigate to your destination folder and paste the suitable 'git clone' command  
 
-<span style="color: #808080; font-size: 11pt;"> or </span>
+###### or
 
 Follow the download link above and unzip the contents in your directory of choice
-</div>
-<hr>
+
 
 ###### Need Help? See Github's download guide [here](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
 
@@ -80,15 +83,9 @@ Follow the download link above and unzip the contents in your directory of choic
  Open the command prompt (for Windows) or the terminal (for Mac or Linux) and run the following installations  
 
   ```console
-  pip install -U socketIO-client
-  ```  
-  
-  ```console
-  pip install -U pathlib
-  ```
-
-  ```console
-  pip install -U paho-mqtt
+  $ pip install -U socketIO-client
+  $ pip install -U pathlib
+  $ pip install -U paho-mqtt
   ```
 
 The MachineMotion Python library is now installed and ready to use! Continue below to start your first custom program. 
@@ -105,34 +102,22 @@ MachineMotion connects to a laptop through Ethernet. If your laptop does not hav
 <div>&nbsp;</div>
 
 ## Loading programs onto MachineMotion
-There are 2 ways to load a custom python script onto MachineMotion, with the command line or with the cloud9 IDE.
+There are 2 ways to load a custom python script onto MachineMotion: with the command line or with the cloud9 IDE.
 
-### Using Command Line
+### Command Line Programing
 
-<p style="text-align:center;" ><img src="__documentation/_media/command_Line_Demo.png" width="90%" height="90%" style="border:1px solid grey;"></p>
-
-   - Open the command prompt (for windows) or terminal (for Mac and Linux)
-   - Browse to the directory where the MachineMotion API library is saved
-   - Execute the demo program with the following line of code:
-      - `python examples/example--demo.py`
-   - The demo program will launch. Press q or Cntrl+C to quit at anytime. 
-
-### Using Cloud9 IDE
-
-- Open up the Cloud9 IDE: [http://192.168.7.2:3000/ide.html](http://192.168.7.2:3000/ide.html)
-<p style="text-align:center;" ><img src="__documentation/_media/cloud9_0.png" width="70%" height="70%" style="border:1px solid grey;"></p>
-
-- Copy and paste the `mm-python-api` folder into the cloud9 IDE
-<p style="text-align:center;" ><img src="__documentation/_media/cloud9_1.png" width="70%" height="70%" style="border:1px solid grey;"></p>
-
-- Navigate to `examples/example--demo.py`
-<p style="text-align:center;" ><img src="__documentation/_media/cloud9_2.png" width="70%" height="70%" style="border:1px solid grey;"></p>
-
-- Press "Run" in the top of the cloud9 IDE
-<p style="text-align:center;" ><img src="__documentation/_media/cloud9_3.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+| | |
+|---|---|
+|![commandLine]| - Open the command prompt (for windows) or terminal (for Mac and Linux) <br>  - Browse to the directory where the MachineMotion API library is saved <br>  - Execute the demo program with the following line of code: <br>     - `python examples/example--demo.py` <br>  - The demo program will launch. Press q or Ctrl+C to quit at anytime. 
 
 
-
+### Cloud9 Programing
+| | |
+|---|---|
+|![cloud91]| Open up the Cloud9 IDE: [http://192.168.7.2:3000/ide.html](http://192.168.7.2:3000/ide.html) |
+|![cloud92]| Copy and paste the `mm-python-api` folder into cloud9
+|![cloud93]| Navigate to examples/example--demo.py and press F5 or 'run' to execute the program
+|![cloud94]| Press 'Run' in the top toolbar of the cloud9 IDE
 
 
 ## Explore the Docs!
