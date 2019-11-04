@@ -9,12 +9,12 @@ The MachineMotion Python API simplifies motion control and provides an intuitive
 
 Inexperienced programmers should consider using [MachineLogic's](https://www.vention.io/technical-documents/in-cad-automation-with-machinelogic-24) code-free visual sequence editor to create simple motion programs. 
 
-However, MachineLogic is not suitable for developing complex applications. The Python API is generally required if:
+However, for developing complex applications Python programs offer several attractives advantages. They are generally the optimal choice if:
 * The application must communicate with custom hardware
 * The application requires complex logic
 * The application must integrate with third party software and tools
 
-###### For more information on 3D design using Vention, datasheets and more, please visit [Vention.io](https://www.vention.io/technical-documents/machinemotion-controller-datasheet-10)
+### For more information on 3D design using Vention, datasheets and more, please visit [Vention.io](https://www.vention.io/technical-documents/machinemotion-controller-datasheet-10)
 
 <div>&nbsp;</div>
 
@@ -22,11 +22,11 @@ However, MachineLogic is not suitable for developing complex applications. The P
 
 To get started with the MachineMotion Python API:
 
-* Install Python on your computer [(link)](#install-python-on-your-computer)
-* Download the MachineMotion API  [(link)](#install-python-on-your-computer)
-* Download the required libraries [(link)](#install-python-on-your-computer)
-* Connect to MachineMotion [(link)](#install-python-on-your-computer)
-* Run your first program [(link)](#install-python-on-your-computer)
+* [(Install Python on your computer)](#install-python-on-your-computer)
+* [(Download the MachineMotion API)](#install-python-on-your-computer)
+* [(Download the MachineMotion API)](#install-python-on-your-computer)
+* [(Connect to MachineMotion)](#install-python-on-your-computer)
+* [(Run your first program)](#install-python-on-your-computer)
 
 <div>&nbsp;</div>
 
@@ -56,7 +56,7 @@ The MachineMotion controller software comes pre-installed on the MachineMotion c
 | v1.2.11 and earlier    | Python API v1.6.8 | `git clone https://github.com/VentionCo/mm-python-api/tree/release/v1.6.8` | [v1.6.8](https://github.com/VentionCo/mm-python-api/tree/release/v1.6.8) |
 | v1.12.0 and later    | Python API v2.0+     | `git clone https://github.com/VentionCo/mm-python-api/tree/release/v2.0`) | [v1.12.0](https://github.com/VentionCo/mm-python-api/tree/release/v2.0)
 
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Check your controller software version <a href="">here</a></em></p>
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>If your MachineMotion controller is connected to your computer (192.168.7.2), you can check its software version <a href="">here</a></em></p>
 
 <b>To Download the API library</b>:
 <hr>
@@ -70,7 +70,7 @@ Follow the download link above and unzip the contents in your directory of choic
 </div>
 <hr>
 
-###### Need Help? See Github's download guide [here](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
+### Need Help? See Github's download guide [here](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
 
 <div>&nbsp;</div>
 
@@ -98,6 +98,7 @@ The MachineMotion Python library is now installed and ready to use! Continue bel
 
 MachineMotion connects to a laptop through Ethernet. If your laptop does not have an ethernet port, use the USB to ethernet converter included with the MachineMotion. 
 
+If you require more information about how to setup you controller to communicate with your computer or network, consult the resource below.
 
 [QuickStart: Connecting to MachineMotion](__documentation/quick_start/machine_motion--quickstart.md)
 
