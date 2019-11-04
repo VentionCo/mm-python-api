@@ -34,7 +34,10 @@ print ("Application Message: Acceleration configured \n")
 mm.emitHomeAll()
 print ("Application Message: Axes at home \n")
 
-# Move the axis 1 to position 100 mm
+# Simultaneously moves three axis:
+#   Moves axis 1 to absolute position 50
+#   Moves axis 2 to absolute position 100
+#   Moves axis 3 to absolute position 50
 mm.emitCombinedAxesAbsoluteMove([1, 2, 3], [50, 100, 50])
 print ("Application Message: Motion on-going ... \n")
 

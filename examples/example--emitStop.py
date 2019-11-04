@@ -16,21 +16,27 @@ def debug(data):
     pass
 
 print ("Application Message: MachineMotion Program Starting \n")
-    
+
 mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
 print ("Application Message: MachineMotion Controller Connected \n")
 
 # Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
-mm.configAxis(1, MICRO_STEPS.ustep_8, 150)
-print ("Application Message: MachineMotion axis 1 configured \n")
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: MachineMotion Axis 1 Configured \n")
+
+# Configuring the travel speed to 1000 mm / min
+mm.emitSpeed(1000)
+print ("Application Message: Speed configured \n")
+
+# Configuring the travel speed to 1000 mm / second^2
+mm.emitAcceleration(1000)
+print ("Application Message: Acceleration configured \n")
 
 # Homing axis 1
 mm.emitHome(1)
+print ("Application Message: Axis 1 is going home\n")
+mm.waitForMotionCompletion()
 print ("Application Message: Axis 1 at home \n")
-
-# Configuring the travel speed to 100 mm / minute
-mm.emitSpeed(100)
-print ("Application Message: Speed configured \n")
 
 # Move the axis one to position 100 mm
 mm.emitRelativeMove(1, "positive", 100)

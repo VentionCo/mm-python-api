@@ -19,7 +19,11 @@ mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
 print ("Application Message: MachineMotion Controller Connected \n")
 
 # Setting the ETHERNET port of the controller in dhcp mode
-mm.configMachineMotionIp(NETWORK_MODE.dhcp, "", "", "")
+mode = NETWORK_MODE.dhcp,
+machineIp = "",
+machineNetmask="",
+machineGateway = ""
+mm.configMachineMotionIp(NETWORK_MODE.dhcp, machineIp, machineNetmask, machineGateway)
 print ("Application Message: Ethernet Port Configured \n")
 
 print ("Application Message: Program terminating ... \n")
