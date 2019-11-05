@@ -22,11 +22,11 @@ However, for developing complex applications Python programs offer several attra
 
 To get started with the MachineMotion Python API:
 
-* [(Install Python on your computer)](#install-python-on-your-computer)
-* [(Download the MachineMotion API)](#install-python-on-your-computer)
-* [(Download the MachineMotion API)](#install-python-on-your-computer)
-* [(Connect to MachineMotion)](#install-python-on-your-computer)
-* [(Run your first program)](#install-python-on-your-computer)
+* [Install Python on your computer](#install-python-on-your-computer)
+* [Download the MachineMotion API](#install-python-on-your-computer)
+* [Download the MachineMotion API](#install-python-on-your-computer)
+* [Connect to MachineMotion](#install-python-on-your-computer)
+* [Run your first program](#install-python-on-your-computer)
 
 <div>&nbsp;</div>
 
