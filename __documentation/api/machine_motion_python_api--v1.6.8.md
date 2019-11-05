@@ -2,7 +2,7 @@
 
 ## Configuration Functions
 
-When creating a Python program to control the MachineMotion controller, the first step is always to create a MachineMotion objcet. This will establish communication with the actual controller and expose different functions that can be used to send commands.
+When creating a Python program to control the MachineMotion controller, the first step is always to create a MachineMotion object. This will establish communication with the actual controller and expose different functions that can be used to send commands.
 
 After creating the MachineMotion instance, you must configure its axes. The functions to perform these steps are covered in this section.
 
