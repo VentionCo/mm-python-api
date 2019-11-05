@@ -109,7 +109,7 @@ There are 2 ways to load a custom python script onto MachineMotion, with the com
 
 ### Using Command Line
 
-<p style="text-align:center;" ><img src="__documentation/_media/command_Line_Demo.png" width="90%" height="90%" style="border:1px solid grey;"></p>
+<p style="text-align:center;" ><img src="__documentation/_media/command_Line_Demo.PNG" width="90%" height="90%" style="border:1px solid grey;"></p>
 
    - Open the command prompt (for windows) or terminal (for Mac and Linux)
    - Browse to the directory where the MachineMotion API library is saved
@@ -123,13 +123,13 @@ There are 2 ways to load a custom python script onto MachineMotion, with the com
 <p style="text-align:center;" ><img src="__documentation/_media/cloud9_0.png" width="70%" height="70%" style="border:1px solid grey;"></p>
 
 - Copy and paste the `mm-python-api` folder into the cloud9 IDE
-<p style="text-align:center;" ><img src="__documentation/_media/cloud9_1.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+<p style="text-align:center;" ><img src="__documentation/_media/cloud9_1.PNG" width="70%" height="70%" style="border:1px solid grey;"></p>
 
 - Navigate to `examples/example--demo.py`
-<p style="text-align:center;" ><img src="__documentation/_media/cloud9_2.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+<p style="text-align:center;" ><img src="__documentation/_media/cloud9_2.PNG" width="70%" height="70%" style="border:1px solid grey;"></p>
 
 - Press "Run" in the top of the cloud9 IDE
-<p style="text-align:center;" ><img src="__documentation/_media/cloud9_3.png" width="70%" height="70%" style="border:1px solid grey;"></p>
+<p style="text-align:center;" ><img src="__documentation/_media/cloud9_3.PNG" width="70%" height="70%" style="border:1px solid grey;"></p>
 
 
 
