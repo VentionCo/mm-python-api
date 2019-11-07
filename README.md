@@ -1,7 +1,7 @@
 [installPython1]: __documentation/_media/python_2.7_download_final.png
 [installPython2]: __documentation/_media/python_2.7_install_edited.png
 [installPython3]: __documentation/_media/python_3.6_install_edited.png
-[commandLine]: __documentation/_media/command_Line_Demo_final.png
+[commandLine]: __documentation/_media/Command_Line_Demo_final.png
 [cloud91]: __documentation/_media/cloud9_0.png
 [cloud92]: __documentation/_media/cloud9_1_final.png
 [cloud93]: __documentation/_media/cloud9_2_final.png
