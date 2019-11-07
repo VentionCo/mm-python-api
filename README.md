@@ -1,11 +1,11 @@
-[installPython1]: __documentation/_media/python_2.7_download.png
+[installPython1]: __documentation/_media/python_2.7_download_final.png
 [installPython2]: __documentation/_media/python_2.7_install_edited.png
 [installPython3]: __documentation/_media/python_3.6_install_edited.png
-[commandLine]: __documentation/_media/command_Line_Demo.png
+[commandLine]: __documentation/_media/command_Line_Demo_final.png
 [cloud91]: __documentation/_media/cloud9_0.png
-[cloud92]: __documentation/_media/cloud9_1.png
-[cloud93]: __documentation/_media/cloud9_2.png
-[cloud94]: __documentation/_media/cloud9_3.png
+[cloud92]: __documentation/_media/cloud9_1_final.png
+[cloud93]: __documentation/_media/cloud9_2_final.png
+[cloud94]: __documentation/_media/cloud9_3_final.png
 
 <p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/030/large/cover-python-guide-usermanual.png?15710631541550698858" width="90%" height="90%"></p>
 
