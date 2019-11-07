@@ -7,13 +7,16 @@
 ## Status: tested
 ##################################################
 
+enableDebug = False
+
 from _MachineMotion_1_6_8 import *
 import configWizard
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
-    pass
+    if(enableDebug): print("Debug Message: " + data + "\n")
 
+cw = configWizard.configWizard()
 # Opens a command line UI where users confirm which end stops are implemented in their system
 end_stop_sensors = check_both_end_stops(1)
    
@@ -31,8 +34,8 @@ print ("Application Message: MachineMotion Axis 1 Configured \n")
 mm.emitSpeed(10000)
 print ("Application Message: Speed configured \n")
 
-# Configuring the travel speed to 1000 mm / second^2
-mm.emitAcceleration(1000)
+# Configuring the travel speed to 250 mm / second^2
+mm.emitAcceleration(250)
 print ("Application Message: Acceleration configured \n")
 
 mm.emitSetAxisDirection(1, "normal")

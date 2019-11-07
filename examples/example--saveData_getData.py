@@ -7,11 +7,13 @@
 ## Status: tested
 ##################################################
 
+enableDebug = False
+
 from _MachineMotion_1_6_8 import *
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
-    pass
+    if(enableDebug): print("Debug Message: " + data + "\n")
     
 print ("Application Message: MachineMotion Program Starting \n")
     

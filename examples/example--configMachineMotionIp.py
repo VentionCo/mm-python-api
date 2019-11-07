@@ -7,18 +7,18 @@
 ## Status: tested
 ##################################################
 
+enableDebug = False
+
 from _MachineMotion_1_6_8 import *
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
-    pass
+    if(enableDebug): print("Debug Message: " + data + "\n")
 
 print ("Application Message: MachineMotion Program Starting \n")
 
-# TODO: Uncomment the appropriate default static IP Address
-#ip_address = DEFAULT_IP_ADDRESS.usb_windows 
-#ip_address = DEFAULT_IP_ADDRESS.usb_mac_linux
-#ip_address = DEFAULT_IP_ADDRESS.ethernet
+# TODO: ip_address can be set to another value if desired by the user. For example if the controller is connected to a LAN
+ip_address = DEFAULT_IP_ADDRESS.usb_windows 
 
 mm = MachineMotion(debug, ip_address)
 print ("Application Message: MachineMotion Controller Connected \n")

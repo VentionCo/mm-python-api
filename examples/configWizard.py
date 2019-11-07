@@ -105,7 +105,6 @@ class configWizard:
     def askYesNo(self, question):
         return self.askMultipleChoice(question, self.validYN)
 
-
     #
     # Prompts the user to check and confirm that sensor sensor xA and sensor xB are installed, where x represents a subset of axes 1,2,3
     # @param axis --- Description: represent which axes need to be checked. It can be a single axis or a set of 2 or 3 axes.
@@ -135,42 +134,28 @@ class configWizard:
 
         return output
 
+    def unitTest(self):
+        question = "Do you like green eggs and ham?"
+        valid = {"y":"I Do! I like them, Sam-I-Am!", "n":"I do not like them, Sam I am"}
+        response = self.askMultipleChoice(question, valid)
+        self.write(response)
 
+        question = "Would you eat them here or there?"
+        valid = {"here":"I would not like them here", "there": "I would not like them there"}
+        response = self.askMultipleChoice(question, valid)
+        self.write(response)
 
+        question = "Would you like them in a house? Would you like them with a mouse?"
+        valid = {"no":"I do not like them in a house, I do not like them with a mouse", "house":"I will eat them in a hosue", "mouse":"I will eat them with a mouse"}
+        response = self.askMultipleChoice(question, valid)
+        self.write(response)
 
+        question = "On a scale of 1-10 how much do you like green eggs and ham?"
+        response = self.askNumeric(question)
+        if response > 10:
+            self.write("Say! I do so like green eggs and ham")
+        elif response > 5:
+            self.write("I guess they're okay")
+        else:
+            self.write("I still hate green eggs and ham")
 
-
-
-
-
-
-
-
-
-# Demo of configWizard that is executed when module is run as a script
-if __name__ == "__main__":
-    import configWizard
-    cw = configWizard.configWizard()
-    question = "Do you like green eggs and ham?"
-    valid = {"y":"I Do! I like them, Sam-I-Am!", "n":"I do not like them, Sam I am"}
-    response = cw.askMultipleChoice(question, valid)
-    cw.write(response)
-    
-    question = "Would you eat them here or there?"
-    valid = {"here":"I would not like them here", "there": "I would not like them there"}
-    response = cw.askMultipleChoice(question, valid)
-    cw.write(response)
-
-    question = "Would you like them in a house? Would you like them with a mouse?"
-    valid = {"no":"I do not like them in a house, I do not like them with a mouse", "house":"I will eat them in a hosue", "mouse":"I will eat them with a mouse"}
-    response = cw.askMultipleChoice(question, valid)
-    cw.write(response)
-
-    question = "On a scale of 1-10 how much do you like green eggs and ham?"
-    response = cw.askNumeric(question)
-    if response > 10:
-        cw.write("Say! I do so like green eggs and ham")
-    elif response > 5:
-        cw.write("I guess they're okay")
-    else:
-        cw.write("I still hate green eggs and ham")

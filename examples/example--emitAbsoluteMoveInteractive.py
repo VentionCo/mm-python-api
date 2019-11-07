@@ -7,12 +7,14 @@
 ## Status: tested
 ##################################################
 
+enableDebug = False
+
 from _MachineMotion_1_6_8 import *
-import configWizard 
+import configWizard
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
-    pass
+    if(enableDebug): print("Debug Message: " + data + "\n")
 
 print ("Application Message: MachineMotion Program Starting \n")
 
@@ -31,9 +33,9 @@ speed = cw.askNumeric("Please enter a travel speed")
 mm.emitSpeed(speed)
 cw.write("Speed Configured")
 
-# Configuring the travel speed to 1000 mm / second^2
+# Configuring the travel speed to 250 mm / second^2
 accel = cw.askNumeric("Please enter a travel acceleration")
-mm.emitAcceleration(1000)
+mm.emitAcceleration(250)
 cw.write("Application Message: Acceleration configured")
 
 # Homing axis 1
