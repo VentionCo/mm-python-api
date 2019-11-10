@@ -505,13 +505,18 @@ class MachineMotion:
         self.myGCode.__emit__("M204 T" + str(mm_per_sec_sqr))
         while self.isReady() != "true": pass
 
-    #
-    # Function to send an absolute move command to the MachineMotion controller
-    # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: string or number.
-    # @param position --- Description: position is the position from its home location where the axis will go. --- Type: string or number.
-    # @status
-    #
     def emitAbsoluteMove(self, axis, position):
+        '''
+        desc: Sends an absolute move command to the MachineMotion controller
+        params: 
+            axis: 
+                desc: the axis on which the command will be applied
+                type: Number
+            position:
+                desc: the position from its home location where the axis will go
+                type: Number
+        exampleCodePath: example--emitAbsoluteMove.py
+        '''
         global motion_completed
 
         motion_completed = "false"
@@ -524,13 +529,18 @@ class MachineMotion:
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
         while self.isReady() != "true": pass
         
-            #
-    # Function to send an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
-    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
-    # @param positions --- Description: positions are the positions from their home location where the axes will go. --- Type: list of strings or numbers.
-    # @status
-    #
     def emitCombinedAxesAbsoluteMove(self, axes, positions):
+        '''
+        desc: Sends an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
+        params:
+            axes:
+                desc: The axis on which the commands will be applied
+                type: List or array of Numbers
+            positions:
+                desc: Positions from their home location where the axes will go
+                type: List or array of Numbers
+        exampleCodePath: example--emitCombinedAxesAbsoluteMove.py
+        '''
         if (not isinstance(axes, list) or not isinstance(positions, list)):
             raise TypeError("All parameters must be lists")
 
@@ -549,14 +559,21 @@ class MachineMotion:
         self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
 
-    #
-    # Function to send a relative move command to the MachineMotion controller
-    # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: int or string.
-    # @param direction --- Description: direction is the direction in which the relative move will be conducted. --- Type: string of value equal to "positive" or "negative"
-    # @param distance is the distance of the relative move.
-    # @status
-    #
     def emitRelativeMove(self, axis, direction, distance):
+        '''
+        desc: Function to send a relative move command to the MachineMotion controller
+        params:
+            axis:
+                desc: the axis on which the command will be applied
+                type: int or string
+            direction:
+                desc: direction is the direction in which the relative move will be conducted
+                type: string of value equal to "positive" or "negative"
+            distance:
+                desc: the direction in which the relative move will be conducted [in mm]
+                type: Number
+        exampleCodePath: example--emitRelativeMove.py
+        '''
         global motion_completed
 
         motion_completed = "false"
@@ -572,14 +589,23 @@ class MachineMotion:
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
         while self.isReady() != "true": pass
         
-    #
-    # Function to send a relative move command to the MachineMotion controller
-    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
-    # @param directions --- Description: direction are the directions in which the relative moves will be conducted. --- Type: list of strings of value equal to "positive" or "negative"
-    # @param distances are the distances of the relative moves --- Type: list of strings or numbers.
-    # @status
-    #
+
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
+        '''
+        desc: sends a relative move command to the MachineMotion controller
+        params:
+            axes: 
+                desc: the axes on which commands will be applied (ex- [1,2,3])
+                type: List of Numbers
+            direction:
+                desc: direction is the direction in which the relative move will be conducted (ex- ["positive","negative","positive"])
+                type: List of strings either "positive" or "negative"
+            distance:
+                desc: the direction in which the relative move will be conducted [in mm]
+                type: List of Numbers
+        exampleCodePath: example--emitCombinedAxesRelativeMove.py
+        '''
+
         if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
             raise TypeError("All parameters must be lists")
         
@@ -635,6 +661,13 @@ class MachineMotion:
     # @status
     #
     def isMotionCompleted(self):
+        '''
+        desc: function description
+        params: 
+            param1:
+                desc: the parameter details
+                type: Number
+        '''
         global motion_completed
         return motion_completed
 

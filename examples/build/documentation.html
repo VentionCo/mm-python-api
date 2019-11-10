@@ -1,0 +1,512 @@
+<!-- #
+# Function to send a displacement speed configuration command
+# @param mm_per_min --- Description: mm_per_mim is the displacement speed in mm/min --- Type: number.
+# @status
+#
+def emitSpeed(self, mm_per_min):
+    self.myGCode.__emit__("G0 F" +str(mm_per_min))
+    while self.isReady() != "true": pass -->
+ <!-- Latest compiled and minified CSS -->
+ <head>
+
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+     <link rel ="stylesheet" href="./native.css">
+     <link rel ="stylesheet" href="./styles.css">
+     <!-- Optional theme -->
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+     
+     <!-- Latest compiled and minified JavaScript -->
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>   https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css
+    
+    <!-- toc -https://afeld.github.io/bootstrap-toc/#via-data-attributes -->
+    <!-- add after bootstrap.min.css -->
+    <link
+    rel="stylesheet"
+    href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"
+    />
+    <!-- add after bootstrap.min.js -->
+    <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
+
+</head>
+<body data-spy="scroll" data-target="#toc">
+    
+    <div class ="container">
+        <div class="row justify-content-md-center"> 
+            <div class="col-md-2">
+                <div class="col-sm-3">
+                    <nav id="toc" data-toggle="toc" class="sticky-top"></nav>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <dl class="function" >
+
+    <dt id=emitCombinedAxesAbsoluteMove class="funcHeader">
+        <h4 data-toc-text = emitCombinedAxesAbsoluteMove> 
+            <span class="funcClassName"> mm.</span>
+            <span class = "funcName"> emitCombinedAxesAbsoluteMove </span>
+            (
+                    <span class="funcParamHeading">
+                        positions
+                    </span>
+                    <span class="funcParamHeading">
+                        axes
+                    </span>
+            )  
+        </h4>
+
+        <span style = "float: right;">
+                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxesAbsoluteMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
+                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+        </span>
+
+    </dt>
+        <div class="indent1">
+            <span class = "funcParam"><b>positions</b></span>
+            <small class = "text-muted">( List or array of Numbers)</small>
+            -
+            <span>              
+                Positions from their home location where the axes will go
+            </span>
+        </div>
+        <div class="indent1">
+            <span class = "funcParam"><b>axes</b></span>
+            <small class = "text-muted">( List or array of Numbers)</small>
+            -
+            <span>              
+                The axis on which the commands will be applied
+            </span>
+        </div>
+    
+    <dd>
+        <div class="funcDescription">
+            Sends an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
+        </div>
+    </dd>
+
+        <div class="collapse" id="emitCombinedAxesAbsoluteMovecollapse">
+            <div class="card card-body">
+                <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Combined Absolute Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Author: Francois Giguere</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 10000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axes at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Simultaneously moves three axis:</span>
+<span class="c1">#   Moves axis 1 to absolute position 50</span>
+<span class="c1">#   Moves axis 2 to absolute position 100</span>
+<span class="c1">#   Moves axis 3 to absolute position 50</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitCombinedAxesAbsoluteMove</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+
+</dl><dl class="function" >
+
+    <dt id=emitAbsoluteMove class="funcHeader">
+        <h4 data-toc-text = emitAbsoluteMove> 
+            <span class="funcClassName"> mm.</span>
+            <span class = "funcName"> emitAbsoluteMove </span>
+            (
+                    <span class="funcParamHeading">
+                        position
+                    </span>
+                    <span class="funcParamHeading">
+                        axis
+                    </span>
+            )  
+        </h4>
+
+        <span style = "float: right;">
+                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitAbsoluteMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
+                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+        </span>
+
+    </dt>
+        <div class="indent1">
+            <span class = "funcParam"><b>position</b></span>
+            <small class = "text-muted">( Number)</small>
+            -
+            <span>              
+                the position from its home location where the axis will go
+            </span>
+        </div>
+        <div class="indent1">
+            <span class = "funcParam"><b>axis</b></span>
+            <small class = "text-muted">( Number)</small>
+            -
+            <span>              
+                the axis on which the command will be applied
+            </span>
+        </div>
+    
+    <dd>
+        <div class="funcDescription">
+            Sends an absolute move command to the MachineMotion controller
+        </div>
+    </dd>
+
+        <div class="collapse" id="emitAbsoluteMovecollapse">
+            <div class="card card-body">
+                <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Absolute Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Author: Francois Giguere</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 1000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 going home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Move the axis 1 to position 100 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+
+</dl><dl class="function" >
+
+    <dt id=emitRelativeMove class="funcHeader">
+        <h4 data-toc-text = emitRelativeMove> 
+            <span class="funcClassName"> mm.</span>
+            <span class = "funcName"> emitRelativeMove </span>
+            (
+                    <span class="funcParamHeading">
+                        distance
+                    </span>
+                    <span class="funcParamHeading">
+                        direction
+                    </span>
+                    <span class="funcParamHeading">
+                        axis
+                    </span>
+            )  
+        </h4>
+
+        <span style = "float: right;">
+                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitRelativeMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
+                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+        </span>
+
+    </dt>
+        <div class="indent1">
+            <span class = "funcParam"><b>distance</b></span>
+            <small class = "text-muted">( Number)</small>
+            -
+            <span>              
+                the direction in which the relative move will be conducted [in mm]
+            </span>
+        </div>
+        <div class="indent1">
+            <span class = "funcParam"><b>direction</b></span>
+            <small class = "text-muted">( string of value equal to "positive" or "negative")</small>
+            -
+            <span>              
+                direction is the direction in which the relative move will be conducted
+            </span>
+        </div>
+        <div class="indent1">
+            <span class = "funcParam"><b>axis</b></span>
+            <small class = "text-muted">( int or string)</small>
+            -
+            <span>              
+                the axis on which the command will be applied
+            </span>
+        </div>
+    
+    <dd>
+        <div class="funcDescription">
+            Function to send a relative move command to the MachineMotion controller
+        </div>
+    </dd>
+
+        <div class="collapse" id="emitRelativeMovecollapse">
+            <div class="card card-body">
+                <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Relative Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Author: Francois Giguere</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 10000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is going home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Move the axis one to position 100 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitRelativeMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Move on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+
+</dl><dl class="function" >
+
+    <dt id=isMotionCompleted class="funcHeader">
+        <h4 data-toc-text = isMotionCompleted> 
+            <span class="funcClassName"> mm.</span>
+            <span class = "funcName"> isMotionCompleted </span>
+            (
+                    <span class="funcParamHeading">
+                        param1
+                    </span>
+            )  
+        </h4>
+
+
+    </dt>
+        <div class="indent1">
+            <span class = "funcParam"><b>param1</b></span>
+            <small class = "text-muted">( Number)</small>
+            -
+            <span>              
+                the parameter details
+            </span>
+        </div>
+    
+    <dd>
+        <div class="funcDescription">
+            function description
+        </div>
+    </dd>
+
+
+</dl><dl class="function" >
+
+    <dt id=emitCombinedAxisRelativeMove class="funcHeader">
+        <h4 data-toc-text = emitCombinedAxisRelativeMove> 
+            <span class="funcClassName"> mm.</span>
+            <span class = "funcName"> emitCombinedAxisRelativeMove </span>
+            (
+                    <span class="funcParamHeading">
+                        distance
+                    </span>
+                    <span class="funcParamHeading">
+                        direction
+                    </span>
+                    <span class="funcParamHeading">
+                        axes
+                    </span>
+            )  
+        </h4>
+
+        <span style = "float: right;">
+                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxisRelativeMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
+                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+        </span>
+
+    </dt>
+        <div class="indent1">
+            <span class = "funcParam"><b>distance</b></span>
+            <small class = "text-muted">( List of Numbers)</small>
+            -
+            <span>              
+                the direction in which the relative move will be conducted [in mm]
+            </span>
+        </div>
+        <div class="indent1">
+            <span class = "funcParam"><b>direction</b></span>
+            <small class = "text-muted">( List of strings either "positive" or "negative")</small>
+            -
+            <span>              
+                direction is the direction in which the relative move will be conducted (ex- ["positive","negative","positive"])
+            </span>
+        </div>
+        <div class="indent1">
+            <span class = "funcParam"><b>axes</b></span>
+            <small class = "text-muted">( List of Numbers)</small>
+            -
+            <span>              
+                the axes on which commands will be applied (ex- [1,2,3])
+            </span>
+        </div>
+    
+    <dd>
+        <div class="funcDescription">
+            sends a relative move command to the MachineMotion controller
+        </div>
+    </dd>
+
+        <div class="collapse" id="emitCombinedAxisRelativeMovecollapse">
+            <div class="card card-body">
+                <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Combined Relative Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Author: Francois Giguere</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 10000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing all axes</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axes at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Simultaneously moves three axis:</span>
+<span class="c1">#   Moves axis 1 in the positive direction by 100 mm</span>
+<span class="c1">#   Moves axis 2 in the positive direction by 200 mm</span>
+<span class="c1">#   Moves axis 3 in the positive direction by 300 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitCombinedAxisRelativeMove</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Multi-axis move on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+
+</dl>
+            </div>
+        </div>
+    </div>
+        
+</body>
