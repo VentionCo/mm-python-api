@@ -42,23 +42,37 @@ def emitSpeed(self, mm_per_min):
                 <dl class="function" >
 
     <dt id=emitCombinedAxesAbsoluteMove class="funcHeader">
-        <h4 data-toc-text = emitCombinedAxesAbsoluteMove> 
-            <span class="funcClassName"> mm.</span>
-            <span class = "funcName"> emitCombinedAxesAbsoluteMove </span>
-            (
-                    <span class="funcParamHeading">
-                        positions
-                    </span>
-                    <span class="funcParamHeading">
-                        axes
-                    </span>
-            )  
-        </h4>
+        <div class = "row">
+            <div class = "col-sm-8">
+            <h4 data-toc-text = emitCombinedAxesAbsoluteMove> 
+                <span class="funcClassName"> mm.</span>
+                <span class = "funcName"> <b>emitCombinedAxesAbsoluteMove</b> </span>
+                (
+                        <span class="funcParamHeading">
+                            positions
+                        </span>
+                        <span class="funcParamHeading">
+                            axes
+                        </span>
+                )
+            </h4>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                        <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxesAbsoluteMovecollapseSource" role="button" aria-expanded="false" aria-controls="collapseExample">View Source</button>
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                            <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxesAbsoluteMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">Example</button>
+                            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
 
-        <span style = "float: right;">
-                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxesAbsoluteMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
-                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-        </span>
+
+        </div>
+
 
     </dt>
         <div class="indent1">
@@ -83,8 +97,32 @@ def emitSpeed(self, mm_per_min):
             Sends an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
         </div>
     </dd>
+    <div class="collapse" id="emitCombinedAxesAbsoluteMovecollapseSource">
+        <div class="card card-body">
+            <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitCombinedAxesAbsoluteMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All parameters must be lists&quot;</span><span class="p">)</span>
+
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Set to absolute motion mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G90&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="c1"># Transmit move command</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;G0 &quot;</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
+            <span class="n">command</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
 
+        </div>
+    </div>
         <div class="collapse" id="emitCombinedAxesAbsoluteMovecollapse">
+            <button type="button" class="btn btn-secondary runCodeBtn" onclick="function hi(){alert('Please connect to MachineMotion to run example program')};hi()">Run On Machine</button>
             <div class="card card-body">
                 <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Combined Absolute Move</span>
@@ -145,23 +183,37 @@ def emitSpeed(self, mm_per_min):
 </dl><dl class="function" >
 
     <dt id=emitAbsoluteMove class="funcHeader">
-        <h4 data-toc-text = emitAbsoluteMove> 
-            <span class="funcClassName"> mm.</span>
-            <span class = "funcName"> emitAbsoluteMove </span>
-            (
-                    <span class="funcParamHeading">
-                        position
-                    </span>
-                    <span class="funcParamHeading">
-                        axis
-                    </span>
-            )  
-        </h4>
+        <div class = "row">
+            <div class = "col-sm-8">
+            <h4 data-toc-text = emitAbsoluteMove> 
+                <span class="funcClassName"> mm.</span>
+                <span class = "funcName"> <b>emitAbsoluteMove</b> </span>
+                (
+                        <span class="funcParamHeading">
+                            position
+                        </span>
+                        <span class="funcParamHeading">
+                            axis
+                        </span>
+                )
+            </h4>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                        <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitAbsoluteMovecollapseSource" role="button" aria-expanded="false" aria-controls="collapseExample">View Source</button>
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                            <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitAbsoluteMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">Example</button>
+                            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
 
-        <span style = "float: right;">
-                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitAbsoluteMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
-                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-        </span>
+
+        </div>
+
 
     </dt>
         <div class="indent1">
@@ -186,8 +238,26 @@ def emitSpeed(self, mm_per_min):
             Sends an absolute move command to the MachineMotion controller
         </div>
     </dd>
+    <div class="collapse" id="emitAbsoluteMovecollapseSource">
+        <div class="card card-body">
+            <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitAbsoluteMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Set to absolute motion mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G90&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="c1"># Transmit move command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G0 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">))</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
 
+        </div>
+    </div>
         <div class="collapse" id="emitAbsoluteMovecollapse">
+            <button type="button" class="btn btn-secondary runCodeBtn" onclick="function hi(){alert('Please connect to MachineMotion to run example program')};hi()">Run On Machine</button>
             <div class="card card-body">
                 <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Absolute Move</span>
@@ -249,26 +319,40 @@ def emitSpeed(self, mm_per_min):
 </dl><dl class="function" >
 
     <dt id=emitRelativeMove class="funcHeader">
-        <h4 data-toc-text = emitRelativeMove> 
-            <span class="funcClassName"> mm.</span>
-            <span class = "funcName"> emitRelativeMove </span>
-            (
-                    <span class="funcParamHeading">
-                        distance
-                    </span>
-                    <span class="funcParamHeading">
-                        direction
-                    </span>
-                    <span class="funcParamHeading">
-                        axis
-                    </span>
-            )  
-        </h4>
+        <div class = "row">
+            <div class = "col-sm-8">
+            <h4 data-toc-text = emitRelativeMove> 
+                <span class="funcClassName"> mm.</span>
+                <span class = "funcName"> <b>emitRelativeMove</b> </span>
+                (
+                        <span class="funcParamHeading">
+                            distance
+                        </span>
+                        <span class="funcParamHeading">
+                            direction
+                        </span>
+                        <span class="funcParamHeading">
+                            axis
+                        </span>
+                )
+            </h4>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                        <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitRelativeMovecollapseSource" role="button" aria-expanded="false" aria-controls="collapseExample">View Source</button>
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                            <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitRelativeMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">Example</button>
+                            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
 
-        <span style = "float: right;">
-                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitRelativeMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
-                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-        </span>
+
+        </div>
+
 
     </dt>
         <div class="indent1">
@@ -301,8 +385,29 @@ def emitSpeed(self, mm_per_min):
             Function to send a relative move command to the MachineMotion controller
         </div>
     </dd>
+    <div class="collapse" id="emitRelativeMovecollapseSource">
+        <div class="card card-body">
+            <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitRelativeMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Set to relative motion mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G91&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;positive&quot;</span><span class="p">:</span><span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">direction</span>  <span class="o">==</span> <span class="s2">&quot;negative&quot;</span><span class="p">:</span> <span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+
+        <span class="c1"># Transmit move command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G0 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">))</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
 
+        </div>
+    </div>
         <div class="collapse" id="emitRelativeMovecollapse">
+            <button type="button" class="btn btn-secondary runCodeBtn" onclick="function hi(){alert('Please connect to MachineMotion to run example program')};hi()">Run On Machine</button>
             <div class="card card-body">
                 <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Relative Move</span>
@@ -362,15 +467,29 @@ def emitSpeed(self, mm_per_min):
 </dl><dl class="function" >
 
     <dt id=isMotionCompleted class="funcHeader">
-        <h4 data-toc-text = isMotionCompleted> 
-            <span class="funcClassName"> mm.</span>
-            <span class = "funcName"> isMotionCompleted </span>
-            (
-                    <span class="funcParamHeading">
-                        param1
-                    </span>
-            )  
-        </h4>
+        <div class = "row">
+            <div class = "col-sm-8">
+            <h4 data-toc-text = isMotionCompleted> 
+                <span class="funcClassName"> mm.</span>
+                <span class = "funcName"> <b>isMotionCompleted</b> </span>
+                (
+                        <span class="funcParamHeading">
+                            param1
+                        </span>
+                )
+            </h4>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                        <button type="button" class="btn btn-link" data-toggle="collapse" href= "#isMotionCompletedcollapseSource" role="button" aria-expanded="false" aria-controls="collapseExample">View Source</button>
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+            </div>
+
+
+        </div>
 
 
     </dt>
@@ -388,31 +507,53 @@ def emitSpeed(self, mm_per_min):
             function description
         </div>
     </dd>
+    <div class="collapse" id="isMotionCompletedcollapseSource">
+        <div class="card card-body">
+            <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isMotionCompleted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+        <span class="k">return</span> <span class="n">motion_completed</span>
+</pre></div>
 
+        </div>
+    </div>
 
 </dl><dl class="function" >
 
     <dt id=emitCombinedAxisRelativeMove class="funcHeader">
-        <h4 data-toc-text = emitCombinedAxisRelativeMove> 
-            <span class="funcClassName"> mm.</span>
-            <span class = "funcName"> emitCombinedAxisRelativeMove </span>
-            (
-                    <span class="funcParamHeading">
-                        distance
-                    </span>
-                    <span class="funcParamHeading">
-                        direction
-                    </span>
-                    <span class="funcParamHeading">
-                        axes
-                    </span>
-            )  
-        </h4>
+        <div class = "row">
+            <div class = "col-sm-8">
+            <h4 data-toc-text = emitCombinedAxisRelativeMove> 
+                <span class="funcClassName"> mm.</span>
+                <span class = "funcName"> <b>emitCombinedAxisRelativeMove</b> </span>
+                (
+                        <span class="funcParamHeading">
+                            distance
+                        </span>
+                        <span class="funcParamHeading">
+                            direction
+                        </span>
+                        <span class="funcParamHeading">
+                            axes
+                        </span>
+                )
+            </h4>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                        <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxisRelativeMovecollapseSource" role="button" aria-expanded="false" aria-controls="collapseExample">View Source</button>
+                        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
+            <div class = "col-sm-2" class = "codeExpandButton">
+                <span >
+                            <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxisRelativeMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">Example</button>
+                            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                </span>
+            </div>
 
-        <span style = "float: right;">
-                    <button type="button" class="btn btn-link" data-toggle="collapse" href= "#emitCombinedAxisRelativeMovecollapse" role="button" aria-expanded="false" aria-controls="collapseExample">See Example Code</button>
-                    <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
-        </span>
+
+        </div>
+
 
     </dt>
         <div class="indent1">
@@ -445,8 +586,35 @@ def emitSpeed(self, mm_per_min):
             sends a relative move command to the MachineMotion controller
         </div>
     </dd>
+    <div class="collapse" id="emitCombinedAxisRelativeMovecollapseSource">
+        <div class="card card-body">
+            <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitCombinedAxisRelativeMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">directions</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">directions</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All parameters must be lists&quot;</span><span class="p">)</span>
+        
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Set to relative motion mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G91&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="c1"># Transmit move command</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;G0 &quot;</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">distance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">directions</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;positive&quot;</span><span class="p">:</span> <span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">direction</span>  <span class="o">==</span> <span class="s2">&quot;negative&quot;</span><span class="p">:</span> <span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+            <span class="n">command</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
 
+        </div>
+    </div>
         <div class="collapse" id="emitCombinedAxisRelativeMovecollapse">
+            <button type="button" class="btn btn-secondary runCodeBtn" onclick="function hi(){alert('Please connect to MachineMotion to run example program')};hi()">Run On Machine</button>
             <div class="card card-body">
                 <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Combined Relative Move</span>

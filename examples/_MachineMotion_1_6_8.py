@@ -446,11 +446,12 @@ class MachineMotion:
 
         sys.exit()
 
-    #
-    # Function that will immediately stop all motion of all the axes
-    # @status
-    #
     def emitStop(self):
+        '''
+        desc: Immediately stops all motion of all axes
+        note: The physical E-stop button will act faster and is the preferred method of emergency stopping.
+        exampleCodePath: example--emitStop.py
+        '''
         global motion_completed
 
         motion_completed = "false"
@@ -462,11 +463,12 @@ class MachineMotion:
         self.myGCode.__emit__("G0 X0")
         while self.isReady() != "true": pass
 
-    #
-    # Function that will initiate the homing sequence of all axes. The sequence will home all axes using the endstop signals
-    # @status
-    #
     def emitHomeAll(self):
+        '''
+        desc: initiates the homing sequence of all axes. All axes will home themselves simultaneously
+        exampleCodePath: example--emitHomeAll.py
+        '''
+
         global motion_completed
 
         motion_completed = "false"
@@ -474,12 +476,16 @@ class MachineMotion:
         self.myGCode.__emit__("G28")
         while self.isReady() != "true": pass
 
-    #
-    # Function that will initiate the homing sequence for the axis specified. The sequence will home the axis using the endstops signals.
-    # @param axis --- Description: "axis" is the axis number that will be set to home location.  --- Type: number.
-    # @status
-    #
     def emitHome(self, axis):
+        '''
+        desc: Initiates the homing sequence for the specified axis
+        params: 
+            axis:
+                desc: The axis number the will be sent to the home location
+                type: Number
+        note: If setAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If setAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
+        exampleCodePath: example--emitHome.py
+        '''
         global motion_completed
 
         motion_completed = "false"
@@ -487,21 +493,29 @@ class MachineMotion:
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
         while self.isReady() != "true": pass
 
-    #
-    # Function to send a displacement speed configuration command
-    # @param mm_per_min --- Description: mm_per_mim is the displacement speed in mm/min --- Type: number.
-    # @status
-    #
     def emitSpeed(self, mm_per_min):
+        '''
+        desc: Sets the global max speed for all axes movement
+        params:
+            desc: mm_per_min is the global max speed in mm/min
+            type: Number
+        exampleCodePath: example--emitSpeed.py
+        '''
+
         self.myGCode.__emit__("G0 F" +str(mm_per_min))
         while self.isReady() != "true": pass
 
-    #
-    # Function to send a displacement acceleration configuration command
-    # @param mm_per_sec_sqr --- Description: mm_per_sec_sqr is the displacement acceleration in mm/sec^2 --- Type: number.
-    # @status
-    #
+
     def emitAcceleration(self, mm_per_sec_sqr):
+        '''
+        desc: Sets the acceleration speed for all axes
+        params:
+            mm_per_sec_sqr:
+                desc: the desired acceleration setting for all axes in mm/sec^2
+                type: Number
+        exampleCodePath:  example--emitAcceleration.py
+        '''
+
         self.myGCode.__emit__("M204 T" + str(mm_per_sec_sqr))
         while self.isReady() != "true": pass
 
@@ -626,40 +640,45 @@ class MachineMotion:
         self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
         
-    #
-    # Function to force set the position of the motion controller for one specific axis.
-    # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: string or number.
-    # @param position --- Description: position is the position to set the axis to --- Type: string or number.
-    # @status
-    #
     def setPosition(self, axis, position):
+        '''
+        desc: overrides the position of a motion controller axis with a specific value
+        params:
+            axis:
+                desc: The axis on which the command will be applied
+                type: Number
+            position:
+                desc: The position value the axis should be set to in mm
+                type: Number
+        exampleCodePath: example--setPosition.py
+        '''
+
         # Transmit move command
         self.myGCode.__emit__("G92 " + self.myGCode.__getTrueAxis__(axis) + str(position))
         while self.isReady() != "true": pass
 
-    #
-    # Function to send a raw G-Code ASCII command
-    # @param gCode --- Description: gCode is string representing the G-Code command to send to the controller. Type: string.
-    # @status
-    #
     def emitgCode(self, gCode):
+        '''
+        desc: sends a raw g-code ASCII command to the controller
+        params:
+            gCode: A string representation of the desired g-code command
+            type: string
+        exampleCodePath: emitgCode.py
+        '''
+
         global motion_completed
 
         motion_completed = "false"
 
         self.myGCode.__emit__(gCode)
 
-    #
-    # Function that indicates if the GCode communication port is ready to send another command.
-    # @status
-    #
     def isReady(self):
+        '''
+        desc: indicates if the gCode communication port is ready to send another command
+        '''
         return self.myGCode.__isReady__()
 
-    #
-    # Function that indicates if the the last move has completed
-    # @status
-    #
+
     def isMotionCompleted(self):
         '''
         desc: function description
@@ -675,14 +694,19 @@ class MachineMotion:
         self.emitgCode("V0")
         while  self.isMotionCompleted() != "true": pass
 
-    #
-    # Function to setup the static IP and the router gateway of the MachineMotion controller
-    # @param machineIp --- Description: desired static ip address to assign to the MachineMotion controller. --- Type: string (xxx.xxx.xxx.xxxx) where x are numbers.
-    # @param gatewayIP --- Description: ip address of the LAN router. Setting a proper gateway ip addreess enables MachineMotion to access the internet for downloads --- Type: string (xxx.xxx.xxx.xxxx) where x are numbers.
-    # @note:           --- For the MachineMotion to access the Internet after an configIp() call, the MachineMotion device must be rebooted.
-    # @status
-    #
     def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway):
+        '''
+        desc: sets up the static IP and router gateway of the MachineMotion controller
+        params:
+            machineIp: 
+                desc: desired static ip address to assign to the MachineMotion controller
+                type: string of format "xxx.xxx.xxx.xxxx" where x are numbers.
+            gatewayIp:
+                desc: ip address of the LAN router. Properly setting this up allows the MachineMotion to connect to the internet through the LAN
+                type: string "xxx.xxx.xxx.xxxx" where x are numbers.
+        exampleCodePath: example--configMachineMotionIp.py
+        note: For the MachineMotion to access the Internet after an configIp() call, the MachineMotion device must be rebooted.
+        '''
 
         # Create a new object and augment it with the key value.
         self.myConfiguration["mode"] = mode
@@ -695,14 +719,23 @@ class MachineMotion:
 
         time.sleep(1)
 
-    #
-    # Function to configure the axis motion.
-    # @param axis       --- Description: The axis number.                           --- Type: number [1, 2, 3]
-    # @param _u_step    --- Description: uStep setting.                             --- Type: number either [1, 2, 4, 8, 16]
-    # @param _mech_gain --- Description: Mechanical gain of the axis in mm / turn.  --- Type: number
-    # @status
-    #
     def configAxis(self, axis, _u_step, _mech_gain):
+        '''
+        desc: function to configure the axis motion
+        params:
+            axis:
+                desc: The axis number
+                type: number - either [1, 2 or 3]
+            _u_step:
+                desc: The uStep setting
+                type: Number - either [1,2,4,8 or 16]
+            _mech_gain: 
+                desc: Mechanical gain of the axis in mm/turn
+                type: Number
+        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch. The value here must match the value on the DIP Switch. To change the uStep setting, please see <a href=#>here</a>
+        exampleCodePath: example--configAxis
+        '''
+
         u_step    = float(_u_step)
         mech_gain = float(_mech_gain)
 
@@ -725,13 +758,21 @@ class MachineMotion:
             pass
             # print "Argument error, {configAxis(self, axis, u_step, mech_gain)}, {u_step} argument is invalid"
             
-    #
-    # Function to reverse the positive direction of an axis, also reverse the home and end-of-travel sensor port
-    # @param axis --- Description: Axis on which the setting applies    --- Type: string or number.
-    # @param data --- Description: normal or reverse axis direction     --- Type: dictionary.
-    # @status
-    #    
+
     def emitSetAxisDirection(self, axis, direction):
+        '''
+        desc: Reverses the positive direction of the axis, also reverses the home and end-of-travel sensor ports
+        params:
+            axis:
+                desc: axis on which the setting applies
+                type: String or Number
+            data:
+                desc: normal or reverse axis direction
+                type: String - either "normal" or "reverse"
+        note: For more details on how to properly set the axis direction, please see <a href="#"> here </a>
+        exampleCodePath: example--emitSetAxisDirection.py
+        '''
+
     
         # Checking input parameters
         if (direction != "normal" and direction != "reverse"):
@@ -756,29 +797,42 @@ class MachineMotion:
             elif (direction == "reverse"):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis3_steps_mm))
 
-    #
-    # Function to save/persist data in the MachineMotion Controller (key - data pair)
-    # @param key --- Description: key is a string that identifies the data to save for future retrieval. --- Type: string or number.
-    # @param data --- Description: data is a dictionary containing the data to save. --- Type: dictionary.
-    # @status
-    #
+ 
     def saveData(self, key, data):
+        '''
+        desc: saves/persists data in the MachineMotion Controller (in key - data pairs)
+        params:
+            key:
+                desc: A string the uniquely identifies the data to save for future retreival
+                type: String
+            data:
+                desc: A dictionary containing the data to save
+                type: Dictionary
+        exampleCodePath: example--saveData_getData.py
+        '''
+
         # Create a new object and augment it with the key value.
         dataPack = {}
-        dataPack["fileName"] = key;
-        dataPack["data"] = data;
+        dataPack["fileName"] = key
+        dataPack["data"] = data
 
         # Send the request to MachineMotion
         self.mySocket.emit('saveData', json.dumps(dataPack))
         time.sleep(0.05)
 
-    #
-    # Function to retrieve saved/persisted data in the MachineMotion Controller (key - data pair)
-    # @param key --- Description: key is a string that identifies the data to retrieve. --- Type: string.
-    # @param callback --- Description: callback is the function to invoke when the asynchronous data is received. --- Type: function with on argument that will contain the data in json serialized format.
-    # @status
-    #
-    def getData(self, key, callback):
+      def getData(self, key, callback):
+        '''
+        desc: retreives saved/persisted data from the MachineMotion controller (in key-data pairs)
+        params:
+            key:
+                desc: Uniquely identifies the data to be retreived
+                type: String
+            callback:
+                desc: A function that is invoked when the asynchronous data is received
+                type: Callback function that takes a single input argument 
+        exampleCodePath: example--setData_getData.py
+        '''
+
         #Send the request to MachineMotion
 
         self.mySocket.emit('getData', key)

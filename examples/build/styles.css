@@ -7,31 +7,31 @@
 }
 
 #div1 {
-background-color: var(--main-bg-color);
+    background-color: var(--main-bg-color);
 }
 
 
-
-.funcClassName {
-     font-size: 14;
-     font-style: italic;
-
-}
 
 .indent1{
     margin-left: 50px;
     margin-top: 10px;
 }
 
+.funcClassName {
+     font-size: 14;
+     font-style: italic;
+}
+
 .funcHeader{
     background: var(--ventionGrey);
     border-top: 2px solid var(--accentBlue);
     padding: 5px 5px 2px 5px;
-
+    margin-top: 10px;
+    vertical-align: middle;
 }
+
 .funcName {
     font-size: 19px;
-    font-style: bold;
 }
 
 .funcParamHeading{
@@ -44,6 +44,21 @@ background-color: var(--main-bg-color);
 }
 
 .funcDescription{
-    text-indent: 20px;
+    margin-left: 20px;
+    margin-top: 10px;
     font-size: 16px;
+}
+
+.codeExpandButton {
+    float: right;
+}
+
+#span {
+    background-color: #BEC9CD;
+}
+
+.runCodeBtn {
+    position: relative;
+    bottom: -50px;
+    right: -80%; 
 }
