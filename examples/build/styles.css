@@ -4,6 +4,18 @@
 --CTAGreen: #1AC876;
 --ventionGrey: #Eff2f7;
 --ventionDarkGrey: #BEC9CD;
+
+
+--t1: 19px;
+--t2: 14.9px;
+--t3: 11.8px;
+--t4: 9.2px;
+
+}
+
+
+a:hover {
+    color:var(--ventionDarkGrey)
 }
 
 #div1 {
@@ -18,7 +30,7 @@
 }
 
 .funcClassName {
-     font-size: 14;
+     font-size: var(--t2);
      font-style: italic;
 }
 
@@ -31,34 +43,56 @@
 }
 
 .funcName {
-    font-size: 19px;
+    font-size: var(--t1);
 }
 
 .funcParamHeading{
-    font-size: 16px;
+    font-size: var(--t1);
     font-style: italic;
 }
 
 .funcParam{
-    color: var(ventionBlue)
+    color: var(--ventionBlue);
 }
 
 .funcDescription{
     margin-left: 20px;
     margin-top: 10px;
-    font-size: 16px;
+    font-size: var(--t2);
 }
 
 .codeExpandButton {
     float: right;
 }
 
-#span {
-    background-color: #BEC9CD;
-}
 
 .runCodeBtn {
     position: relative;
     bottom: -50px;
     right: -80%; 
 }
+
+#mySideBar{
+    top: 200;
+    border-left: 1px solid var(--ventionGrey);
+}
+
+.myTocHeader{
+    font-size: var(--t2);
+    color: var(--ventionDarkGrey);
+    margin-left: 5px;
+}
+
+.myTocItem a{
+    margin-top: 5px;
+    padding-left: 10px;
+    color: black;
+    font-size: var(--t3);
+    text-decoration: none;
+}
+
+.myTocItem a:hover{
+    padding-left: 12px;
+    color: var(--accentBlue);
+}
+

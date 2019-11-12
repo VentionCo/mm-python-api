@@ -497,8 +497,9 @@ class MachineMotion:
         '''
         desc: Sets the global max speed for all axes movement
         params:
-            desc: mm_per_min is the global max speed in mm/min
-            type: Number
+            mm_per_min:
+                desc: mm_per_min is the global max speed in mm/min
+                type: Number
         exampleCodePath: example--emitSpeed.py
         '''
 
@@ -661,9 +662,10 @@ class MachineMotion:
         '''
         desc: sends a raw g-code ASCII command to the controller
         params:
-            gCode: A string representation of the desired g-code command
-            type: string
-        exampleCodePath: emitgCode.py
+            gCode:
+                desc: A string representation of the desired g-code command
+                type: string
+        exampleCodePath: example--emitgCode.py
         '''
 
         global motion_completed
@@ -681,12 +683,8 @@ class MachineMotion:
 
     def isMotionCompleted(self):
         '''
-        desc: function description
-        params: 
-            param1:
-                desc: the parameter details
-                type: Number
-        '''
+        desc: returns True if the machine's current motion is complete
+         '''
         global motion_completed
         return motion_completed
 
@@ -733,7 +731,7 @@ class MachineMotion:
                 desc: Mechanical gain of the axis in mm/turn
                 type: Number
         note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch. The value here must match the value on the DIP Switch. To change the uStep setting, please see <a href=#>here</a>
-        exampleCodePath: example--configAxis
+        exampleCodePath: example--configAxis.py
         '''
 
         u_step    = float(_u_step)
@@ -820,7 +818,7 @@ class MachineMotion:
         self.mySocket.emit('saveData', json.dumps(dataPack))
         time.sleep(0.05)
 
-      def getData(self, key, callback):
+    def getData(self, key, callback):
         '''
         desc: retreives saved/persisted data from the MachineMotion controller (in key-data pairs)
         params:
@@ -830,7 +828,7 @@ class MachineMotion:
             callback:
                 desc: A function that is invoked when the asynchronous data is received
                 type: Callback function that takes a single input argument 
-        exampleCodePath: example--setData_getData.py
+        exampleCodePath: example--saveData_getData.py
         '''
 
         #Send the request to MachineMotion
