@@ -1,6 +1,6 @@
 
 <div class="row">
-    <div class="col-md-10 col-sm-12">
+    <div class="col-md-10 col-sm-12" id="machine-motion-content">
         <img  style="width:90%" src= "https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/181/large/python-api-reference-temp.png?1573518342">
         <dl class="function" >
 
@@ -2228,15 +2228,20 @@ a:hover {
 
 .sticky-side-nav {
     position: fixed;
-    top: 185;
+    top: 0;
 }
 
 </style>
 <script>
     $( document ).ready(function() {
+
+ 
+        var title = document.getElementsByClassName("technical-document-title")[0].parentNode
+        var content = document.getElementById("machine-motion-content")
+        content.insertBefore(title, content.childNodes[0])
+
         var sideNav = document.getElementById('sideNav')
         var sideNavTop = sideNav.offsetTop;
-        var stickOffset = 65;
 
 
         $(window).scroll(function(){ // scroll event
