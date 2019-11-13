@@ -703,7 +703,6 @@ class MachineMotion:
                 desc: ip address of the LAN router. Properly setting this up allows the MachineMotion to connect to the internet through the LAN
                 type: string "xxx.xxx.xxx.xxxx" where x are numbers.
         exampleCodePath: example--configMachineMotionIp.py
-        note: For the MachineMotion to access the Internet after an configIp() call, the MachineMotion device must be rebooted.
         '''
 
         # Create a new object and augment it with the key value.
