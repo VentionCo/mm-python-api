@@ -449,7 +449,7 @@ class MachineMotion:
     def emitStop(self):
         '''
         desc: Immediately stops all motion of all axes
-        note: The physical E-stop button will act faster and is the preferred method of emergency stopping.
+        note: This function does not stop the machine as fast as the E-stop button and this function is not intended to serve as an emergency stop.
         exampleCodePath: example--emitStop.py
         '''
         global motion_completed
@@ -465,7 +465,7 @@ class MachineMotion:
 
     def emitHomeAll(self):
         '''
-        desc: initiates the homing sequence of all axes. All axes will home themselves simultaneously
+        desc: Initiates the homing sequence of all axes. All axes will home simultaneously.
         exampleCodePath: example--emitHomeAll.py
         '''
 
@@ -478,10 +478,10 @@ class MachineMotion:
 
     def emitHome(self, axis):
         '''
-        desc: Initiates the homing sequence for the specified axis
+        desc: Initiates the homing sequence for the specified axis.
         params: 
             axis:
-                desc: The axis number the will be sent to the home location
+                desc: The number of the axis that you would like to home.
                 type: Number
         note: If setAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If setAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
         exampleCodePath: example--emitHome.py
@@ -495,10 +495,10 @@ class MachineMotion:
 
     def emitSpeed(self, mm_per_min):
         '''
-        desc: Sets the global max speed for all axes movement
+        desc: Sets the global speed for all movement commands on all axes.
         params:
             mm_per_min:
-                desc: mm_per_min is the global max speed in mm/min
+                desc: The global max speed in mm/min.
                 type: Number
         exampleCodePath: example--emitSpeed.py
         '''
@@ -509,10 +509,10 @@ class MachineMotion:
 
     def emitAcceleration(self, mm_per_sec_sqr):
         '''
-        desc: Sets the acceleration speed for all axes
+        desc: Sets the global acceleration for all movement commands on all axes.
         params:
             mm_per_sec_sqr:
-                desc: the desired acceleration setting for all axes in mm/sec^2
+                desc: The global acceleration in mm/min.
                 type: Number
         exampleCodePath:  example--emitAcceleration.py
         '''
@@ -522,13 +522,13 @@ class MachineMotion:
 
     def emitAbsoluteMove(self, axis, position):
         '''
-        desc: Sends an absolute move command to the MachineMotion controller
+        desc: Moves the specified axis to a desired end location.
         params: 
             axis: 
-                desc: the axis on which the command will be applied
+                desc: The axis which will perform the absolute move command.
                 type: Number
             position:
-                desc: the position from its home location where the axis will go
+                desc: The desired end position of the axis movement.
                 type: Number
         exampleCodePath: example--emitAbsoluteMove.py
         '''
@@ -546,14 +546,14 @@ class MachineMotion:
         
     def emitCombinedAxesAbsoluteMove(self, axes, positions):
         '''
-        desc: Sends an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
+        desc: Moves multiple specified axes to their desired end locations.
         params:
             axes:
-                desc: The axis on which the commands will be applied
-                type: List or array of Numbers
+                desc: The axes which will perform the move commands. Ex - [1 ,3]
+                type: List
             positions:
-                desc: Positions from their home location where the axes will go
-                type: List or array of Numbers
+                desc: The desired end position of all axess movement. Ex - [50, 10]
+                type: List
         exampleCodePath: example--emitCombinedAxesAbsoluteMove.py
         '''
         if (not isinstance(axes, list) or not isinstance(positions, list)):
@@ -576,16 +576,16 @@ class MachineMotion:
 
     def emitRelativeMove(self, axis, direction, distance):
         '''
-        desc: Function to send a relative move command to the MachineMotion controller
+        desc: Moves the specified axis the specified distance in the specified direction.
         params:
             axis:
-                desc: the axis on which the command will be applied
-                type: int or string
+                desc: The axis to move.
+                type: Integer
             direction:
-                desc: direction is the direction in which the relative move will be conducted
-                type: string of value equal to "positive" or "negative"
+                desc: The direction of travel. Ex - "positive" or "negative" 
+                type: String
             distance:
-                desc: the direction in which the relative move will be conducted [in mm]
+                desc: The travel distance in mm.
                 type: Number
         exampleCodePath: example--emitRelativeMove.py
         '''
@@ -607,17 +607,17 @@ class MachineMotion:
 
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
         '''
-        desc: sends a relative move command to the MachineMotion controller
+        desc: Moves the multiple specified axes the specified distances in the specified directions.
         params:
-            axes: 
-                desc: the axes on which commands will be applied (ex- [1,2,3])
-                type: List of Numbers
+            axes:
+                desc: The axes to move. Ex-[1,3]
+                type: List
             direction:
-                desc: direction is the direction in which the relative move will be conducted (ex- ["positive","negative","positive"])
-                type: List of strings either "positive" or "negative"
+                desc: The direction of travel of each specified axis. Ex - ["positive", "negative"] 
+                type: String
             distance:
-                desc: the direction in which the relative move will be conducted [in mm]
-                type: List of Numbers
+                desc: The travel distances in mm. Ex - [10, 40]
+                type: List
         exampleCodePath: example--emitCombinedAxesRelativeMove.py
         '''
 
@@ -643,13 +643,13 @@ class MachineMotion:
         
     def setPosition(self, axis, position):
         '''
-        desc: overrides the position of a motion controller axis with a specific value
+        desc: Override the current position of the specified axis to a new value.
         params:
             axis:
-                desc: The axis on which the command will be applied
+                desc: Overrides the position on this axis.
                 type: Number
             position:
-                desc: The position value the axis should be set to in mm
+                desc: The new position value in mm.
                 type: Number
         exampleCodePath: example--setPosition.py
         '''
@@ -660,11 +660,12 @@ class MachineMotion:
 
     def emitgCode(self, gCode):
         '''
-        desc: sends a raw g-code ASCII command to the controller
+        desc: Executes raw gCode on the controller.
         params:
             gCode:
-                desc: A string representation of the desired g-code command
+                desc: The g-code that will be passed directly to the controller.
                 type: string
+        note: You can see a list of g-code commands and their definitions <a style="color:red">here</a>
         exampleCodePath: example--emitgCode.py
         '''
 
@@ -676,32 +677,42 @@ class MachineMotion:
 
     def isReady(self):
         '''
-        desc: indicates if the gCode communication port is ready to send another command
+        desc: Returns true if the gCode communication port is ready to send another command to the controller.
         '''
         return self.myGCode.__isReady__()
 
 
     def isMotionCompleted(self):
         '''
-        desc: returns True if the machine's current motion is complete
-         '''
+        desc: Returns true if all axes have completed their movement.
+        '''
         global motion_completed
         return motion_completed
 
     def waitForMotionCompletion(self):
+        '''
+        desc: Pauses script execution while axes are still moving, continues once all axes have stopped.
+        '''
         self.emitgCode("V0")
         while  self.isMotionCompleted() != "true": pass
 
     def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway):
         '''
-        desc: sets up the static IP and router gateway of the MachineMotion controller
+        desc: Set up the required network information for the Machine Motion controller.
         params:
             machineIp: 
-                desc: desired static ip address to assign to the MachineMotion controller
-                type: string of format "xxx.xxx.xxx.xxxx" where x are numbers.
+                desc: The static IP Address given to the controller.
+                type: String
             gatewayIp:
-                desc: ip address of the LAN router. Properly setting this up allows the MachineMotion to connect to the internet through the LAN
-                type: string "xxx.xxx.xxx.xxxx" where x are numbers.
+                desc: The gateway IP Address given to the controller. 
+                type: String
+            machineNetmask:
+                desc: The netmask IP Address given to the controller.
+                type: String
+            machineGateway:
+                desc: The gateway IP Address given to the controller.
+                type: String
+        Note: All strings expect the format "XXX.XXX.XXX.XXX". To connect the controller to the internet, the gateway IP should be the same IP as your LAN router.
         exampleCodePath: example--configMachineMotionIp.py
         '''
 
@@ -718,18 +729,18 @@ class MachineMotion:
 
     def configAxis(self, axis, _u_step, _mech_gain):
         '''
-        desc: function to configure the axis motion
+        desc: Initializes parameters for proper axis control.
         params:
             axis:
-                desc: The axis number
-                type: number - either [1, 2 or 3]
-            _u_step:
-                desc: The uStep setting
-                type: Number - either [1,2,4,8 or 16]
-            _mech_gain: 
-                desc: Mechanical gain of the axis in mm/turn
+                desc: The axis to configure.
                 type: Number
-        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch. The value here must match the value on the DIP Switch. To change the uStep setting, please see <a href=#>here</a>
+            _u_step:
+                desc: The number of microsteps taken by the stepper motor. Must be either 1, 2, 5, 8 or 16.
+                type: Number
+            _mech_gain: 
+                desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
+                type: Number
+        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch. To change the uStep setting, please see <a href=#>here</a>
         exampleCodePath: example--configAxis.py
         '''
 
@@ -758,15 +769,15 @@ class MachineMotion:
 
     def emitSetAxisDirection(self, axis, direction):
         '''
-        desc: Reverses the positive direction of the axis, also reverses the home and end-of-travel sensor ports
+        desc: Reverses the positive direction of the axis and reverses the home and end-of-travel sensor ports.
         params:
             axis:
-                desc: axis on which the setting applies
-                type: String or Number
-            data:
-                desc: normal or reverse axis direction
-                type: String - either "normal" or "reverse"
-        note: For more details on how to properly set the axis direction, please see <a href="#"> here </a>
+                desc: The specified axis.
+                type: Number
+            direction:
+                desc: A string of value either either 'Normal' or 'Reverse'. 'Normal' direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B. Ex - "Reverse"
+                type: String
+        note: For more details on how to properly set the axis direction, please see <a style="color:red" href="#"> here </a>
         exampleCodePath: example--emitSetAxisDirection.py
         '''
 
@@ -797,7 +808,7 @@ class MachineMotion:
  
     def saveData(self, key, data):
         '''
-        desc: saves/persists data in the MachineMotion Controller (in key - data pairs)
+        desc: Saves/persists data within the MachineMotion Controller in key - data pairs.
         params:
             key:
                 desc: A string the uniquely identifies the data to save for future retreival
@@ -805,6 +816,7 @@ class MachineMotion:
             data:
                 desc: A dictionary containing the data to save
                 type: Dictionary
+        note: The Data continues to exist even when the controller is shut off. However, writing to a previously used key will override the previous value.
         exampleCodePath: example--saveData_getData.py
         '''
 
@@ -825,8 +837,8 @@ class MachineMotion:
                 desc: Uniquely identifies the data to be retreived
                 type: String
             callback:
-                desc: A function that is invoked when the asynchronous data is received
-                type: Callback function that takes a single input argument 
+                desc: A function that is invoked when the asynchronous data is received. The function must take a single input parameter.
+                type: Function
         exampleCodePath: example--saveData_getData.py
         '''
 
