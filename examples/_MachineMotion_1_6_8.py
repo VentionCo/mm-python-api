@@ -449,7 +449,7 @@ class MachineMotion:
     def emitStop(self):
         '''
         desc: Immediately stops all motion of all axes
-        note: This function does not stop the machine as fast as the E-stop button and this function is not intended to serve as an emergency stop.
+        note: This function is a hard stop. It is not a controlled stop and consequently does not decelerate smoothly to a stop. Additionally, this function is not intended to serve as an emergency stop since this stop mechanism does not have safety ratings.
         exampleCodePath: example--emitStop.py
         '''
         global motion_completed
@@ -465,7 +465,7 @@ class MachineMotion:
 
     def emitHomeAll(self):
         '''
-        desc: Initiates the homing sequence of all axes. All axes will home simultaneously.
+        desc: Initiates the homing sequence of all axes. All axes will home sequentially (Axis 1, 2 then 3).
         exampleCodePath: example--emitHomeAll.py
         '''
 
@@ -512,7 +512,7 @@ class MachineMotion:
         desc: Sets the global acceleration for all movement commands on all axes.
         params:
             mm_per_sec_sqr:
-                desc: The global acceleration in mm/min.
+                desc: The global acceleration in mm/s^2.
                 type: Number
         exampleCodePath:  example--emitAcceleration.py
         '''
@@ -665,7 +665,7 @@ class MachineMotion:
             gCode:
                 desc: The g-code that will be passed directly to the controller.
                 type: string
-        note: You can see a list of g-code commands and their definitions <a style="color:red">here</a>
+        note: All movement commands sent to the controller are by default in mm. You can see a list of g-code commands and their definitions <a style="color:red">here</a>
         exampleCodePath: example--emitgCode.py
         '''
 
@@ -677,7 +677,7 @@ class MachineMotion:
 
     def isReady(self):
         '''
-        desc: Returns true if the gCode communication port is ready to send another command to the controller.
+        desc: Returns true if the motion controller is ready to receive another command.
         '''
         return self.myGCode.__isReady__()
 
@@ -769,7 +769,7 @@ class MachineMotion:
 
     def emitSetAxisDirection(self, axis, direction):
         '''
-        desc: Reverses the positive direction of the axis and reverses the home and end-of-travel sensor ports.
+        desc: Reversing the axis direction reverses the location of the home sensor and reverses the positive motion direction. In Normal direction, the Home sensor is xA, in Reverse the Home sensor is xB.
         params:
             axis:
                 desc: The specified axis.
