@@ -1,7 +1,6 @@
 ##################################################
 ## Home All Axes
 ##################################################
-## Author: Francois Giguere
 ## Version: 1.6.8
 ## Email: info@vention.cc
 ## Status: tested

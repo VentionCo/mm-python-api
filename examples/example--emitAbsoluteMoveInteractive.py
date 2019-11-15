@@ -1,7 +1,6 @@
 ##################################################
 ## Absolute Move Interactive
 ##################################################
-## Author: Jack Dundas
 ## Version: 1.6.8
 ## Email: info@vention.cc
 ## Status: tested

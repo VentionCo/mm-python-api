@@ -1,7 +1,6 @@
 ##################################################
 ## Encoder Control Example
 ##################################################
-## Author: Francois Giguere
 ## Version: 1.6.8
 ## Email: info@vention.cc
 ## Status: tested
