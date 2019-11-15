@@ -1,0 +1,24 @@
+---
+tag: m501
+title: Restore Settings
+brief: Restore settings from EEPROM.
+
+experimental: false
+requires: EEPROM_SETTINGS
+group: eeprom
+
+codes:
+  - M501
+
+long: Load all saved settings from EEPROM.
+
+notes: Requires `EEPROM_SETTINGS`.
+
+parameters:
+
+examples:
+  -
+    pre: Restore all settings.
+    code: M501
+
+---

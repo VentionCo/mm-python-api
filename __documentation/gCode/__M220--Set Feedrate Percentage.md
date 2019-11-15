@@ -1,0 +1,29 @@
+---
+tag: m220
+title: Set Feedrate Percentage
+brief: Set the global feedrate percentage.
+
+experimental: false
+group: planner
+
+codes:
+  - M220
+
+long: Set the feedrate percentage, which applies to all G-code-based moves.
+
+notes:
+
+parameters:
+  -
+    tag: S
+    optional: false
+    description: Feedrate percentage
+    values:
+      -
+        tag: percent
+        type: int
+
+examples:
+
+---
+

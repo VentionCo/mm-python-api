@@ -1,0 +1,422 @@
+<article class="markdown-body">
+ <p style="text-align:center;">
+  <img height="90%" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/030/large/cover-python-guide-usermanual.png?15710631541550698858" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; " width="90%"/>
+ </p>
+ <p>
+ </p>
+ <p>
+  The MachineMotion Python API simplifies motion control and provides an intuitive, human-readable way to bring your equipment to life.
+ </p>
+ <p>
+  Inexperienced programmers should consider using
+  <a class="anchor" href="https://www.vention.io/technical-documents/in-cad-automation-with-machinelogic-24">
+   MachineLogic's
+  </a>
+  code-free visual sequence editor instead to create simple motion programs.
+ </p>
+ <p>
+  Compared to MachineLogic, Python programs are more complicated, but they offer several advantages. They are generally the best choice if you want your application to:
+ </p>
+ <ul>
+  <li>
+   Communicate with custom hardware.
+  </li>
+  <li>
+   Involve complex logic.
+  </li>
+  <li>
+   Integrate with third-party software and tools.
+  </li>
+ </ul>
+ <h4 id="for-more-information-on-3d-design-using-vention-datasheets-and-more-please-visit-ventionio">
+  <a class="anchor" href="#for-more-information-on-3d-design-using-vention-datasheets-and-more-please-visit-ventionio">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  For more information on 3D design using Vention, datasheets and more, please visit
+  <a class="anchor" href="https://www.vention.io/technical-documents/machinemotion-controller-datasheet-10">
+   Vention.io
+  </a>
+  .
+ </h4>
+ <div>
+ </div>
+ <h2 id="quick-start">
+  <a class="anchor" href="#quick-start">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Quick start
+ </h2>
+ <p>
+  Once you've connected your MachineMotion controller
+  <span style="font-weight: 200">
+   (see
+   <a class="anchor" href="connecting-to-machinemotion">
+    here
+   </a>
+   for details)
+  </span>
+  running your first Python script is as simple as typing these commands into your terminal:
+ </p>
+ <pre><code class="hljs" style="font-size: 12px">$ git clone https://github.com/VentionCo/mm-python-api
+$ python mm-python-api/examples/demo</code></pre>
+ <h2 id="installation">
+  <a class="anchor" href="#installation">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Installation
+ </h2>
+ <p>
+  This manual will guide you through five steps to get MachineMotion up and running with the Python API.
+ </p>
+ <ol>
+  <li>
+   <a class="anchor" href="#install-python">
+    Install Python on your computer
+   </a>
+  </li>
+  <li>
+   <a class="anchor" href="#download-the-api-library">
+    Download the MachineMotion API
+   </a>
+  </li>
+  <li>
+   <a class="anchor" href="#download-the-required-libraries">
+    Download the required libraries
+   </a>
+  </li>
+  <li>
+   <a class="anchor" href="#connect-to-machinemotion">
+    Connect to MachineMotion
+   </a>
+  </li>
+  <li>
+   <a class="anchor" href="#loading-programs-onto-machinemotion">
+    Run your first program
+   </a>
+  </li>
+ </ol>
+ <div>
+ </div>
+ <p text=" ">
+ </p>
+ <h3 id="install-python">
+  <a class="anchor" href="#install-python">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Install Python
+ </h3>
+ <ol>
+  <li>
+   <p>
+    Go to
+    <a class="anchor" href="https://www.python.org/downloads/">
+     https://www.python.org/downloads/
+    </a>
+    to download the latest version of python
+    <img alt="installPython1" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/177/large/download-python-step1.png?1573151525" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; "/>
+    .
+   </p>
+  </li>
+  <li>
+   <p>
+    Open and run the installer. If you’re using Windows, make sure you select the option to
+    <b>
+     Add python to path
+    </b>
+    .
+    <img alt="installPython3" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/179/large/download-python-step3.png?1573151526" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; "/>
+   </p>
+  </li>
+ </ol>
+ <div>
+ </div>
+ <p text=" ">
+ </p>
+ <h3 id="download-the-api-library">
+  <a class="anchor" href="#download-the-api-library">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Download the API library
+ </h3>
+ <p>
+  MachineMotion comes with pre-installed controller software. There are two versions of the Python API, so make sure you install the correct version of the. The table below indicates which one to choose.
+ </p>
+ <div style="border: 2px solid #E9ECEF;padding: 5px;width:80%; margin: auto; font-size:90%">
+  <table class="table" style="width:95%; margin: auto">
+   <thead>
+    <tr style="line-height: 120%">
+     <th>
+      Controller software
+     </th>
+     <th style="text-align:center">
+      Python API
+     </th>
+     <th style="text-align:center">
+      Git clone
+     </th>
+     <th>
+      Link
+     </th>
+    </tr>
+   </thead>
+   <tbody>
+    <tr style="line-height: 120%">
+     <td>
+      v1.2.11 and earlier
+     </td>
+     <td style="text-align:center">
+      Python API v1.6.8
+     </td>
+     <td style="text-align:center">
+      <code style="font-size: 12px">
+       git clone https://github.com/VentionCo/mm-python-api/tree/release/v1.6.8
+      </code>
+     </td>
+     <td>
+      <a class="anchor" href="https://github.com/VentionCo/mm-python-api/tree/release/v1.6.8">
+       v1.6.8
+      </a>
+     </td>
+    </tr>
+    <tr style="line-height: 120%">
+     <td>
+      v1.12.0 and later
+     </td>
+     <td style="text-align:center">
+      Python API v2.0+
+     </td>
+     <td style="text-align:center">
+      <code style="font-size: 12px">
+       git clone https://github.com/VentionCo/mm-python-api/tree/release/v2.0
+      </code>
+      )
+     </td>
+     <td>
+      <a class="anchor" href="https://github.com/VentionCo/mm-python-api/tree/release/v2.0">
+       v1.12.0
+      </a>
+     </td>
+    </tr>
+   </tbody>
+  </table>
+ </div>
+ <p style="text-align: center;">
+  <span style="color: #808080; font-size: 11pt;">
+   <em>
+    If your MachineMotion controller is connected to your computer, you can check its software version
+    <a class="anchor" href="”192.168.7.2”">
+     here
+    </a>
+    .
+   </em>
+  </span>
+ </p>
+ <p>
+  Open the command prompt (for Windows) or the terminal (for Mac or Linux), navigate to your destination folder, and paste the suitable 'git clone' command
+ </p>
+ <h4 id="or">
+  <a class="anchor" href="#or">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  or
+ </h4>
+ <p>
+  Follow the download link above and unzip the contents in your directory of choice.
+ </p>
+ <h4 id="need-help-see-githubs-download-guide-here">
+  <a class="anchor" href="#need-help-see-githubs-download-guide-here">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Need help? See Github's download guide
+  <a class="anchor" href="https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository">
+   here
+  </a>
+  .
+ </h4>
+ <div>
+ </div>
+ <p text=" ">
+ </p>
+ <h3 id="download-the-required-libraries">
+  <a class="anchor" href="#download-the-required-libraries">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Download the required libraries
+ </h3>
+ <p>
+  Open the command prompt (for Windows) or the terminal (for Mac or Linux) and run the following installations:
+ </p>
+ <pre><code class="hljs" style="font-size: 12px">$ pip install -U socketIO-client
+$ pip install -U pathlib
+$ pip install -U paho-mqtt</code></pre>
+ <p>
+  The MachineMotion Python library is now installed and ready to use! Continue below to start your first custom program.
+ </p>
+ <div>
+ </div>
+ <h2 id="connect-to-machinemotion">
+  <a class="anchor" href="#connect-to-machinemotion">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Connect to MachineMotion
+ </h2>
+ <p>
+  MachineMotion connects to a laptop through Ethernet. If your laptop does not have an Ethernet port, use the USB to Ethernet converter included with your MachineMotion purchase.
+ </p>
+ <p>
+  For more info on getting MachineMotion to communicate with your computer or network, see the user manual.
+ </p>
+ <p>
+  <a class="anchor" href="https://www.vention.io/technical-documents/machine-motion-user-manual-71">
+   User Manual: MachineMotion
+  </a>
+ </p>
+ <div>
+ </div>
+ <h2 id="loading-programs-onto-machinemotion">
+  <a class="anchor" href="#loading-programs-onto-machinemotion">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Loading programs onto MachineMotion
+ </h2>
+ <p>
+  There are two ways to load a custom Python script onto MachineMotion:
+ </p>
+ <ol>
+  <li>
+   With the command line/terminal.
+  </li>
+  <li>
+   With the cloud9 IDE.
+  </li>
+ </ol>
+ <p text=" ">
+ </p>
+ <h3 id="command-line-programming">
+  <a class="anchor" href="#command-line-programming">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Command line programming
+ </h3>
+ <ol>
+  <li>
+   <p>
+    Open the command prompt (for Windows) or terminal (for Mac and Linux).
+   </p>
+  </li>
+  <li>
+   <p>
+    Browse to the directory where the MachineMotion API library is saved:
+    <br/>
+    <code style="font-size: 12px">
+     cd path/to/folder/mm-python-api/
+    </code>
+   </p>
+  </li>
+  <li>
+   <p>
+    Execute the demo program with the following line of code:
+    <br/>
+    <code style="font-size: 12px">
+     python examples/example--demo.py
+    </code>
+   </p>
+  </li>
+  <li>
+   <p>
+    The demo program will launch. Press q or Ctrl+C to quit anytime.
+    <br/>
+    <img alt="commandLine" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/176/large/deploy-program-command-line.png?1573151523" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; "/>
+   </p>
+  </li>
+ </ol>
+ <p text=" ">
+ </p>
+ <h3 id="cloud9-programming">
+  <a class="anchor" href="#cloud9-programming">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Cloud9 programming
+ </h3>
+ <ol>
+  <li>
+   <p>
+    Open the Cloud9 IDE:
+    <a class="anchor" href="http://192.168.7.2:3000/ide.html">
+     http://192.168.7.2:3000/ide.html
+    </a>
+    <img alt="cloud91" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/172/large/deploy-program-cloud9-step1.png?1573151515" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; "/>
+   </p>
+  </li>
+  <li>
+   <p>
+    Copy and paste the
+    <code style="font-size: 12px">
+     mm-python-api
+    </code>
+    folder into cloud9
+    <img alt="cloud92" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/173/large/deploy-program-cloud9-step2.png?1573151517" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; "/>
+   </p>
+  </li>
+  <li>
+   <p>
+    Navigate to examples/example--demo.py and press F5 or 'run' to execute the program
+    <img alt="cloud93" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/174/large/deploy-program-cloud9-step3.png?1573151519" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; "/>
+   </p>
+  </li>
+  <li>
+   <p>
+    Press 'Run' in the top toolbar of the cloud9 IDE
+    <img alt="cloud94" src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/175/large/deploy-program-cloud9-step4.png?1573151521" style="margin:20px; width: 80%; border: 2px solid rgb(233, 236, 239); outline: none; "/>
+   </p>
+  </li>
+ </ol>
+ <h2 id="explore-the-possibilities">
+  <a class="anchor" href="#explore-the-possibilities">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Explore the possibilities
+ </h2>
+ <p>
+  Congratulations on loading your Python API script!
+ </p>
+ <p>
+  Keep exploring by browsing the sample code in our Python API documentation.
+  <a class="anchor" href="__documentation/api/machine_motion_python_api--v1.6.8.md">
+   Application Programming Interface: Python v1.6.8
+  </a>
+ </p>
+ <h6 id="feedback-on-this-doc-please-email-infoventioncc-with-the-subject-technical-documentation">
+  <a class="anchor" href="#feedback-on-this-doc-please-email-infoventioncc-with-the-subject-technical-documentation">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  Feedback on this doc? Please email
+  <a class="anchor" href="mailto:info@vention.cc">
+   info@vention.cc
+  </a>
+  with the subject "Technical Documentation".
+ </h6>
+ <h6 id="release-notes-python-v168">
+  <a class="anchor" href="#release-notes-python-v168">
+   <span class="octicon octicon-link">
+   </span>
+  </a>
+  <a class="anchor" href="release-notes.md">
+   Release notes: Python v1.6.8
+  </a>
+ </h6>
+</article>

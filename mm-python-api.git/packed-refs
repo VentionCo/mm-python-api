@@ -1,0 +1,24 @@
+# pack-refs with: peeled fully-peeled sorted 
+110e58a97d6268d316cf0a4bc8b3e2ae74ee6572 refs/heads/V2.2
+be6be11c69f1ec800e5448a23ceff37d7cd2a47a refs/heads/autochangelinks
+0fc3237c514ad450e02c7f82805b68ca16169fd2 refs/heads/develop
+220d3d08e2e023510d53ae1377d6c911b51519f7 refs/heads/document_typos
+3e8b227390f6c4ca47cb4675579082fed75506e2 refs/heads/example-code-edits
+d0cfeb1c759925a28f14fa41db4fa66aec57fc7d refs/heads/example-code-edits2
+63d06609a0fdf494f41d7ee616a0c047f0cdb5cf refs/heads/master
+63d06609a0fdf494f41d7ee616a0c047f0cdb5cf refs/heads/merge-1.6.8-and-2.1
+0e1280c352438fc1bce8ba630ce983523d4fe413 refs/heads/merge1.6.8and2.1
+da9d7f5722cb13fd1a4d2f33598730519756ca58 refs/heads/origin/feature/gCode_Lock
+f926fa76434e386c0c7cf195b003b91cde4cb549 refs/heads/release/v1.6.5
+893d1956a5e8d891f7aeb53640140943c7d3c801 refs/heads/release/v1.6.6
+c2f1990d8370ef3fc79231008336be85acd0418e refs/heads/release/v1.6.7
+417acc9156e17767854e903e35ade6cc6d3c29ff refs/heads/release/v1.6.8
+e0905e2f8658400f0e90a2017e8f3ba7f408e552 refs/heads/release/v2.0
+25a6a1473039f12e9e16a3eaf696af0166b6c151 refs/heads/release/v2.1
+63d06609a0fdf494f41d7ee616a0c047f0cdb5cf refs/heads/typos
+f926fa76434e386c0c7cf195b003b91cde4cb549 refs/tags/v1.6.5
+94cc93a3e14e33eacdfc5c376189736b807e0212 refs/tags/v1.6.7
+2ac644afc1107be0c5072b59b92a91dd588fb223 refs/tags/v1.6.8
+658a1b046868d9945e1a26c3cf796ebc3f438a91 refs/tags/v2.0
+776372e7444c4a539e5b63eb5b39e8f7156e291c refs/tags/v2.1
+^d1dd39cbf85479758014825772194eb07430545e
