@@ -8,35 +8,35 @@
 <li>Involve complex logic.</li>
 <li>Integrate with third-party software and tools.</li>
 </ul>
-<h4 id="for-more-information-on-3d-design-using-vention-datasheets-and-more-please-visit-ventionio"><a class="anchor" href="#for-more-information-on-3d-design-using-vention-datasheets-and-more-please-visit-ventionio"><span class="octicon octicon-link"></span></a>For more information on 3D design using Vention, datasheets and more, please visit <a href="https://www.vention.io/technical-documents/machinemotion-controller-datasheet-10">Vention.io</a>.</h4>
+<h4 id="for-details-on-3d-design-using-vention-datasheets-and-more-please-visit-ventionio"><a class="anchor" href="#for-details-on-3d-design-using-vention-datasheets-and-more-please-visit-ventionio"><span class="octicon octicon-link"></span></a>For details on 3D design using Vention, datasheets, and more, please visit <a href="https://www.vention.io/technical-documents/machinemotion-controller-datasheet-10">Vention.io</a>.</h4>
 <div>&nbsp;</div>
 <h2 id="quick-start"><a class="anchor" href="#quick-start"><span class="octicon octicon-link"></span></a>Quick start</h2>
-<p>Once you've connected your MachineMotion controller <span style="font-weight: 200"> (see <a href="connecting-to-machinemotion">here</a> for details)</span> running your first Python script is as simple as typing these commands into your terminal:</p>
+<p>Once you've connected your MachineMotion controller <span style="font-weight: 200"> (see <a href="connecting-to-machinemotion">here</a> for details)</span>, running your first Python script is as simple as typing these commands into your terminal:</p>
 <pre><code class="hljs">$ git clone https://github.com/VentionCo/mm-python-api
 $ python mm-python-api/examples/demo</code></pre><h2 id="installation"><a class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
 <p>This manual will guide you through five steps to get MachineMotion up and running with the Python API.</p>
 <ol>
 <li><a href="#install-python">Install Python on your computer</a></li>
-<li><a href="#download-the-api-library">Download the MachineMotion API</a></li>
-<li><a href="#download-the-required-libraries">Download the required libraries</a></li>
+<li><a href="#download-the-api">Download the MachineMotion API</a></li>
+<li><a href="#download-libraries">Download the required libraries</a></li>
 <li><a href="#connect-to-machinemotion">Connect to MachineMotion</a></li>
-<li><a href="#loading-programs-onto-machinemotion">Run your first program</a></li>
+<li><a href="#run-your-first-program">Run your first program</a></li>
 </ol>
 <div>&nbsp;</div>
-<h3 id="install-python"><a class="anchor" href="#install-python"><span class="octicon octicon-link"></span></a>Install Python</h3>
+<h2 id="install-python"><a class="anchor" href="#install-python"><span class="octicon octicon-link"></span></a>Install Python</h2>
 <ol>
 <li>
-<p>Go to <a href="https://www.python.org/downloads/">https://www.python.org/downloads/</a> to download the latest version of python
+<p>Go to <a href="https://www.python.org/downloads/">https://www.python.org/downloads/</a> to download the latest version of Python
 <img src="__documentation/_media/download-python-step1.png" alt="installPython1">.</p>
 </li>
 <li>
-<p>Open and run the installer. If you’re using Windows, make sure you select the option to <b>Add python to path</b>.
+<p>Open and run the installer. If you’re using Windows, make sure you select <b>Add Python to path</b>.
 <img src="__documentation/_media/download-python-step3.png" alt="installPython3"></p>
 </li>
 </ol>
 <div>&nbsp;</div>
-<h3 id="download-the-api-library"><a class="anchor" href="#download-the-api-library"><span class="octicon octicon-link"></span></a>Download the API library</h3>
-<p>MachineMotion comes with pre-installed controller software. There are two versions of the Python API, so make sure you install the correct version of the. The table below indicates which one to choose.</p>
+<h2 id="download-the-api"><a class="anchor" href="#download-the-api"><span class="octicon octicon-link"></span></a>Download the API</h2>
+<p>MachineMotion comes with pre-installed controller software. There are two versions of the Python API, so make sure you install the right one. The table below indicates which one to choose.</p>
 <table>
 <thead>
 <tr>
@@ -62,12 +62,11 @@ $ python mm-python-api/examples/demo</code></pre><h2 id="installation"><a class=
 </tbody>
 </table>
 <p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>If your MachineMotion controller is connected to your computer, you can check its software version <a href="”192.168.7.2”">here</a>.</em></span></p>
-<p>Open the command prompt (for Windows) or the terminal (for Mac or Linux), navigate to your destination folder, and paste the suitable 'git clone' command</p>
-<h4 id="or"><a class="anchor" href="#or"><span class="octicon octicon-link"></span></a>or</h4>
-<p>Follow the download link above and unzip the contents in your directory of choice.</p>
-<h4 id="need-help-see-githubs-download-guide-here"><a class="anchor" href="#need-help-see-githubs-download-guide-here"><span class="octicon octicon-link"></span></a>Need help? See Github's download guide <a href="https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository">here</a>.</h4>
+<p>Next, open the command prompt (for Windows) or terminal (for Mac or Linux), navigate to your destination folder, and paste the suitable “git clone” command.</p>
+<p>(Or follow the download link above and unzip the contents into your directory of choice.)</p>
+<h3 id="need-help-see-githubs-download-guide-here"><a class="anchor" href="#need-help-see-githubs-download-guide-here"><span class="octicon octicon-link"></span></a>Need help? See Github's download guide <a href="https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository">here</a>.</h3>
 <div>&nbsp;</div>
-<h3 id="download-the-required-libraries"><a class="anchor" href="#download-the-required-libraries"><span class="octicon octicon-link"></span></a>Download the required libraries</h3>
+<h2 id="download-libraries"><a class="anchor" href="#download-libraries"><span class="octicon octicon-link"></span></a>Download libraries</h2>
 <p>Open the command prompt (for Windows) or the terminal (for Mac or Linux) and run the following installations:</p>
 <pre><code class="hljs">$ pip install -U socketIO-client
 $ pip install -U pathlib
@@ -75,16 +74,15 @@ $ pip install -U paho-mqtt</code></pre><p>The MachineMotion Python library is no
 <div>&nbsp;</div>
 <h2 id="connect-to-machinemotion"><a class="anchor" href="#connect-to-machinemotion"><span class="octicon octicon-link"></span></a>Connect to MachineMotion</h2>
 <p>MachineMotion connects to a laptop through Ethernet. If your laptop does not have an Ethernet port, use the USB to Ethernet converter included with your MachineMotion purchase.</p>
-<p>For more info on getting MachineMotion to communicate with your computer or network, see the user manual.</p>
-<p><a href="https://www.vention.io/technical-documents/machine-motion-user-manual-71">User Manual: MachineMotion</a></p>
+<p>For more info on getting MachineMotion to communicate with your computer or network, see <em><a href="https://www.vention.io/technical-documents/machine-motion-user-manual-71">User Manual: MachineMotion</a></em>.</p>
 <div>&nbsp;</div>
-<h2 id="loading-programs-onto-machinemotion"><a class="anchor" href="#loading-programs-onto-machinemotion"><span class="octicon octicon-link"></span></a>Loading programs onto MachineMotion</h2>
+<h2 id="run-your-first-program"><a class="anchor" href="#run-your-first-program"><span class="octicon octicon-link"></span></a>Run your first program</h2>
 <p>There are two ways to load a custom Python script onto MachineMotion:</p>
 <ol>
 <li>With the command line/terminal.</li>
 <li>With the cloud9 IDE.</li>
 </ol>
-<h3 id="command-line-programming"><a class="anchor" href="#command-line-programming"><span class="octicon octicon-link"></span></a>Command line programming</h3>
+<h3 id="command-line-programming"><a class="anchor" href="#command-line-programming"><span class="octicon octicon-link"></span></a>Command-line programming</h3>
 <ol>
 <li>
 <p>Open the command prompt (for Windows) or terminal (for Mac and Linux).</p>
@@ -105,26 +103,22 @@ $ pip install -U paho-mqtt</code></pre><p>The MachineMotion Python library is no
 <h3 id="cloud9-programming"><a class="anchor" href="#cloud9-programming"><span class="octicon octicon-link"></span></a>Cloud9 programming</h3>
 <ol>
 <li>
-<p>Open the Cloud9 IDE: <a href="http://192.168.7.2:3000/ide.html">http://192.168.7.2:3000/ide.html</a>
+<p>Open the Cloud9 IDE: <a href="http://192.168.7.2:3000/ide.html">http://192.168.7.2:3000/ide.html</a>.
 <img src="__documentation/_media/deploy-program-cloud9-step1.png" alt="cloud91"></p>
 </li>
 <li>
-<p>Copy and paste the <code>mm-python-api</code> folder into cloud9
+<p>Copy and paste the <code>mm-python-api</code> folder into Cloud9.
 <img src="__documentation/_media/deploy-program-cloud9-step2.png" alt="cloud92"></p>
 </li>
 <li>
-<p>Navigate to examples/example--demo.py and press F5 or 'run' to execute the program
+<p>Navigate to examples/example--demo.py and press F5 or <b>run</b> to execute the program.
 <img src="__documentation/_media/deploy-program-cloud9-step3.png" alt="cloud93"></p>
-</li>
-<li>
-<p>Press 'Run' in the top toolbar of the cloud9 IDE
-<img src="__documentation/_media/deploy-program-cloud9-step4.png" alt="cloud94"></p>
 </li>
 </ol>
 <h2 id="explore-the-possibilities"><a class="anchor" href="#explore-the-possibilities"><span class="octicon octicon-link"></span></a>Explore the possibilities</h2>
 <p>Congratulations on loading your Python API script!</p>
-<p>Keep exploring by browsing the sample code in our Python API documentation.
-<a href="__documentation/api/machine_motion_python_api--v1.6.8.md">Application Programming Interface: Python v1.6.8</a></p>
-<h6 id="feedback-on-this-doc-please-email-infoventioncc-with-the-subject-technical-documentation"><a class="anchor" href="#feedback-on-this-doc-please-email-infoventioncc-with-the-subject-technical-documentation"><span class="octicon octicon-link"></span></a>Feedback on this doc? Please email <a href="mailto:info@vention.cc">info@vention.cc</a> with the subject "Technical Documentation".</h6>
-<h6 id="release-notes-python-v168"><a class="anchor" href="#release-notes-python-v168"><span class="octicon octicon-link"></span></a><a href="release-notes.md">Release notes: Python v1.6.8</a></h6>
+<p>Keep exploring by browsing the sample code in our Python API documentation, <a href="__documentation/api/machine_motion_python_api--v1.6.8.md">Application Programming Interface: Python v1.6.8</a>.</p>
+<hr>
+<h4 id="feedback-on-this-doc-please-email-infoventioncc-with-the-subject-technical-documentation"><a class="anchor" href="#feedback-on-this-doc-please-email-infoventioncc-with-the-subject-technical-documentation"><span class="octicon octicon-link"></span></a>Feedback on this doc? Please email <a href="mailto:info@vention.cc">info@vention.cc</a> with the subject "Technical Documentation".</h4>
+<h4 id="release-notes-python-v168"><a class="anchor" href="#release-notes-python-v168"><span class="octicon octicon-link"></span></a><a href="release-notes.md">Release notes: Python v1.6.8</a>.</h4>
 </article><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.slim.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.bundle.min.js"></script><script>$(function() { $('canvas.chartjs').each(function() { new Chart($(this), JSON.parse($(this).text())); }); });</script></body></html>

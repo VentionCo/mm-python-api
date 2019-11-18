@@ -20,12 +20,12 @@ Compared to MachineLogic, Python programs are more complicated, but they offer s
 * Involve complex logic.
 * Integrate with third-party software and tools.
 
-#### For more information on 3D design using Vention, datasheets and more, please visit [Vention.io](https://www.vention.io/technical-documents/machinemotion-controller-datasheet-10).
+#### For details on 3D design using Vention, datasheets, and more, please visit [Vention.io](https://www.vention.io/technical-documents/machinemotion-controller-datasheet-10).
 
 <div>&nbsp;</div>
 
 ## Quick start
- Once you've connected your MachineMotion controller <span style="font-weight: 200"> (see <a href="connecting-to-machinemotion">here</a> for details)</span> running your first Python script is as simple as typing these commands into your terminal:
+ Once you've connected your MachineMotion controller <span style="font-weight: 200"> (see <a href="connecting-to-machinemotion">here</a> for details)</span>, running your first Python script is as simple as typing these commands into your terminal:
 
 ```console
 $ git clone https://github.com/VentionCo/mm-python-api
@@ -34,31 +34,31 @@ $ python mm-python-api/examples/demo
 
 ## Installation
 
- This manual will guide you through five steps to get MachineMotion up and running with the Python API.
+This manual will guide you through five steps to get MachineMotion up and running with the Python API.
 
 1. [Install Python on your computer](#install-python)
-1. [Download the MachineMotion API](#download-the-api-library)
-1. [Download the required libraries](#download-the-required-libraries)
+1. [Download the MachineMotion API](#download-the-api)
+1. [Download the required libraries](#download-libraries)
 1. [Connect to MachineMotion](#connect-to-machinemotion)
-1. [Run your first program](#loading-programs-onto-machinemotion)
+1. [Run your first program](#run-your-first-program)
 
 <div>&nbsp;</div>
 
-### Install Python
+## Install Python
 
-1. Go to https://www.python.org/downloads/ to download the latest version of python 
+1. Go to https://www.python.org/downloads/ to download the latest version of Python 
 ![installPython1].
 
-1. Open and run the installer. If you’re using Windows, make sure you select the option to <b>Add python to path</b>.
+1. Open and run the installer. If you’re using Windows, make sure you select <b>Add Python to path</b>.
 ![installPython3]
 
 
 <div>&nbsp;</div>
 
 
-### Download the API library
+## Download the API
 
-MachineMotion comes with pre-installed controller software. There are two versions of the Python API, so make sure you install the correct version of the. The table below indicates which one to choose.
+MachineMotion comes with pre-installed controller software. There are two versions of the Python API, so make sure you install the right one. The table below indicates which one to choose.
 
 | Controller software| Python API | Git clone | Link |
 | ------------- |:-------------:| :-----:| ---|
@@ -69,17 +69,15 @@ MachineMotion comes with pre-installed controller software. There are two versio
 
 
 
-Open the command prompt (for Windows) or the terminal (for Mac or Linux), navigate to your destination folder, and paste the suitable 'git clone' command  
+Next, open the command prompt (for Windows) or terminal (for Mac or Linux), navigate to your destination folder, and paste the suitable “git clone” command.  
 
-#### or 
+(Or follow the download link above and unzip the contents into your directory of choice.)
 
-Follow the download link above and unzip the contents in your directory of choice.
-
-#### Need help? See Github's download guide [here](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository).
+### Need help? See Github's download guide [here](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository).
 
 <div>&nbsp;</div>
 
-### Download the required libraries
+## Download libraries
 
  Open the command prompt (for Windows) or the terminal (for Mac or Linux) and run the following installations:  
 
@@ -97,19 +95,17 @@ The MachineMotion Python library is now installed and ready to use! Continue bel
 
 MachineMotion connects to a laptop through Ethernet. If your laptop does not have an Ethernet port, use the USB to Ethernet converter included with your MachineMotion purchase. 
 
-For more info on getting MachineMotion to communicate with your computer or network, see the user manual.
-
-[User Manual: MachineMotion](https://www.vention.io/technical-documents/machine-motion-user-manual-71)
+For more info on getting MachineMotion to communicate with your computer or network, see <em>[User Manual: MachineMotion](https://www.vention.io/technical-documents/machine-motion-user-manual-71)</em>.
 
 <div>&nbsp;</div>
 
-## Loading programs onto MachineMotion
+## Run your first program
 
 There are two ways to load a custom Python script onto MachineMotion:
 1. With the command line/terminal.
 1. With the cloud9 IDE.
 
-### Command line programming
+### Command-line programming
 
 1. Open the command prompt (for Windows) or terminal (for Mac and Linux).
 
@@ -124,17 +120,15 @@ There are two ways to load a custom Python script onto MachineMotion:
 
 ### Cloud9 programming
 
-1. Open the Cloud9 IDE: [http://192.168.7.2:3000/ide.html](http://192.168.7.2:3000/ide.html) 
+1. Open the Cloud9 IDE: [http://192.168.7.2:3000/ide.html](http://192.168.7.2:3000/ide.html).
 ![cloud91]
 
-1. Copy and paste the `mm-python-api` folder into cloud9
+1. Copy and paste the `mm-python-api` folder into Cloud9.
 ![cloud92]
 
-1. Navigate to examples/example--demo.py and press F5 or 'run' to execute the program
+1. Navigate to examples/example--demo.py and press F5 or <b>run</b> to execute the program.
 ![cloud93]
 
-1. Press 'Run' in the top toolbar of the cloud9 IDE
-![cloud94]
 
 
 
@@ -142,11 +136,11 @@ There are two ways to load a custom Python script onto MachineMotion:
 
 Congratulations on loading your Python API script!
 
-Keep exploring by browsing the sample code in our Python API documentation. 
-[Application Programming Interface: Python v1.6.8](https://https://www.vention.io/technical-documents/a5e6df4eef66ae8826357fb2e15b2ab6/python-api-reference-v1-6-8)
+Keep exploring by browsing the sample code in our Python API documentation, [Application Programming Interface: Python v1.6.8](__documentation/api/machine_motion_python_api--v1.6.8.md).
 
+<hr>
 
-###### Feedback on this doc? Please email info@vention.cc with the subject "Technical Documentation".
-###### [Release notes: Python v1.6.8](release-notes.md)
+#### Feedback on this doc? Please email info@vention.cc with the subject "Technical Documentation".
+#### [Release notes: Python v1.6.8](release-notes.md).
 
 
