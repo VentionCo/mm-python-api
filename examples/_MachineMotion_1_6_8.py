@@ -665,7 +665,7 @@ class MachineMotion:
             gCode:
                 desc: The g-code that will be passed directly to the controller.
                 type: string
-        note: All movement commands sent to the controller are by default in mm. You can see a list of g-code commands and their definitions <a style="color:red">here</a>
+        note: All movement commands sent to the controller are by default in mm. 
         exampleCodePath: example--emitgCode.py
         '''
 
@@ -740,7 +740,7 @@ class MachineMotion:
             _mech_gain: 
                 desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
                 type: Number
-        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch. To change the uStep setting, please see <a href=#>here</a>
+        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch. 
         exampleCodePath: example--configAxis.py
         '''
 
@@ -777,7 +777,7 @@ class MachineMotion:
             direction:
                 desc: A string of value either either 'Normal' or 'Reverse'. 'Normal' direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B. Ex - "Reverse"
                 type: String
-        note: For more details on how to properly set the axis direction, please see <a style="color:red" href="#"> here </a>
+        note: For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a>
         exampleCodePath: example--emitSetAxisDirection.py
         '''
 

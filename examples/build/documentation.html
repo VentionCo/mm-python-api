@@ -7,8 +7,9 @@
         <img  style="width:90%" src= "https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/182/large/api-reference.jpg?1573771416">
         <p class="technical-document-description">
 The MachineMotion python API can be used to quickly build custom applications to control your Vention fixture.
-If this is your first time using the machine motion controller, please follow the Python programming manual <a style="color:red">here</a>.
+If this is your first time using the machine motion controller, please follow the Python programming manual <a href="https://www.vention.io/technical-documents/c996243ecf14cdd00e01ffe122d5c317/programming-manual-python">here</a>.
 </p>
+<p></p>
         
         <dl class="funcWrapper" >
     
@@ -69,7 +70,7 @@ If this is your first time using the machine motion controller, please follow th
     <dd >
         <div class="funcNote">
             <div class="d-inline"><b>NOTE:</b></div>
-            <div class="d-inline">The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch. To change the uStep setting, please see <a href=#>here</a></div>
+            <div class="d-inline">The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch.</div>
         </div>
 
     </dd>
@@ -113,7 +114,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Axis Configuration</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -246,7 +246,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Ethernet Port Static Configuration</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -371,7 +370,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Absolute Move</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -469,7 +467,7 @@ If this is your first time using the machine motion controller, please follow th
                 <span class = "funcParamType"><code>Number</code></span>
                 -
                 <span class = "funcText">              
-                    The global acceleration in mm/min.
+                    The global acceleration in mm/s^2.
                 </span>
             </div>
 
@@ -495,7 +493,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Acceleration Configuration</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -622,7 +619,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Combined Absolute Move</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -778,7 +774,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Combined Relative Move</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -911,7 +906,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Home Individual Axis</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -980,7 +974,7 @@ If this is your first time using the machine motion controller, please follow th
 
     <dd>
         <div class="funcDescription funcText">
-            Initiates the homing sequence of all axes. All axes will home simultaneously.
+            Initiates the homing sequence of all axes. All axes will home sequentially (Axis 1, 2 then 3).
         </div>
     </dd>
 
@@ -1012,7 +1006,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Home All Axes</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -1154,7 +1147,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Relative Move</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -1240,7 +1232,7 @@ If this is your first time using the machine motion controller, please follow th
 
     <dd>
         <div class="funcDescription funcText">
-            Reverses the positive direction of the axis and reverses the home and end-of-travel sensor ports.
+            Reversing the axis direction reverses the location of the home sensor and reverses the positive motion direction. In Normal direction, the Home sensor is xA, in Reverse the Home sensor is xB.
         </div>
     </dd>
 
@@ -1265,7 +1257,7 @@ If this is your first time using the machine motion controller, please follow th
     <dd >
         <div class="funcNote">
             <div class="d-inline"><b>NOTE:</b></div>
-            <div class="d-inline">For more details on how to properly set the axis direction, please see <a style="color:red" href="#"> here </a></div>
+            <div class="d-inline">For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a></div>
         </div>
 
     </dd>
@@ -1312,7 +1304,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Set Axis Direction</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -1460,7 +1451,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Speed Configuration</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -1532,7 +1522,7 @@ If this is your first time using the machine motion controller, please follow th
     <dd >
         <div class="funcNote">
             <div class="d-inline"><b>NOTE:</b></div>
-            <div class="d-inline">This function does not stop the machine as fast as the E-stop button and this function is not intended to serve as an emergency stop.</div>
+            <div class="d-inline">This function is a hard stop. It is not a controlled stop and consequently does not decelerate smoothly to a stop. Additionally, this function is not intended to serve as an emergency stop since this stop mechanism does not have safety ratings.</div>
         </div>
 
     </dd>
@@ -1565,7 +1555,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Immediate Stop</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -1672,7 +1661,7 @@ If this is your first time using the machine motion controller, please follow th
     <dd >
         <div class="funcNote">
             <div class="d-inline"><b>NOTE:</b></div>
-            <div class="d-inline">You can see a list of g-code commands and their definitions <a style="color:red">here</a></div>
+            <div class="d-inline">All movement commands sent to the controller are by default in mm.</div>
         </div>
 
     </dd>
@@ -1701,7 +1690,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Emit G Code</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -1841,7 +1829,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Save Data, Get Data Example</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -1966,7 +1953,7 @@ If this is your first time using the machine motion controller, please follow th
 
     <dd>
         <div class="funcDescription funcText">
-            Returns true if the gCode communication port is ready to send another command to the controller.
+            Returns true if the motion controller is ready to receive another command.
         </div>
     </dd>
 
@@ -2075,7 +2062,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Save Data, Get Data Example</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
@@ -2198,7 +2184,6 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Set Position</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Author: Francois Giguere</span>
 <span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
