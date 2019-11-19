@@ -613,16 +613,20 @@ class MachineMotion:
 
         motion_completed = "false"
 
-        # Set to relative motion mode
-        self.myGCode.__emit__("G91")
-        while self.isReady() != "true": pass
+        # Set to relative motion mode temporarily
+        try:
+            self.myGCode.__emit__("G91")
+            while self.isReady() != "true": pass
 
-        if direction == "positive":distance = "" + str(distance)
-        elif direction  == "negative": distance = "-" + str(distance)
+            if direction == "positive":distance = "" + str(distance)
+            elif direction  == "negative": distance = "-" + str(distance)
 
-        # Transmit move command
-        self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
-        while self.isReady() != "true": pass
+            # Transmit move command
+            self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+            while self.isReady() != "true": pass
+        finally:
+            self.myGCode.__emit__("G90")
+            while self.isReady() != "true": pass
 
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
         '''
@@ -647,18 +651,24 @@ class MachineMotion:
 
         motion_completed = "false"
 
-        # Set to relative motion mode
+        # Temporarily set to relative motion mode
         self.myGCode.__emit__("G91")
         while self.isReady() != "true": pass
 
-        # Transmit move command
-        command = "G0 "
-        for axis, direction, distance in zip(axes, directions, distances):
-            if direction == "positive": distance = "" + str(distance)
-            elif direction  == "negative": distance = "-" + str(distance)
-            command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
-        self.myGCode.__emit__(command)
-        while self.isReady() != "true": pass
+        try:
+
+            # Transmit move command
+            command = "G0 "
+            for axis, direction, distance in zip(axes, directions, distances):
+                if direction == "positive": distance = "" + str(distance)
+                elif direction  == "negative": distance = "-" + str(distance)
+                command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
+            self.myGCode.__emit__(command)
+            while self.isReady() != "true": pass
+        
+        finally:
+            self.myGCode.__emit__("G91")
+            while self.isReady() != "true": pass
         
     def setPosition(self, axis, position):
         '''
@@ -740,7 +750,7 @@ class MachineMotion:
 
         time.sleep(1)
 
-    def configAxis(self, axis, _u_step, _mech_gain):
+    def configAxis(self, axis, _u_step = ustep_8, _mech_gain):
         '''
         desc: Initializes parameters for proper axis control.
         params:
@@ -787,8 +797,8 @@ class MachineMotion:
                 desc: A string the uniquely identifies the data to save for future retreival
                 type: String
             data:
-                desc: A dictionary containing the data to save
-                type: Dictionary
+                desc: The data to save to the machine. The data must be convertible to JSON format.
+                type: String
         note: The Data continues to exist even when the controller is shut off. However, writing to a previously used key will override the previous value.
         exampleCodePath: example--saveData_getData.py
         '''
