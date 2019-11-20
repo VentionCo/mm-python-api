@@ -1,5 +1,5 @@
 ##################################################
-## Relative Move
+## Set Axis Direction
 ##################################################
 ## Version: 1.6.8
 ## Email: info@vention.cc
@@ -9,11 +9,17 @@
 enableDebug = False
 
 from _MachineMotion_1_6_8 import *
+import configWizard
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
     if(enableDebug): print("Debug Message: " + data + "\n")
 
+cw = configWizard.configWizard()
+# Opens a command line UI where users confirm which end stops are implemented in their system
+end_stop_sensors = check_both_end_stops(1)
+   
+    
 print ("Application Message: MachineMotion Program Starting \n")
 
 mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
@@ -31,18 +37,38 @@ print ("Application Message: Speed configured \n")
 mm.emitAcceleration(250)
 print ("Application Message: Acceleration configured \n")
 
-# Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 is going home \n")
-mm.waitForMotionCompletion()
-print ("Application Message: Axis 1 at home \n")
+mm.emitSetAxisDirection(1, "normal")
+print ("Application Message: Axis direction set for axis 1 \n")
 
-# Move the axis one to position 100 mm
-mm.emitRelativeMove(1, "positive", 100)
-print ("Application Message: Move on-going ... \n")
+if end_stop_sensors["1A"]: 
+    # Homing axis 1
+    mm.emitHome(1)
+    print ("Application Message: Axis 1 is going home \n")
+    mm.waitForMotionCompletion()
+    print ("Application Message: Axis 1 at home \n")
 
-mm.waitForMotionCompletion()
-print ("Application Message: Motion completed \n")
+
+    # Move the axis 1 to position 100 mm
+    mm.emitAbsoluteMove(1, 100)
+    print ("Application Message: Motion on-going ... \n")
+
+    mm.waitForMotionCompletion()
+    print ("Application Message: Motion completed \n")
+
+if end_stop_sensors["1B"]:
+    mm.emitSetAxisDirection(1, "reverse")
+    print ("Application Message: Axis direction set for axis 1 \n")
+
+    # Homing axis 1
+    mm.emitHome(1)
+    print ("Application Message: Axis 1 is at home \n")
+
+    # Move the axis 1 to position 100 mm
+    mm.emitAbsoluteMove(1, 100)
+    print ("Application Message: Motion on-going ... \n")
+
+    mm.waitForMotionCompletion()
+    print ("Application Message: Motion completed \n")
 
 print ("Application Message: Program terminating ... \n")
 time.sleep(1)

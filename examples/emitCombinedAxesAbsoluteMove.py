@@ -1,5 +1,5 @@
 ##################################################
-## Relative Move
+## Combined Absolute Move
 ##################################################
 ## Version: 1.6.8
 ## Email: info@vention.cc
@@ -32,14 +32,15 @@ mm.emitAcceleration(250)
 print ("Application Message: Acceleration configured \n")
 
 # Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 is going home \n")
-mm.waitForMotionCompletion()
-print ("Application Message: Axis 1 at home \n")
+mm.emitHomeAll()
+print ("Application Message: Axes at home \n")
 
-# Move the axis one to position 100 mm
-mm.emitRelativeMove(1, "positive", 100)
-print ("Application Message: Move on-going ... \n")
+# Simultaneously moves three axis:
+#   Moves axis 1 to absolute position 50
+#   Moves axis 2 to absolute position 100
+#   Moves axis 3 to absolute position 50
+mm.emitCombinedAxesAbsoluteMove([1, 2, 3], [50, 100, 50])
+print ("Application Message: Motion on-going ... \n")
 
 mm.waitForMotionCompletion()
 print ("Application Message: Motion completed \n")

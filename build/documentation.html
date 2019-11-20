@@ -1,0 +1,2787 @@
+
+ <head>
+
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+     <link rel ="stylesheet" href="./native.css">
+     <link rel ="stylesheet" href="./styles.css">
+     <!-- Optional theme -->
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+     
+     <!-- Latest compiled and minified JavaScript -->
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  
+
+    
+    <!-- toc -https://afeld.github.io/bootstrap-toc/#via-data-attributes -->
+    <!-- add after bootstrap.min.css -->
+    <link
+    rel="stylesheet"
+    href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"
+    />
+    <!-- add after bootstrap.min.js -->
+    <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
+
+</head>
+<body >
+    
+    <div class ="container" style = "width:100%">
+        <div class="col-md-10">
+            <dl class="funcWrapper" >
+    
+    <dt id=configAxis class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>configAxis</b> </span>
+                        (<span class="func funcParamHeading">
+                                _u_step, _mech_gain, axis
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#configAxiscollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#configAxiscollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Initializes parameters for proper axis control.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>_u_step</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The number of microsteps taken by the stepper motor. Must be either 1, 2, 5, 8 or 16.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>_mech_gain</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>axis</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The axis to configure.
+                </span>
+            </div>
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch.</div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="configAxiscollapseParent" >
+        <div class="collapse" data-parent ="#configAxiscollapseParent" id="configAxiscollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">configAxis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">_u_step</span><span class="p">,</span> <span class="n">_mech_gain</span><span class="p">):</span>
+
+        <span class="n">u_step</span>    <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_u_step</span><span class="p">)</span>
+        <span class="n">mech_gain</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_mech_gain</span><span class="p">)</span>
+
+        <span class="c1"># validate that the uStep setting is valid</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valid_u_step</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">u_step</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">*</span> <span class="n">u_step</span> <span class="o">/</span> <span class="n">mech_gain</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span><span class="p">))</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">*</span> <span class="n">u_step</span> <span class="o">/</span> <span class="n">mech_gain</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span><span class="p">))</span>
+            <span class="k">elif</span><span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">*</span> <span class="n">u_step</span> <span class="o">/</span> <span class="n">mech_gain</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+                <span class="c1"># print &quot;Argument error, {configAxis(self, axis, u_step, mech_gain)}, {axis} argument is invalid&quot;</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="configAxiscollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#configAxiscollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('configAxisexampleCode', 'configAxis')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "configAxisexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Axis Configuration</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion axis 1 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=configMachineMotionIp class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>configMachineMotionIp</b> </span>
+                        (<span class="func funcParamHeading">
+                                gatewayIp, machineIp, machineNetmask, machineGateway
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#configMachineMotionIpcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#configMachineMotionIpcollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Set up the required network information for the Machine Motion controller.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>gatewayIp</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The gateway IP Address given to the controller.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>machineIp</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The static IP Address given to the controller.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>machineNetmask</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The netmask IP Address given to the controller.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>machineGateway</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The gateway IP Address given to the controller.
+                </span>
+            </div>
+
+
+
+
+    <div id="configMachineMotionIpcollapseParent" >
+        <div class="collapse" data-parent ="#configMachineMotionIpcollapseParent" id="configMachineMotionIpcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">configMachineMotionIp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">machineIp</span><span class="p">,</span> <span class="n">machineNetmask</span><span class="p">,</span> <span class="n">machineGateway</span><span class="p">):</span>
+
+        <span class="c1"># Create a new object and augment it with the key value.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;machineIp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">machineIp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;machineNetmask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">machineNetmask</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;machineGateway&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">machineGateway</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;configIp&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">))</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="configMachineMotionIpcollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#configMachineMotionIpcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('configMachineMotionIpexampleCode', 'configMachineMotionIp')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "configMachineMotionIpexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Ethernet Port Static Configuration</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 2.2</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># TODO: ip_address can be set to another value if desired by the user. For example if the controller is connected to a LAN</span>
+<span class="n">ip_address</span> <span class="o">=</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span> 
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Setting the ETHERNET port of the controller in static mode</span>
+<span class="n">mode</span> <span class="o">=</span> <span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">static</span>
+<span class="n">machineIp</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.2&quot;</span>
+<span class="n">machineNetmask</span><span class="o">=</span><span class="s2">&quot;255.255.255.0&quot;</span>
+<span class="n">machineGateway</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.1&quot;</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configMachineMotionIp</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">machineIp</span><span class="p">,</span> <span class="n">machineNetmask</span><span class="p">,</span> <span class="n">machineGateway</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Ethernet Port Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=digitalRead class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>digitalRead</b> </span>
+                        (<span class="func funcParamHeading">
+                                device, pin
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#digitalReadcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns the value (<span style="color:red"> HIGH/LOW? </span>) of the given device and pin.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>device</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The device identifier to read from (1, 2, 3) <span style="color:red">Is this AUX1, AUX2, AUX3?</span>
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>pin</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The pin index to read from [0,1,2,3]
+                </span>
+            </div>
+
+
+
+
+    <div id="digitalReadcollapseParent" >
+        <div class="collapse" data-parent ="#digitalReadcollapseParent" id="digitalReadcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">digitalRead</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">pin</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isIoExpanderInputIdValid</span><span class="p">(</span> <span class="n">device</span><span class="p">,</span> <span class="n">pin</span> <span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;DEBUG: unexpected digital-output parameters: device= &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; pin= &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span> <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;digitalInputs&#39;</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digitalInputs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">device</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitalInputs</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digitalInputs</span><span class="p">[</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">pin</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitalInputs</span><span class="p">[</span><span class="n">device</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">digitalInputs</span><span class="p">[</span><span class="n">device</span><span class="p">][</span><span class="n">pin</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">digitalInputs</span><span class="p">[</span><span class="n">device</span><span class="p">][</span><span class="n">pin</span><span class="p">]</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=digitalWrite class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>digitalWrite</b> </span>
+                        (<span class="func funcParamHeading">
+                                device, pin, value
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#digitalWritecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Sets voltage on specified pin of digital IO output pin to either High (5V) or Low (0V).
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>device</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The device identifier to write to.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>pin</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The pin number of the output device to write to.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>value</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    Writing '1' or HIGH will set digial output to 5V, writing 0 will set digital output to 0V.
+                </span>
+            </div>
+
+
+
+
+    <div id="digitalWritecollapseParent" >
+        <div class="collapse" data-parent ="#digitalWritecollapseParent" id="digitalWritecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">digitalWrite</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="n">pin</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isIoExpanderOutputIdValid</span><span class="p">(</span> <span class="n">device</span><span class="p">,</span> <span class="n">pin</span> <span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;DEBUG: unexpected digitalOutput parameters: device= &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; pin= &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span> <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myMqttClient</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;devices/io-expander/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/digital-output/&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="s1">&#39;1&#39;</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitAbsoluteMove class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitAbsoluteMove</b> </span>
+                        (<span class="func funcParamHeading">
+                                position, axis
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitAbsoluteMovecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitAbsoluteMovecollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Moves the specified axis to a desired end location.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>position</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The desired end position of the axis movement.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>axis</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The axis which will perform the absolute move command.
+                </span>
+            </div>
+
+
+
+
+    <div id="emitAbsoluteMovecollapseParent" >
+        <div class="collapse" data-parent ="#emitAbsoluteMovecollapseParent" id="emitAbsoluteMovecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitAbsoluteMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Set to absolute motion mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G90&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="c1"># Transmit move command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G0 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">))</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitAbsoluteMovecollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitAbsoluteMovecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitAbsoluteMoveexampleCode', 'emitAbsoluteMove')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitAbsoluteMoveexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Absolute Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 2.2</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 1000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 going home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Move the axis 1 to position 100 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitAcceleration class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitAcceleration</b> </span>
+                        (<span class="func funcParamHeading">
+                                mm_per_sec_sqr
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitAccelerationcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitAccelerationcollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Sets the global acceleration for all movement commands on all axes.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>mm_per_sec_sqr</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The global acceleration in mm/s^2.
+                </span>
+            </div>
+
+
+
+
+    <div id="emitAccelerationcollapseParent" >
+        <div class="collapse" data-parent ="#emitAccelerationcollapseParent" id="emitAccelerationcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitAcceleration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mm_per_sec_sqr</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M204 T&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mm_per_sec_sqr</span><span class="p">))</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitAccelerationcollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitAccelerationcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitAccelerationexampleCode', 'emitAcceleration')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitAccelerationexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Acceleration Configuration</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 2.2</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel acceleration to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitCombinedAxesAbsoluteMove class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitCombinedAxesAbsoluteMove</b> </span>
+                        (<span class="func funcParamHeading">
+                                positions, axes
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitCombinedAxesAbsoluteMovecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitCombinedAxesAbsoluteMovecollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Moves multiple specified axes to their desired end locations.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>positions</b></span>
+                <span class = "funcParamType"><code>List</code></span>
+                -
+                <span class = "funcText">              
+                    The desired end position of all axess movement. Ex - [50, 10]
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>axes</b></span>
+                <span class = "funcParamType"><code>List</code></span>
+                -
+                <span class = "funcText">              
+                    The axes which will perform the move commands. Ex - [1 ,3]
+                </span>
+            </div>
+
+
+
+
+    <div id="emitCombinedAxesAbsoluteMovecollapseParent" >
+        <div class="collapse" data-parent ="#emitCombinedAxesAbsoluteMovecollapseParent" id="emitCombinedAxesAbsoluteMovecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitCombinedAxesAbsoluteMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">positions</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Axes and Postions must be lists&quot;</span><span class="p">)</span>
+
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Set to absolute motion mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G90&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="c1"># Transmit move command</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;G0 &quot;</span>
+        <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">position</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">positions</span><span class="p">):</span>
+            <span class="n">command</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitCombinedAxesAbsoluteMovecollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitCombinedAxesAbsoluteMovecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitCombinedAxesAbsoluteMoveexampleCode', 'emitCombinedAxesAbsoluteMove')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitCombinedAxesAbsoluteMoveexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Combined Absolute Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 10000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axes at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Simultaneously moves three axis:</span>
+<span class="c1">#   Moves axis 1 to absolute position 50</span>
+<span class="c1">#   Moves axis 2 to absolute position 100</span>
+<span class="c1">#   Moves axis 3 to absolute position 50</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitCombinedAxesAbsoluteMove</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">])</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitCombinedAxisRelativeMove class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitCombinedAxisRelativeMove</b> </span>
+                        (<span class="func funcParamHeading">
+                                distance, direction, axes
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitCombinedAxisRelativeMovecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitCombinedAxisRelativeMovecollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Moves the multiple specified axes the specified distances in the specified directions.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>distance</b></span>
+                <span class = "funcParamType"><code>List</code></span>
+                -
+                <span class = "funcText">              
+                    The travel distances in mm. Ex - [10, 40]
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>direction</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The direction of travel of each specified axis. Ex - ["positive", "negative"]
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>axes</b></span>
+                <span class = "funcParamType"><code>List</code></span>
+                -
+                <span class = "funcText">              
+                    The axes to move. Ex-[1,3]
+                </span>
+            </div>
+
+
+
+
+    <div id="emitCombinedAxisRelativeMovecollapseParent" >
+        <div class="collapse" data-parent ="#emitCombinedAxisRelativeMovecollapseParent" id="emitCombinedAxisRelativeMovecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitCombinedAxisRelativeMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">directions</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">directions</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;All parameters must be lists&quot;</span><span class="p">)</span>
+        
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Temporarily set to relative motion mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G91&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="c1"># Transmit move command</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;G0 &quot;</span>
+            <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">distance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">directions</span><span class="p">,</span> <span class="n">distances</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;positive&quot;</span><span class="p">:</span> <span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">direction</span>  <span class="o">==</span> <span class="s2">&quot;negative&quot;</span><span class="p">:</span> <span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+                <span class="n">command</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+        
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G91&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitCombinedAxisRelativeMovecollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitCombinedAxisRelativeMovecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitCombinedAxisRelativeMoveexampleCode', 'emitCombinedAxisRelativeMove')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitCombinedAxisRelativeMoveexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Combined Relative Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 10000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing all axes</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axes at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Simultaneously moves three axis:</span>
+<span class="c1">#   Moves axis 1 in the positive direction by 100 mm</span>
+<span class="c1">#   Moves axis 2 in the positive direction by 200 mm</span>
+<span class="c1">#   Moves axis 3 in the positive direction by 300 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitCombinedAxisRelativeMove</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">],</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">])</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Multi-axis move on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitHome class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitHome</b> </span>
+                        (<span class="func funcParamHeading">
+                                axis
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitHomecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitHomecollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Initiates the homing sequence for the specified axis.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>axis</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The number of the axis that you would like to home.
+                </span>
+            </div>
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">If setAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If setAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.</div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="emitHomecollapseParent" >
+        <div class="collapse" data-parent ="#emitHomecollapseParent" id="emitHomecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitHome</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G28 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">))</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitHomecollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitHomecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitHomeexampleCode', 'emitHome')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitHomeexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Home Individual Axis</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 2.2</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is going home</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitHomeAll class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitHomeAll</b> </span>
+                    ()
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitHomeAllcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitHomeAllcollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Initiates the homing sequence of all axes. All axes will home sequentially (Axis 1, 2 then 3).
+        </div>
+    </dd>
+
+
+
+
+
+
+    <div id="emitHomeAllcollapseParent" >
+        <div class="collapse" data-parent ="#emitHomeAllcollapseParent" id="emitHomeAllcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitHomeAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G28&quot;</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitHomeAllcollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitHomeAllcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitHomeAllexampleCode', 'emitHomeAll')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitHomeAllexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Home All Axes</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 2, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 2 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 3, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 3 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing all the axes of the controller sequentially</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axes are going home</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Application Message: Axes are home</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitRelativeMove class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitRelativeMove</b> </span>
+                        (<span class="func funcParamHeading">
+                                distance, direction, axis
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitRelativeMovecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitRelativeMovecollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Moves the specified axis the specified distance in the specified direction.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>distance</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The travel distance in mm.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>direction</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The direction of travel. Ex - "positive" or "negative"
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>axis</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The axis to move.
+                </span>
+            </div>
+
+
+
+
+    <div id="emitRelativeMovecollapseParent" >
+        <div class="collapse" data-parent ="#emitRelativeMovecollapseParent" id="emitRelativeMovecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitRelativeMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">distance</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="c1"># Set to relative motion mode temporarily</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G91&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;positive&quot;</span><span class="p">:</span><span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">direction</span>  <span class="o">==</span> <span class="s2">&quot;negative&quot;</span><span class="p">:</span> <span class="n">distance</span> <span class="o">=</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span>
+
+            <span class="c1"># Transmit move command</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G0 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">))</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G90&quot;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitRelativeMovecollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitRelativeMovecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitRelativeMoveexampleCode', 'emitRelativeMove')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitRelativeMoveexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Relative Move</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 10000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is going home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Move the axis one to position 100 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitRelativeMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Move on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitSpeed class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitSpeed</b> </span>
+                        (<span class="func funcParamHeading">
+                                mm_per_min
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitSpeedcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitSpeedcollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Sets the global speed for all movement commands on all axes.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>mm_per_min</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The global max speed in mm/min.
+                </span>
+            </div>
+
+
+
+
+    <div id="emitSpeedcollapseParent" >
+        <div class="collapse" data-parent ="#emitSpeedcollapseParent" id="emitSpeedcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitSpeed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mm_per_min</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G0 F&quot;</span> <span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mm_per_min</span><span class="p">))</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitSpeedcollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitSpeedcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitSpeedexampleCode', 'emitSpeed')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitSpeedexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Speed Configuration</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 1000 mm / minute</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitStop class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitStop</b> </span>
+                    ()
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitStopcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitStopcollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Immediately stops all motion of all axes
+        </div>
+    </dd>
+
+
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">This function is a hard stop. It is not a controlled stop and consequently does not decelerate smoothly to a stop. Additionally, this function is not intended to serve as an emergency stop since this stop mechanism does not have safety ratings.</div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="emitStopcollapseParent" >
+        <div class="collapse" data-parent ="#emitStopcollapseParent" id="emitStopcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitStop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M410&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Wait and send a dummy packet to insure that other commands after the emit stop are not flushed.</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.500</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G91&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G0 X0&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitStopcollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitStopcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitStopexampleCode', 'emitStop')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitStopexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Immediate Stop</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
+   <span class="n">machine_motion_example</span><span class="o">.</span><span class="n">emitStop</span><span class="p">()</span>
+   <span class="n">machine_motion_example</span><span class="o">.</span><span class="n">emitRelativeMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 1000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is going home</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Move the axis one to position 100 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitRelativeMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Move on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Waiting for 2 seconds ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Instruct the controller to stop all motion immediately</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitStop</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion stopped! </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitgCode class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitgCode</b> </span>
+                        (<span class="func funcParamHeading">
+                                gCode
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitgCodecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitgCodecollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Executes raw gCode on the controller.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>gCode</b></span>
+                <span class = "funcParamType"><code>string</code></span>
+                -
+                <span class = "funcText">              
+                    The g-code that will be passed directly to the controller.
+                </span>
+            </div>
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">All movement commands sent to the controller are by default in mm.</div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="emitgCodecollapseParent" >
+        <div class="collapse" data-parent ="#emitgCodecollapseParent" id="emitgCodecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitgCode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gCode</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+
+        <span class="n">motion_completed</span> <span class="o">=</span> <span class="s2">&quot;false&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="n">gCode</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitgCodecollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitgCodecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitgCodeexampleCode', 'emitgCode')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitgCodeexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Emit G Code</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">TODO</span><span class="p">:</span> 
+<span class="n">demonstrate</span> <span class="n">how</span> <span class="n">emit</span> <span class="n">gCode</span> <span class="n">overrides</span> <span class="n">the</span> <span class="n">speed</span> <span class="ow">and</span> <span class="n">acceleration</span> <span class="n">values</span> <span class="n">permanently</span><span class="o">.</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion axis 1 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 2, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion axis 2 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 10000 mm / min</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">10000</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 1</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Homing axis 2</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 2 at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Use the G0 command to move both axis 1 and 2 by 50mm at a travel speed of 10000 mm / minute</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitgCode</span><span class="p">(</span><span class="s2">&quot;G0 X50 Y50 F10000&quot;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=getData class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>getData</b> </span>
+                        (<span class="func funcParamHeading">
+                                callback, key
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#getDatacollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#getDatacollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            retreives saved/persisted data from the MachineMotion controller (in key-data pairs)
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>callback</b></span>
+                <span class = "funcParamType"><code>Function</code></span>
+                -
+                <span class = "funcText">              
+                    A function that is invoked when the asynchronous data is received. The function must take a single input parameter.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>key</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    Uniquely identifies the data to be retreived
+                </span>
+            </div>
+
+
+
+
+    <div id="getDatacollapseParent" >
+        <div class="collapse" data-parent ="#getDatacollapseParent" id="getDatacollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+
+        <span class="c1">#Send the request to MachineMotion</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;getData&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="c1"># On reception of the data invoke the callback function.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;getDataResponse&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="getDatacollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#getDatacollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('getDataexampleCode', 'getData')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "getDataexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Save Data, Get Data Example</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 2.2</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="c1"># Define a callback to print the data retrieved using the getData function</span>
+<span class="k">def</span> <span class="nf">printGetDataResult</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="n">dictionary</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Application Message: Retrieved file name = &quot;</span> <span class="o">+</span> <span class="n">dictionary</span><span class="p">[</span><span class="s2">&quot;fileName&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">)</span>
+    
+    <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Application Message: Retrieved data = &quot;</span> <span class="o">+</span> <span class="n">dictionary</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>  <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Saving a string on the controller</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">saveData</span><span class="p">(</span><span class="s2">&quot;data_1&quot;</span><span class="p">,</span> <span class="s2">&quot;save_this_string_on_the_controller&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Data saved </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Reading a string from the controller</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">getData</span><span class="p">(</span><span class="s2">&quot;data_1&quot;</span><span class="p">,</span> <span class="n">printGetDataResult</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=isEncoderIdValid class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>isEncoderIdValid</b> </span>
+                        (<span class="func funcParamHeading">
+                                id
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isEncoderIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns True if the given id is valid for an encoder.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>id</b></span>
+                <span class = "funcParamType"><code>No value given fortype</code></span>
+                -
+                <span class = "funcText">              
+                    <span style="color:red"> What Id is this?</span>
+                </span>
+            </div>
+
+
+
+
+    <div id="isEncoderIdValidcollapseParent" >
+        <div class="collapse" data-parent ="#isEncoderIdValidcollapseParent" id="isEncoderIdValidcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isEncoderIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">id</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=isIoExpanderAvailable class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>isIoExpanderAvailable</b> </span>
+                        (<span class="func funcParamHeading">
+                                device
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderAvailablecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns True if the io-expander with the given id is available
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>device</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The io-expander device identifier <span style="color:red">What is an example?</span>
+                </span>
+            </div>
+
+
+
+
+    <div id="isIoExpanderAvailablecollapseParent" >
+        <div class="collapse" data-parent ="#isIoExpanderAvailablecollapseParent" id="isIoExpanderAvailablecollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderAvailable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">myIoExpanderAvailabilityState</span><span class="p">[</span> <span class="n">device</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=isIoExpanderIdValid class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>isIoExpanderIdValid</b> </span>
+                        (<span class="func funcParamHeading">
+                                id
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns true if the given id is valid for an IO Expander
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>id</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    Device identifier <span style="color:red">revise</span>
+                </span>
+            </div>
+
+
+
+
+    <div id="isIoExpanderIdValidcollapseParent" >
+        <div class="collapse" data-parent ="#isIoExpanderIdValidcollapseParent" id="isIoExpanderIdValidcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">id</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">id</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=isIoExpanderInputIdValid class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>isIoExpanderInputIdValid</b> </span>
+                        (<span class="func funcParamHeading">
+                                pinId, deviceId
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderInputIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns true if the given input pin identifier is valid for an IO Expander
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>pinId</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    Pin identifier
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>deviceId</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    Device identifier
+                </span>
+            </div>
+
+
+
+
+    <div id="isIoExpanderInputIdValidcollapseParent" >
+        <div class="collapse" data-parent ="#isIoExpanderInputIdValidcollapseParent" id="isIoExpanderInputIdValidcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderInputIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deviceId</span><span class="p">,</span> <span class="n">pinId</span><span class="p">):</span>
+                
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isIoExpanderIdValid</span><span class="p">(</span> <span class="n">deviceId</span> <span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pinId</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">pinId</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=isIoExpanderOutputIdValid class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>isIoExpanderOutputIdValid</b> </span>
+                        (<span class="func funcParamHeading">
+                                pinId, deviceId
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderOutputIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns True if the given output pin identifier is valid for an IO Expander.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>pinId</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    Pin Identifier
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>deviceId</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    Device Identifier
+                </span>
+            </div>
+
+
+
+
+    <div id="isIoExpanderOutputIdValidcollapseParent" >
+        <div class="collapse" data-parent ="#isIoExpanderOutputIdValidcollapseParent" id="isIoExpanderOutputIdValidcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderOutputIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deviceId</span><span class="p">,</span> <span class="n">pinId</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isIoExpanderIdValid</span><span class="p">(</span> <span class="n">deviceId</span> <span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pinId</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">pinId</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=isMotionCompleted class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>isMotionCompleted</b> </span>
+                    ()
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isMotionCompletedcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns true if all axes have completed their movement.
+        </div>
+    </dd>
+
+
+
+
+
+
+    <div id="isMotionCompletedcollapseParent" >
+        <div class="collapse" data-parent ="#isMotionCompletedcollapseParent" id="isMotionCompletedcollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isMotionCompleted</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">global</span> <span class="n">motion_completed</span>
+        <span class="k">return</span> <span class="n">motion_completed</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=isReady class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>isReady</b> </span>
+                    ()
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isReadycollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns true if the motion controller is ready to receive another command.
+        </div>
+    </dd>
+
+
+
+
+
+
+    <div id="isReadycollapseParent" >
+        <div class="collapse" data-parent ="#isReadycollapseParent" id="isReadycollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isReady</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__isReady__</span><span class="p">()</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=readEncoder class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>readEncoder</b> </span>
+                        (<span class="func funcParamHeading">
+                                encoder
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#readEncodercollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns the last received encoder position.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>encoder</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The identifier of the encoder to read
+                </span>
+            </div>
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays</div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="readEncodercollapseParent" >
+        <div class="collapse" data-parent ="#readEncodercollapseParent" id="readEncodercollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">readEncoder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">readEncoderRealtimePosition</span><span class="p">(</span> <span class="n">encoder</span> <span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=readEncoderRealtimePosition class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>readEncoderRealtimePosition</b> </span>
+                        (<span class="func funcParamHeading">
+                                encoder
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#readEncoderRealtimePositioncollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Returns the last received encoder position.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>encoder</b></span>
+                <span class = "funcParamType"><code>Integer</code></span>
+                -
+                <span class = "funcText">              
+                    The identifier of the encoder to read
+                </span>
+            </div>
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays</div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="readEncoderRealtimePositioncollapseParent" >
+        <div class="collapse" data-parent ="#readEncoderRealtimePositioncollapseParent" id="readEncoderRealtimePositioncollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">readEncoderRealtimePosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isEncoderIdValid</span><span class="p">(</span> <span class="n">encoder</span> <span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;DEBUG: unexpected encoder identifier: encoderId= &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">encoder</span><span class="p">)</span> <span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">myEncoderRealtimePositions</span><span class="p">[</span><span class="n">encoder</span><span class="p">]</span>
+</pre></div>
+
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=saveData class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>saveData</b> </span>
+                        (<span class="func funcParamHeading">
+                                data, key
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#saveDatacollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#saveDatacollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Saves/persists data within the MachineMotion Controller in key - data pairs.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>data</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The data to save to the machine. The data must be convertible to JSON format.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>key</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    A string the uniquely identifies the data to save for future retreival
+                </span>
+            </div>
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">The Data continues to exist even when the controller is shut off. However, writing to a previously used key will override the previous value.</div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="saveDatacollapseParent" >
+        <div class="collapse" data-parent ="#saveDatacollapseParent" id="saveDatacollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">saveData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+
+        <span class="c1"># Create a new object and augment it with the key value.</span>
+        <span class="n">dataPack</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">dataPack</span><span class="p">[</span><span class="s2">&quot;fileName&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span><span class="p">;</span>
+        <span class="n">dataPack</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+
+        <span class="c1"># Send the request to MachineMotion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;saveData&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dataPack</span><span class="p">))</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="saveDatacollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#saveDatacollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('saveDataexampleCode', 'saveData')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "saveDataexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Save Data, Get Data Example</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 2.2</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    
+<span class="c1"># Define a callback to print the data retrieved using the getData function</span>
+<span class="k">def</span> <span class="nf">printGetDataResult</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+    <span class="n">dictionary</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Application Message: Retrieved file name = &quot;</span> <span class="o">+</span> <span class="n">dictionary</span><span class="p">[</span><span class="s2">&quot;fileName&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="p">)</span>
+    
+    <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Application Message: Retrieved data = &quot;</span> <span class="o">+</span> <span class="n">dictionary</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>  <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Saving a string on the controller</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">saveData</span><span class="p">(</span><span class="s2">&quot;data_1&quot;</span><span class="p">,</span> <span class="s2">&quot;save_this_string_on_the_controller&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Data saved </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Reading a string from the controller</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">getData</span><span class="p">(</span><span class="s2">&quot;data_1&quot;</span><span class="p">,</span> <span class="n">printGetDataResult</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=setPosition class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>setPosition</b> </span>
+                        (<span class="func funcParamHeading">
+                                position, axis
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#setPositioncollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#setPositioncollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Override the current position of the specified axis to a new value.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>position</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The new position value in mm.
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>axis</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    Overrides the position on this axis.
+                </span>
+            </div>
+
+
+
+
+    <div id="setPositioncollapseParent" >
+        <div class="collapse" data-parent ="#setPositioncollapseParent" id="setPositioncollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">setPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="setPositioncollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#setPositioncollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('setPositionexampleCode', 'setPosition')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "setPositionexampleCode">
+                    <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
+<span class="c1">## Set Position</span>
+<span class="c1">##################################################</span>
+<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Email: info@vention.cc</span>
+<span class="c1">## Status: tested</span>
+<span class="c1">##################################################</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">_MachineMotion_1_6_8</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion axis 1 configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Override the current position of the machine motion controller with a new value - without moving the axis.</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">setPosition</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Position set to 100 mm on axis 1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">emitRelativeMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Moving in the negative direction ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+
+        </div>
+        <div class="col-md-2 sticky">
+            
+<div id="sideNav">
+        <nav class="nav">
+            <div class ="myTocHeader">
+                <a class="nav-link" href="#"> Machine Motion </a>
+            </div>
+           
+            <div class = "myTocItem">
+                <a href="#configAxis">configAxis</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#configMachineMotionIp">configMachineMotionIp</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#digitalRead">digitalRead</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#digitalWrite">digitalWrite</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitAbsoluteMove">emitAbsoluteMove</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitAcceleration">emitAcceleration</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitCombinedAxesAbsoluteMove">emitCombinedAxesAbsoluteMove</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitCombinedAxisRelativeMove">emitCombinedAxisRelativeMove</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitHome">emitHome</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitHomeAll">emitHomeAll</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitRelativeMove">emitRelativeMove</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitSpeed">emitSpeed</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitStop">emitStop</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitgCode">emitgCode</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#getData">getData</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#isEncoderIdValid">isEncoderIdValid</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#isIoExpanderAvailable">isIoExpanderAvailable</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#isIoExpanderIdValid">isIoExpanderIdValid</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#isIoExpanderInputIdValid">isIoExpanderInputIdValid</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#isIoExpanderOutputIdValid">isIoExpanderOutputIdValid</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#isMotionCompleted">isMotionCompleted</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#isReady">isReady</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#readEncoder">readEncoder</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#readEncoderRealtimePosition">readEncoderRealtimePosition</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#saveData">saveData</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#setPosition">setPosition</a>
+            </div>
+        
+        </nav>
+
+</div>
+
+        </div>
+    </div>
+
+        
+</body>

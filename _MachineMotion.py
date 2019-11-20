@@ -112,7 +112,7 @@ class GCode:
     #
     # Class constructor
     # PRIVATE
-    # @param socket --- Description: The GCode class requires a socket object to communicate with the controller. The socket object is passed at contruction time.
+    # @param socket --- Description: The GCode class requires a socket object to communicate with the controller. The socket object is passed at construction time.
     # @status
     #
     def __init__(self, socket):
@@ -396,47 +396,62 @@ class MachineMotion:
     validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
 
-    # ------------------------------------------------------------------------
-    # Determines if the given id is valid for an IO Exapnder.
-    #
-    # @param {int} id - Device identifier
-    # @return {Bool}  - True if valid; False otherwise
+
     def isIoExpanderIdValid(self, id):
+        '''
+        desc: Returns true if the given id is valid for an IO Expander
+        params:
+            id: 
+                desc: Device identifier <span style="color:red">revise</span>
+                type: Integer
+        '''
         if (id < 1 or id > 3):
             return False
         return True
         
-    # ------------------------------------------------------------------------
-    # Determines if the given input pin identifier is valid for an IO Exapnder.
-    #
-    # @param {int} deviceId - Device identifier
-    # @param {int} pinId    - Pin identifier
-    # @return {Bool}        - True if valid; False otherwise
     def isIoExpanderInputIdValid(self, deviceId, pinId):
+        '''
+        desc: Returns true if the given input pin identifier is valid for an IO Expander
+        params:
+            deviceId:
+                desc: Device identifier
+                type: Integer
+            pinId:
+                desc: Pin identifier
+                type: Integer
+        '''
+                
         if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
         if (pinId < 0 or pinId > 3):
             return False
         return True
         
-    # ------------------------------------------------------------------------
-    # Determines if the given output pin identifier is valid for an IO Exapnder.
-    #
-    # @param {int} deviceId - Device identifier
-    # @param {int} pinId    - Pin identifier
-    # @return {Bool}        - True if valid; False otherwise
     def isIoExpanderOutputIdValid(self, deviceId, pinId):
+        '''
+        desc: Returns True if the given output pin identifier is valid for an IO Expander.
+        params:
+            deviceId:
+                desc: Device Identifier
+                type: Integer
+            pinId:
+                desc: Pin Identifier
+                type: Integer
+        '''
         if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
         if (pinId < 0 or pinId > 3):
             return False
         return True
         
-    # ------------------------------------------------------------------------
-    # Determines if the given id is valid for an encoder.
-    #
-    # @return {Bool} - True if valid; False otherwise
+
     def isEncoderIdValid(self, id):
+        '''
+        desc: Returns True if the given id is valid for an encoder.
+        params:
+            id:
+                desc: <span style="color:red"> What Id is this?</span> 
+        '''
         if id >= 0 and id <= 3:
             return True
         return False
@@ -451,11 +466,12 @@ class MachineMotion:
 
         return self.myGCode.currentPositions
 
-    #
-    # Function that will immediately stop all motion of all the axes
-    # @status
-    #
     def emitStop(self):
+        '''
+        desc: Immediately stops all motion of all axes
+        note: This function is a hard stop. It is not a controlled stop and consequently does not decelerate smoothly to a stop. Additionally, this function is not intended to serve as an emergency stop since this stop mechanism does not have safety ratings.
+        exampleCodePath: emitStop.py
+        '''
         global motion_completed
 
         motion_completed = "false"
@@ -469,54 +485,72 @@ class MachineMotion:
         self.myGCode.__emit__("G0 X0")
         while self.isReady() != "true": pass
 
-    #
-    # Function that will initiate the homing sequence of all axes. The sequence will home all axes using the endstop signals
-    # @status
-    #
     def emitHomeAll(self):
+        '''
+        desc: Initiates the homing sequence of all axes. All axes will home sequentially (Axis 1, 2 then 3).
+        exampleCodePath: emitHomeAll.py
+        '''
+
         global motion_completed
 
         motion_completed = "false"
 
         self.myGCode.__emit__("G28")
 
-    #
-    # Function that will initiate the homing sequence for the axis specified. The sequence will home the axis using the endstops signals.
-    # @param axis --- Description: "axis" is the axis number that will be set to home location.  --- Type: number.
-    # @status
-    #
     def emitHome(self, axis):
+        '''
+        desc: Initiates the homing sequence for the specified axis.
+        params: 
+            axis:
+                desc: The number of the axis that you would like to home.
+                type: Number
+        note: If setAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If setAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
+        exampleCodePath: emitHome.py
+        '''
         global motion_completed
 
         motion_completed = "false"
 
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
 
-    #
-    # Function to send a displacement speed configuration command
-    # @param mm_per_min --- Description: mm_per_mim is the displacement speed in mm/min --- Type: number.
-    # @status
-    #
     def emitSpeed(self, mm_per_min):
+        '''
+        desc: Sets the global speed for all movement commands on all axes.
+        params:
+            mm_per_min:
+                desc: The global max speed in mm/min.
+                type: Number
+        exampleCodePath: emitSpeed.py
+        '''
+
         self.myGCode.__emit__("G0 F" +str(mm_per_min))
         while self.isReady() != "true": pass
 
-    #
-    # Function to send a displacement acceleration configuration command
-    # @param mm_per_sec_sqr --- Description: mm_per_sec_sqr is the displacement acceleration in mm/sec^2 --- Type: number.
-    # @status
-    #
     def emitAcceleration(self, mm_per_sec_sqr):
+        '''
+        desc: Sets the global acceleration for all movement commands on all axes.
+        params:
+            mm_per_sec_sqr:
+                desc: The global acceleration in mm/s^2.
+                type: Number
+        exampleCodePath:  emitAcceleration.py
+        '''
+
         self.myGCode.__emit__("M204 T" + str(mm_per_sec_sqr))
         while self.isReady() != "true": pass
 
-    #
-    # Function to send an absolute move command to the MachineMotion controller
-    # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: string or number.
-    # @param position --- Description: position is the position from its home location where the axis will go. --- Type: string or number.
-    # @status
-    #
     def emitAbsoluteMove(self, axis, position):
+        '''
+        desc: Moves the specified axis to a desired end location.
+        params: 
+            axis: 
+                desc: The axis which will perform the absolute move command.
+                type: Number
+            position:
+                desc: The desired end position of the axis movement.
+                type: Number
+        exampleCodePath: emitAbsoluteMove.py
+        '''
         global motion_completed
 
         motion_completed = "false"
@@ -529,13 +563,18 @@ class MachineMotion:
         self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
         while self.isReady() != "true": pass
 
-    #
-    # Function to send an absolute move command to the MachineMotion controller. This command can move more than one axis simultaneously
-    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
-    # @param positions --- Description: positions are the positions from their home location where the axes will go. --- Type: list of strings or numbers.
-    # @status
-    #
     def emitCombinedAxesAbsoluteMove(self, axes, positions):
+        '''
+        desc: Moves multiple specified axes to their desired end locations.
+        params:
+            axes:
+                desc: The axes which will perform the move commands. Ex - [1 ,3]
+                type: List
+            positions:
+                desc: The desired end position of all axess movement. Ex - [50, 10]
+                type: List
+        exampleCodePath: emitCombinedAxesAbsoluteMove.py
+        '''
         if (not isinstance(axes, list) or not isinstance(positions, list)):
             raise TypeError("Axes and Postions must be lists")
 
@@ -554,81 +593,121 @@ class MachineMotion:
         self.myGCode.__emit__(command)
         while self.isReady() != "true": pass
 
-    #
-    # Function to send a relative move command to the MachineMotion controller
-    # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: int or string.
-    # @param direction --- Description: direction is the direction in which the relative move will be conducted. --- Type: string of value equal to "positive" or "negative"
-    # @param distance is the distance of the relative move.
-    # @status
-    #
     def emitRelativeMove(self, axis, direction, distance):
+        '''
+        desc: Moves the specified axis the specified distance in the specified direction.
+        params:
+            axis:
+                desc: The axis to move.
+                type: Integer
+            direction:
+                desc: The direction of travel. Ex - "positive" or "negative" 
+                type: String
+            distance:
+                desc: The travel distance in mm.
+                type: Number
+        exampleCodePath: emitRelativeMove.py
+        '''
         global motion_completed
 
         motion_completed = "false"
 
-        # Set to relative motion mode
-        self.myGCode.__emit__("G91")
-        while self.isReady() != "true": pass
+        # Set to relative motion mode temporarily
+        try:
+            self.myGCode.__emit__("G91")
+            while self.isReady() != "true": pass
 
-        if direction == "positive":distance = "" + str(distance)
-        elif direction  == "negative": distance = "-" + str(distance)
+            if direction == "positive":distance = "" + str(distance)
+            elif direction  == "negative": distance = "-" + str(distance)
 
-        # Transmit move command
-        self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
-        while self.isReady() != "true": pass
+            # Transmit move command
+            self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+            while self.isReady() != "true": pass
+        finally:
+            self.myGCode.__emit__("G90")
+            while self.isReady() != "true": pass
 
-    #
-    # Function to send a relative move command to the MachineMotion controller
-    # @param axes --- Description: axes are the axes on which the command will be applied. Example : [1, 2, 3] --- Type: list of strings or numbers.
-    # @param directions --- Description: direction are the directions in which the relative moves will be conducted. --- Type: list of strings of value equal to "positive" or "negative"
-    # @param distances are the distances of the relative moves --- Type: list of strings or numbers.
-    # @status
-    #
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
-        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
-            raise TypeError("Axes and Postions must be lists")
+        '''
+        desc: Moves the multiple specified axes the specified distances in the specified directions.
+        params:
+            axes:
+                desc: The axes to move. Ex-[1,3]
+                type: List
+            direction:
+                desc: The direction of travel of each specified axis. Ex - ["positive", "negative"] 
+                type: String
+            distance:
+                desc: The travel distances in mm. Ex - [10, 40]
+                type: List
+        exampleCodePath: emitCombinedAxesRelativeMove.py
+        '''
+
+        if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
+            raise TypeError("All parameters must be lists")
         
         global motion_completed
 
         motion_completed = "false"
 
-        # Set to relative motion mode
+        # Temporarily set to relative motion mode
         self.myGCode.__emit__("G91")
         while self.isReady() != "true": pass
 
-        # Transmit move command
-        command = "G0 "
-        for axis, direction, distance in zip(axes, directions, distances):
-            if direction == "positive": distance = "" + str(distance)
-            elif direction  == "negative": distance = "-" + str(distance)
-            command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
-        self.myGCode.__emit__(command)
-        while self.isReady() != "true": pass
+        try:
 
-    #
-    # Function to send a raw G-Code ASCII command
-    # @param gCode --- Description: gCode is string representing the G-Code command to send to the controller. Type: string.
-    # @status
-    #
+            # Transmit move command
+            command = "G0 "
+            for axis, direction, distance in zip(axes, directions, distances):
+                if direction == "positive": distance = "" + str(distance)
+                elif direction  == "negative": distance = "-" + str(distance)
+                command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
+            self.myGCode.__emit__(command)
+            while self.isReady() != "true": pass
+        
+        finally:
+            self.myGCode.__emit__("G91")
+            while self.isReady() != "true": pass
+        
+    def setPosition(self, axis, position):
+        '''
+        desc: Override the current position of the specified axis to a new value.
+        params:
+            axis:
+                desc: Overrides the position on this axis.
+                type: Number
+            position:
+                desc: The new position value in mm.
+                type: Number
+        exampleCodePath: setPosition.py
+        '''
+
     def emitgCode(self, gCode):
+        '''
+        desc: Executes raw gCode on the controller.
+        params:
+            gCode:
+                desc: The g-code that will be passed directly to the controller.
+                type: string
+        note: All movement commands sent to the controller are by default in mm. 
+        exampleCodePath: emitgCode.py
+        '''
         global motion_completed
 
         motion_completed = "false"
 
         self.myGCode.__emit__(gCode)
 
-    #
-    # Function that indicates if the GCode communication port is ready to send another command.
-    # @status
-    #
     def isReady(self):
+        '''
+        desc: Returns true if the motion controller is ready to receive another command.
+        '''
         return self.myGCode.__isReady__()
 
-    #
-    # Function that indicates if the the last move has completed
-    # @status
-    #
     def isMotionCompleted(self):
+        '''
+        desc: Returns true if all axes have completed their movement.
+        '''
         global motion_completed
         return motion_completed
 
@@ -639,14 +718,25 @@ class MachineMotion:
         self.emitgCode("V0")
         while  self.isMotionCompleted() != "true": pass
 
-    #
-    # Function to setup the static IP and the router gateway of the MachineMotion controller
-    # @param machineIp --- Description: desired static ip address to assign to the MachineMotion controller. --- Type: string (xxx.xxx.xxx.xxxx) where x are numbers.
-    # @param gatewayIP --- Description: ip address of the LAN router. Setting a proper gateway ip addreess enables MachineMotion to access the internet for downloads --- Type: string (xxx.xxx.xxx.xxxx) where x are numbers.
-    # @note:           --- For the MachineMotion to access the Internet after an configIp() call, the MachineMotion device must be rebooted.
-    # @status
-    #
     def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway):
+        '''
+        desc: Set up the required network information for the Machine Motion controller.
+        params:
+            machineIp: 
+                desc: The static IP Address given to the controller.
+                type: String
+            gatewayIp:
+                desc: The gateway IP Address given to the controller. 
+                type: String
+            machineNetmask:
+                desc: The netmask IP Address given to the controller.
+                type: String
+            machineGateway:
+                desc: The gateway IP Address given to the controller.
+                type: String
+        Note: All strings expect the format "XXX.XXX.XXX.XXX". To connect the controller to the internet, the gateway IP should be the same IP as your LAN router.
+        exampleCodePath: configMachineMotionIp.py
+        '''
 
         # Create a new object and augment it with the key value.
         self.myConfiguration["mode"] = mode
@@ -659,14 +749,23 @@ class MachineMotion:
 
         time.sleep(1)
 
-    #
-    # Function to configure the axis motion.
-    # @param axis       --- Description: The axis number.                           --- Type: number [1, 2, 3]
-    # @param _u_step    --- Description: uStep setting.                             --- Type: number either [1, 2, 4, 8, 16]
-    # @param _mech_gain --- Description: Mechanical gain of the axis in mm / turn.  --- Type: number
-    # @status
-    #
     def configAxis(self, axis, _u_step, _mech_gain):
+        '''
+        desc: Initializes parameters for proper axis control.
+        params:
+            axis:
+                desc: The axis to configure.
+                type: Number
+            _u_step:
+                desc: The number of microsteps taken by the stepper motor. Must be either 1, 2, 5, 8 or 16.
+                type: Number
+            _mech_gain: 
+                desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
+                type: Number
+        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch. 
+        exampleCodePath: configAxis.py
+        '''
+
         u_step    = float(_u_step)
         mech_gain = float(_mech_gain)
 
@@ -688,13 +787,21 @@ class MachineMotion:
         else:
             pass
             # print "Argument error, {configAxis(self, axis, u_step, mech_gain)}, {u_step} argument is invalid"
-    #
-    # Function to save/persist data in the MachineMotion Controller (key - data pair)
-    # @param key --- Description: key is a string that identifies the data to save for future retrieval. --- Type: string or number.
-    # @param data --- Description: data is a dictionary containing the data to save. --- Type: dictionary.
-    # @status
-    #
+
     def saveData(self, key, data):
+        '''
+        desc: Saves/persists data within the MachineMotion Controller in key - data pairs.
+        params:
+            key:
+                desc: A string the uniquely identifies the data to save for future retreival
+                type: String
+            data:
+                desc: The data to save to the machine. The data must be convertible to JSON format.
+                type: String
+        note: The Data continues to exist even when the controller is shut off. However, writing to a previously used key will override the previous value.
+        exampleCodePath: saveData_getData.py
+        '''
+
         # Create a new object and augment it with the key value.
         dataPack = {}
         dataPack["fileName"] = key;
@@ -704,13 +811,19 @@ class MachineMotion:
         self.mySocket.emit('saveData', json.dumps(dataPack))
         time.sleep(0.05)
 
-    #
-    # Function to retrieve saved/persisted data in the MachineMotion Controller (key - data pair)
-    # @param key --- Description: key is a string that identifies the data to retrieve. --- Type: string.
-    # @param callback --- Description: callback is the function to invoke when the asynchronous data is received. --- Type: function with on argument that will contain the data in json serialized format.
-    # @status
-    #
     def getData(self, key, callback):
+        '''
+        desc: retreives saved/persisted data from the MachineMotion controller (in key-data pairs)
+        params:
+            key:
+                desc: Uniquely identifies the data to be retreived
+                type: String
+            callback:
+                desc: A function that is invoked when the asynchronous data is received. The function must take a single input parameter.
+                type: Function
+        exampleCodePath: saveData_getData.py
+        '''
+
         #Send the request to MachineMotion
 
         self.mySocket.emit('getData', key)
@@ -718,22 +831,30 @@ class MachineMotion:
         # On reception of the data invoke the callback function.
         self.mySocket.on('getDataResponse', callback)
 
-    # ------------------------------------------------------------------------
-    # Determines if the io-expander with the given id is available
-    #
-    # @param device - The io-expander device identifier
-    # @return.      - True if the io-expander exists; False otherwise
+
     def isIoExpanderAvailable(self, device):
+        '''
+        desc: Returns True if the io-expander with the given id is available
+        params:
+            device:
+                desc: The io-expander device identifier <span style="color:red">What is an example?</span>
+                type: Integer
+        '''
         return self.myIoExpanderAvailabilityState[ device-1 ]
+
     
     
-    # ------------------------------------------------------------------------
-    # Read the digital input from a pin a given device.
-    #
-    # @param device - The device identifier (1-3) to read from
-    # @param pin.   - The pin index to read from (0-3)
-    # @return.      - The latest pin value
     def digitalRead(self, device, pin):
+        '''
+        desc: Returns the value (<span style="color:red"> HIGH/LOW? </span>) of the given device and pin.
+        params:
+            device:
+                desc: The device identifier to read from (1, 2, 3) <span style="color:red">Is this AUX1, AUX2, AUX3?</span>
+                type: Integer
+            pin:
+                desc: The pin index to read from [0,1,2,3]
+                type: Integer
+        '''
         if (self.isIoExpanderInputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin) )
             return
@@ -745,38 +866,48 @@ class MachineMotion:
             self.digitalInputs[device][pin] = 0
         return self.digitalInputs[device][pin]
         
-    # ------------------------------------------------------------------------
-    # Modify the digital output of the given pin a the specified device.
-    #
-    # @param device - The device identifier (1-3) to write to
-    # @param pin.   - The pin index to write to (0-3)
-    # @param value  - The pin value to be written
     def digitalWrite(self, device, pin, value):
+        '''
+        desc: Sets voltage on specified pin of digital IO output pin to either High (5V) or Low (0V).
+        params:
+            device:
+                desc: The device identifier to write to.
+                type: Integer
+            pin:
+                desc: The pin number of the output device to write to.
+                type: Integer
+            value:
+                desc: Writing '1' or HIGH will set digial output to 5V, writing 0 will set digital output to 0V.
+                type: Integer
+        Note: The max current that can be drawn from the output pins is <span style="color:red">x mA</span>
+        '''
         if (self.isIoExpanderOutputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
         self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
             
-    # ------------------------------------------------------------------------
-    # Returns the last received encoder position.
-    #
-    # @param {int} encoder - The identifier of the encoder.
-    # @return              - The relatime encoder position (deled by up to 250ms)
-    #
-    # NOTE: The encoder position return may be offset by up to 250ms caused by
-    #       internal propagation delays
+
     def readEncoder(self, encoder):
+        '''
+        desc: Returns the last received encoder position.
+        params:
+            encoder:
+                desc: The identifier of the encoder to read
+                type: Integer
+        note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
+        '''
         return self.readEncoderRealtimePosition( encoder )
 
-    # ------------------------------------------------------------------------
-    # Returns the last received encoder position.
-    #
-    # @param {int} encoder - The identifier of the encoder.
-    # @return              - The relatime encoder position (deled by up to 250ms)
-    #
-    # NOTE: The encoder position return may be offset by up to 250ms caused by
-    #       internal propagation delays
+
     def readEncoderRealtimePosition(self, encoder):
+        '''
+        desc: Returns the last received encoder position.
+        params:
+            encoder:
+                desc: The identifier of the encoder to read
+                type: Integer
+        note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
+        '''
         if (self.isEncoderIdValid( encoder ) == False):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return

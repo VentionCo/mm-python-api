@@ -1,13 +1,42 @@
-#!/usr/bin/python
-from _MachineMotion import *
+##################################################
+## Home All Axes
+##################################################
+## Version: 1.6.8
+## Email: info@vention.cc
+## Status: tested
+##################################################
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+enableDebug = False
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+from _MachineMotion_1_6_8 import *
+
+# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+def debug(data):
+    if(enableDebug): print("Debug Message: " + data + "\n")
+
+print ("Application Message: MachineMotion Program Starting \n")
+
+mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+print ("Application Message: MachineMotion Controller Connected \n")
+
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: Axis 1 configured \n")
+
+# Configure the axis number 2, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(2, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: Axis 2 configured \n")
+
+# Configure the axis number 3, 8 uSteps and 150 mm / turn for a timing belt
+mm.configAxis(3, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+print ("Application Message: Axis 3 configured \n")
 
 # Homing all the axes of the controller sequentially
-machine_motion_example.emitHomeAll()
+mm.emitHomeAll()
+print ("Application Message: Axes are going home\n")
+mm.waitForMotionCompletion()
+print("Application Message: Axes are home\n")
 
-print ( "--> All Axes are now at home position." )
+print ("Application Message: Program terminating ... \n")
+time.sleep(1)
+sys.exit(0)
