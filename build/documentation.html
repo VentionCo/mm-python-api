@@ -134,9 +134,15 @@
 <span class="c1">## Status: tested</span>
 <span class="c1">##################################################</span>
 
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 
+<span class="c1">#Adds mm-python-api to the sys path so that we can access MachineMotion.py </span>
+<span class="n">parentdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parentdir</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
 <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -176,7 +182,7 @@
                     <span class="funcClassName "> mm.</span>
                     <span class = "funcName"> <b>configMachineMotionIp</b> </span>
                         (<span class="func funcParamHeading">
-                                gatewayIp, machineIp, machineNetmask, machineGateway
+                                machineIp, machineGateway, machineNetmask, mode
                             </span>)
                 </h4>
             </div>
@@ -193,33 +199,17 @@
 
     <dd>
         <div class="funcDescription funcText">
-            Set up the required network information for the Machine Motion controller.
+            Set up the required network information for the Machine Motion controller. The router can be configured in either DHCP mode or
         </div>
     </dd>
 
 
             <div class="indent2">
-                <span class = "funcParam"><b>gatewayIp</b></span>
-                <span class = "funcParamType"><code>String</code></span>
-                -
-                <span class = "funcText">              
-                    The gateway IP Address given to the controller.
-                </span>
-            </div>
-            <div class="indent2">
                 <span class = "funcParam"><b>machineIp</b></span>
                 <span class = "funcParamType"><code>String</code></span>
                 -
                 <span class = "funcText">              
-                    The static IP Address given to the controller.
-                </span>
-            </div>
-            <div class="indent2">
-                <span class = "funcParam"><b>machineNetmask</b></span>
-                <span class = "funcParamType"><code>String</code></span>
-                -
-                <span class = "funcText">              
-                    The netmask IP Address given to the controller.
+                    The static IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
                 </span>
             </div>
             <div class="indent2">
@@ -227,7 +217,23 @@
                 <span class = "funcParamType"><code>String</code></span>
                 -
                 <span class = "funcText">              
-                    The gateway IP Address given to the controller.
+                    The gateway IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>machineNetmask</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    The netmask IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>mode</b></span>
+                <span class = "funcParamType"><code>Constant</code></span>
+                -
+                <span class = "funcText">              
+                    Sets Network Mode to either DHCP or static addressing. Either <code>NETWORK_MODE.static</code> or <code>NETWORK_MODE.dhcp</code>
                 </span>
             </div>
 
@@ -237,17 +243,20 @@
     <div id="configMachineMotionIpcollapseParent" >
         <div class="collapse" data-parent ="#configMachineMotionIpcollapseParent" id="configMachineMotionIpcollapseSource">
             <div class="card card-body  code-demo">
-                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">configMachineMotionIp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">machineIp</span><span class="p">,</span> <span class="n">machineNetmask</span><span class="p">,</span> <span class="n">machineGateway</span><span class="p">):</span>
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">configMachineMotionIp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">machineIp</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">machineNetmask</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">machineGateway</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
 
-        <span class="c1"># Create a new object and augment it with the key value.</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">static</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s1">&#39;&#39;</span> <span class="ow">in</span> <span class="p">[</span><span class="n">machineIp</span><span class="p">,</span> <span class="n">machineNetmask</span><span class="p">,</span> <span class="n">machineGateway</span><span class="p">]:</span>
+               <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;NETWORK ERROR: machineIp, machineNetmask and machineGateway cannot be left blank in static mode&quot;</span><span class="p">)</span>
+               <span class="n">quit</span><span class="p">()</span>
+
+        <span class="c1"># Create a new object and augment it with the key value.    </span>
         <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;machineIp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">machineIp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;machineNetmask&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">machineNetmask</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">[</span><span class="s2">&quot;machineGateway&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">machineGateway</span>
 
-
         <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;configIp&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myConfiguration</span><span class="p">))</span>
-
         <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 
@@ -259,39 +268,50 @@
            <button type="button" data-parent ="#configMachineMotionIpcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('configMachineMotionIpexampleCode', 'configMachineMotionIp')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "configMachineMotionIpexampleCode">
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
-<span class="c1">## Ethernet Port Static Configuration</span>
+<span class="c1">## Ethernet Port Dynamic Configuration</span>
 <span class="c1">##################################################</span>
 <span class="c1">## Version: 2.2</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
 <span class="c1">##################################################</span>
 
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">configWizard</span>
+<span class="c1">#Adds mm-python-api to the sys path so that we can access MachineMotion.py </span>
+<span class="n">parentdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parentdir</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
 <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
     <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
+
+
 <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Program Starting </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># TODO: ip_address can be set to another value if desired by the user. For example if the controller is connected to a LAN</span>
-<span class="n">ip_address</span> <span class="o">=</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span> 
+<span class="n">cw</span> <span class="o">=</span> <span class="n">configWizard</span><span class="o">.</span><span class="n">configWizard</span><span class="p">()</span>
 
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">ip_address</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">question</span> <span class="o">=</span> <span class="s2">&quot;Select either static or dhcp ethernet configuration:&quot;</span>
+<span class="n">valid</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;static&quot;</span> <span class="p">:</span> <span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">static</span><span class="p">,</span><span class="s2">&quot;dhcp&quot;</span> <span class="p">:</span> <span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">dhcp</span><span class="p">}</span>
+<span class="n">mode</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">askMultipleChoice</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="n">valid</span><span class="p">)</span>
 
-<span class="c1"># Setting the ETHERNET port of the controller in static mode</span>
-<span class="n">mode</span> <span class="o">=</span> <span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">static</span>
-<span class="n">machineIp</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.2&quot;</span>
-<span class="n">machineNetmask</span><span class="o">=</span><span class="s2">&quot;255.255.255.0&quot;</span>
-<span class="n">machineGateway</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.1&quot;</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">configMachineMotionIp</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">machineIp</span><span class="p">,</span> <span class="n">machineNetmask</span><span class="p">,</span> <span class="n">machineGateway</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">mode</span> <span class="o">==</span><span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">static</span><span class="p">:</span>
+    <span class="n">machineIp</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.2&quot;</span>
+    <span class="n">machineNetmask</span><span class="o">=</span><span class="s2">&quot;255.255.255.0&quot;</span>
+    <span class="n">machineGateway</span> <span class="o">=</span> <span class="s2">&quot;192.168.0.1&quot;</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">configMachineMotionIp</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">machineIp</span><span class="p">,</span> <span class="n">machineNetmask</span><span class="p">,</span> <span class="n">machineGateway</span><span class="p">)</span>
+    <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Application Message: Ethernet Port Configured in Static mode&quot;</span><span class="p">)</span>
 
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Ethernet Port Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">if</span>  <span class="n">mode</span> <span class="o">==</span> <span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">dhcp</span><span class="p">:</span>
+    <span class="c1"># Setting the ETHERNET port of the controller in dhcp mode</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">configMachineMotionIp</span><span class="p">(</span><span class="n">NETWORK_MODE</span><span class="o">.</span><span class="n">dhcp</span><span class="p">)</span>
+    <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Application Message: Ethernet Port Configured in DHCP mode&quot;</span><span class="p">)</span>
 
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>

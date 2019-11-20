@@ -8,8 +8,13 @@
 
 enableDebug = False
 
-from _MachineMotion_1_6_8 import *
+import os, sys
 import configWizard
+#Adds mm-python-api to the sys path so that we can access MachineMotion.py 
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parentdir)
+
+from _MachineMotion import *
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
@@ -23,29 +28,33 @@ print ("Application Message: MachineMotion Controller Connected \n")
 cw = configWizard.configWizard()
 
 try:
-    question = "What actuator do you have installed on axis 1?"
+    question = "What axis would you like to test?"
+    valid = {"Drive 1":1, "Drive 2":2, "Drive 3":3}
+    axis = cw.askMultipleChoice(question, valid)
+
+    question = "What actuator do you have installed on axis " + str(axis)+ "?"
     valid = {
-        "timing belt":MECH_GAIN.timing_belt_150mm_turn,
-        "ballscrew"    : MECH_GAIN.ballscrew_10mm_turn,
-        "indexer"    : MECH_GAIN.indexer_deg_turn,   
-        "conveyor"    : MECH_GAIN.conveyor_mm_turn,               
-        "rack and pinion"    : MECH_GAIN.rack_pinion_mm_turn                  
+        "timing belt"    :MECH_GAIN.timing_belt_150mm_turn,
+        "ballscrew"      :MECH_GAIN.ballscrew_10mm_turn,
+        "indexer"        : MECH_GAIN.indexer_deg_turn,   
+        "conveyor"       : MECH_GAIN.conveyor_mm_turn,               
+        "rack and pinion": MECH_GAIN.rack_pinion_mm_turn                  
         }
 
     mechGain = cw.askMultipleChoice(question, valid)
-    mm.configAxis(1, MICRO_STEPS.ustep_8, mechGain)
-    cw.write("MachineMotion Axis 1 Configured\n")
+    mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
+    cw.write("MachineMotion Axis " + str(axis) + " Configured\n")
 
 
-    if cw.askYesNo("Would you like to begin homing Axis 1?") == False:
-        cw.write("You must home Axis 1 before sending motion commands")
-        if cw.askYesNo("Are you ready to home Axis 1? If No, the demo will exit") == False:
+    if cw.askYesNo("Would you like to begin homing Axis " + str(axis) + " ?") == False:
+        cw.write("You must home Axis " + axis + " before sending motion commands")
+        if cw.askYesNo("Are you ready to home Axis " + axis + "? If No, the demo will exit") == False:
             exit()
 
 
 
     cw.write("Machine Motion going home")
-    mm.emitHome(1)
+    mm.emitHome(axis)
 
     mm.waitForMotionCompletion()
 
@@ -54,10 +63,10 @@ try:
 
     cw.write("Machine Motion is waving!")
 
-    mm.emitAbsoluteMove(1,40)
-    mm.emitAbsoluteMove(1,0)
-    mm.emitAbsoluteMove(1,40)
-    mm.emitAbsoluteMove(1,0)
+    mm.emitAbsoluteMove(axis,40)
+    mm.emitAbsoluteMove(axis,0)
+    mm.emitAbsoluteMove(axis,40)
+    mm.emitAbsoluteMove(axis,0)
 
     mm.waitForMotionCompletion()
 

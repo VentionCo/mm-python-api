@@ -72,6 +72,7 @@ class MECH_GAIN:
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
     conveyor_mm_turn                = 157
+    rack_pinion_mm_turn             = 157.08
 
 def fastMotionStatusCallback(data, mm):
     global motion_completed

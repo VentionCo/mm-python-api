@@ -44,6 +44,7 @@ class configWizard:
         print(self.delimiter, end = '')
         if self.pythonVersion == 2:
             userinput = raw_input()
+            userinput = userinput.split('\r')[0]
 
             if(self.debugMode):
                 print(userinput)
@@ -67,11 +68,18 @@ class configWizard:
     #
     def askMultipleChoice(self, question, valid):
         choice = ""
+        #Makes the keys lowercase and removes any trailing/leading white spaces
+        for key in valid.keys():
+            valid[key.lower().strip()] = valid.pop(key)
+
+
+
         # Starts loop that exits when user either quits or enters a valid choice
         try:
             while True:
                 self.write(question + " [" + " / ".join(valid.keys()) + "]")
                 choice = self.getUserInput()
+                choice =choice.lower().strip()
 
                 if choice in valid:
                     return valid[choice]
