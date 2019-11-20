@@ -718,35 +718,38 @@ class MachineMotion:
         self.emitgCode("V0")
         while  self.isMotionCompleted() != "true": pass
 
-    def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway):
+    def configMachineMotionIp(self, mode, machineIp="", machineNetmask="", machineGateway=""):
         '''
-        desc: Set up the required network information for the Machine Motion controller.
+        desc: Set up the required network information for the Machine Motion controller. The router can be configured in either DHCP mode or 
         params:
+            mode:
+                desc: Sets Network Mode to either DHCP or static addressing. Either <code>NETWORK_MODE.static</code> or <code>NETWORK_MODE.dhcp</code>
+                type: Constant
             machineIp: 
-                desc: The static IP Address given to the controller.
-                type: String
-            gatewayIp:
-                desc: The gateway IP Address given to the controller. 
+                desc: The static IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
                 type: String
             machineNetmask:
-                desc: The netmask IP Address given to the controller.
+                desc: The netmask IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
                 type: String
             machineGateway:
-                desc: The gateway IP Address given to the controller.
+                desc: The gateway IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
                 type: String
         Note: All strings expect the format "XXX.XXX.XXX.XXX". To connect the controller to the internet, the gateway IP should be the same IP as your LAN router.
         exampleCodePath: configMachineMotionIp.py
         '''
 
-        # Create a new object and augment it with the key value.
+        if(mode == NETWORK_MODE.static):
+            if '' in [machineIp, machineNetmask, machineGateway]:
+               print("NETWORK ERROR: machineIp, machineNetmask and machineGateway cannot be left blank in static mode")
+               quit()
+
+        # Create a new object and augment it with the key value.    
         self.myConfiguration["mode"] = mode
         self.myConfiguration["machineIp"] = machineIp
         self.myConfiguration["machineNetmask"] = machineNetmask
         self.myConfiguration["machineGateway"] = machineGateway
 
-
         self.mySocket.emit('configIp', json.dumps(self.myConfiguration))
-
         time.sleep(1)
 
     def configAxis(self, axis, _u_step, _mech_gain):

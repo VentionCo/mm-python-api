@@ -78,7 +78,7 @@ class configWizard:
                 elif choice in self.exitCommands:
                     self.quit()
                 else:
-                    self.write("Please respond with [" + " or ".join(valid.keys()) + "] \n")
+                    self.write("Please type one of the " + str(len(valid)) + " valid answers exactly  [" + " or ".join(valid.keys()) + "] \n")
         except self.userQuit:
             
             return 
