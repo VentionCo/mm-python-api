@@ -6,9 +6,15 @@
 ## Status: tested
 ##################################################
 
-enableDebug = False
+import sys, os
 
+#Adds mm-python-api to the sys path so that we can access MachineMotion.py 
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parentdir)
 from _MachineMotion import *
+
+
+enableDebug = False
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
