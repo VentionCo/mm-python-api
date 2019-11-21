@@ -1,13 +1,20 @@
 from __future__ import print_function
-import sys
+import sys, os
 import collections
+
+try:
+    from _MachineMotion import *
+except ImportError:
+    #Adds mm-python-api to the sys path so that we can access MachineMotion.py 
+    parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.append(parentdir)
+    from _MachineMotion import *
 
 class configWizard:
 
     exitCommands = ["q"]
     class userQuit(Exception): pass
     delimiter = ">>\t"
-    validYN = {"y":True, "n":False}
     debugMode = False
 
     #Initializes variables and starts the command line interface
@@ -33,7 +40,7 @@ class configWizard:
     #
     #Raises the 'user quit' error for error handling
     #
-    def quit(self):
+    def quitCW(self):
         print(self.delimiter + "\n" + self.delimiter + "Application Quit")
         raise self.userQuit
     
@@ -72,25 +79,19 @@ class configWizard:
         for key in valid.keys():
             valid[key.lower().strip()] = valid.pop(key)
 
-
-
         # Starts loop that exits when user either quits or enters a valid choice
-        try:
-            while True:
-                self.write(question + " [" + " / ".join(valid.keys()) + "]")
-                choice = self.getUserInput()
-                choice =choice.lower().strip()
+        while True:
+            self.write(question + " [" + " / ".join(valid.keys()) + "]")
+            choice = self.getUserInput()
+            choice =choice.lower().strip()
 
-                if choice in valid:
-                    return valid[choice]
-                elif choice in self.exitCommands:
-                    self.quit()
-                else:
-                    self.write("Please type one of the " + str(len(valid)) + " valid answers exactly  [" + " or ".join(valid.keys()) + "] \n")
-        except self.userQuit:
-            
-            return 
-    
+            if choice in valid:
+                return valid[choice]
+            elif choice in self.exitCommands:
+                self.quitCW()
+            else:
+                self.write("Please type one of the " + str(len(valid)) + " valid answers exactly  [" + " or ".join(valid.keys()) + "] \n")
+
     #
     # Handles user interaction and logic for asking users questions that return numbers
     # @param question --- Description: A question for the user in string format
@@ -102,7 +103,7 @@ class configWizard:
         answer = self.getUserInput()
 
         if answer in self.exitCommands:
-            self.quit()
+            self.quitCW()
         else:
             try:
                 return int(answer)
@@ -111,7 +112,8 @@ class configWizard:
                 return self.askNumeric(question)
         
     def askYesNo(self, question):
-        return self.askMultipleChoice(question, self.validYN)
+        valid = {"y":True, "n":False}
+        return self.askMultipleChoice(question,valid)
 
     #
     # Prompts the user to check and confirm that sensor sensor xA and sensor xB are installed, where x represents a subset of axes 1,2,3
@@ -141,6 +143,43 @@ class configWizard:
             output[str(axis) + "B"] = self.askMultipleChoice(question, valid)
 
         return output
+
+    def askForSingleAxis(self):
+        question = "What axis would you like to test?"
+        valid = {"Drive 1":1, "Drive 2":2, "Drive 3":3}
+        return self.askMultipleChoice(question, valid)
+    
+    def askForMechGain(self, axis):
+        question = "What actuator do you have installed on axis " + str(axis)+ "?"
+        valid = {
+        "timing belt"    : MECH_GAIN.timing_belt_150mm_turn,
+        "ballscrew"      : MECH_GAIN.ballscrew_10mm_turn,
+        "indexer"        : MECH_GAIN.indexer_deg_turn,   
+        "conveyor"       : MECH_GAIN.conveyor_mm_turn,               
+        "rack and pinion": MECH_GAIN.rack_pinion_mm_turn                  
+        }
+        return self.askMultipleChoice(question, valid)
+
+    def forceUserToHome(self, axis):
+        if self.askYesNo("Would you like to begin homing Axis " + str(axis) + " ?") == False:
+            self.write("You must home Axis " + str(axis) + " before sending motion commands")
+            if self.askYesNo("Are you ready to home Axis " + str(axis) + "? If No, the demo will exit") == False:
+                self.quitCW()
+
+    def askForSpeedAndAcceleration(self):
+        speed = self.askForSpeed()
+        acceleration = self.askForAcceleration()
+        return speed, acceleration
+
+
+    def askForSpeed(self):
+        question = "Please enter a value for global speed"
+        return self.askNumeric(question)
+
+    def askForAcceleration(self):
+        question = "Please enter a value for global acceleration"
+        return self.askNumeric(question)
+
 
     def unitTest(self):
         question = "Do you like green eggs and ham?"

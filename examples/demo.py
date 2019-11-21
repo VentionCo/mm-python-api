@@ -28,31 +28,14 @@ print ("Application Message: MachineMotion Controller Connected \n")
 cw = configWizard.configWizard()
 
 try:
-    question = "What axis would you like to test?"
-    valid = {"Drive 1":1, "Drive 2":2, "Drive 3":3}
-    axis = cw.askMultipleChoice(question, valid)
 
-    question = "What actuator do you have installed on axis " + str(axis)+ "?"
-    valid = {
-        "timing belt"    :MECH_GAIN.timing_belt_150mm_turn,
-        "ballscrew"      :MECH_GAIN.ballscrew_10mm_turn,
-        "indexer"        : MECH_GAIN.indexer_deg_turn,   
-        "conveyor"       : MECH_GAIN.conveyor_mm_turn,               
-        "rack and pinion": MECH_GAIN.rack_pinion_mm_turn                  
-        }
+    axis = cw.askForSingleAxis()
+    mechGain = cw.askForMechGain(axis)
 
-    mechGain = cw.askMultipleChoice(question, valid)
     mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
     cw.write("MachineMotion Axis " + str(axis) + " Configured\n")
 
-
-    if cw.askYesNo("Would you like to begin homing Axis " + str(axis) + " ?") == False:
-        cw.write("You must home Axis " + axis + " before sending motion commands")
-        if cw.askYesNo("Are you ready to home Axis " + axis + "? If No, the demo will exit") == False:
-            exit()
-
-
-
+    cw.forceUserToHome(axis)
     cw.write("Machine Motion going home")
     mm.emitHome(axis)
 
@@ -71,7 +54,7 @@ try:
     mm.waitForMotionCompletion()
 
     cw.write("Goodbye!")
-    cw.quit()
+    cw.quitCW()
 
 except cw.userQuit:
     mm.emitStop()

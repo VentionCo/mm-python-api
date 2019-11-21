@@ -6,9 +6,14 @@
 ## Status: tested
 ##################################################
 
-enableDebug = False
-
+import os, sys
+import configWizard
+#Adds mm-python-api to the sys path so that we can access MachineMotion.py 
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parentdir)
 from _MachineMotion import *
+
+enableDebug = False
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
 def debug(data):
@@ -19,34 +24,43 @@ print ("Application Message: MachineMotion Program Starting \n")
 mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
 print ("Application Message: MachineMotion Controller Connected \n")
 
-# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
-mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
-print ("Application Message: MachineMotion Axis 1 Configured \n")
+try:
+    cw = configWizard.configWizard()
+    axis = cw.askForSingleAxis()
+    mechGain = cw.askForMechGain(axis)
+    # Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+    mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
+    cw.write("MachineMotion Axis" + str(axis) + " Configured")
 
-# Configuring the travel speed to 1000 mm / min
-mm.emitSpeed(1000)
-print ("Application Message: Speed configured \n")
+    speed, acceleration = cw.askForSpeedAndAcceleration()
 
-# Configuring the travel speed to 250 mm / second^2
-mm.emitAcceleration(250)
-print ("Application Message: Acceleration configured \n")
+    mm.emitSpeed(speed)
+    cw.write("Global speed configured to " + str(speed) + " mm/s")
 
-# Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 going home \n")
-mm.waitForMotionCompletion()
-print ("Application Message: Axis 1 is at home \n")
+    mm.emitAcceleration(acceleration)
+    cw.write("Global acceleration configured to " + str(acceleration) + " mm/s^2")
 
-# Move the axis 1 to position 100 mm
-mm.emitAbsoluteMove(1, 100)
-print ("Application Message: Motion on-going ... \n")
+    # Homing axis
+    mm.emitHome(axis)
+    cw.write("Axis " + str(axis) + " going home \n")
+    mm.waitForMotionCompletion()
+    cw.write("Axis " + str(axis) + " is at home \n")
 
-mm.waitForMotionCompletion()
-print ("Application Message: Motion completed \n")
+    while True:
+        # Move the axis
+        position = cw.askNumeric("Please enter the absolute position you wish to move to")
+        mm.emitAbsoluteMove(axis, position)
+        cw.write("Motion on-going ... \n")
+        mm.waitForMotionCompletion()
+        if not cw.askYesNo("Would you like to do another move?"):
+            break
 
+    cw.quitCW()
 
+except cw.userQuit:
+    mm.emitStop()
+    pass
 
-print ("Application Message: Program terminating ... \n")
 time.sleep(1)
 sys.exit(0)
 
