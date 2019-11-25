@@ -808,8 +808,8 @@ class MachineMotion:
 
         # Create a new object and augment it with the key value.
         dataPack = {}
-        dataPack["fileName"] = key;
-        dataPack["data"] = data;
+        dataPack["fileName"] = key
+        dataPack["data"] = data
 
         # Send the request to MachineMotion
         self.mySocket.emit('saveData', json.dumps(dataPack))

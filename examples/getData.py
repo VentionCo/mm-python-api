@@ -1,4 +1,7 @@
 #!/usr/bin/python
+import os, sys
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(parentdir)
 from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)

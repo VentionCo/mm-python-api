@@ -1,6 +1,7 @@
 from __future__ import print_function
-import sys, os
+import sys, os, json
 import collections
+import threading
 
 try:
     from _MachineMotion import *
@@ -43,6 +44,16 @@ class configWizard:
     def quitCW(self):
         print(self.delimiter + "\n" + self.delimiter + "Application Quit")
         raise self.userQuit
+
+    def getListCallback(self, data):
+
+        class dataReceived(Exception):
+            def __init__(self, data):
+                self.data = data
+        if data:
+            raise dataReceived(data)
+        else:
+            return None
     
     #
     # Handles the user input into the command line interface.
@@ -111,9 +122,97 @@ class configWizard:
                 self.write("Please enter a number")
                 return self.askNumeric(question)
         
+    def askString(self, question):
+        self.write("")
+        self.write(question)
+        answer = self.getUserInput()
+
+        if answer in self.exitCommands:
+            self.quitCW()
+        else:
+            try:
+                return str(answer)
+            except ValueError:
+                self.write("Please enter a string")
+                return self.askString(question)
+
     def askYesNo(self, question):
         valid = {"y":True, "n":False}
         return self.askMultipleChoice(question,valid)
+
+    def askForMechGain(self, axis):
+        question = "What actuator do you have installed on axis " + str(axis)+ "?"
+        valid = {
+        "timing belt"    : MECH_GAIN.timing_belt_150mm_turn,
+        "ballscrew"      : MECH_GAIN.ballscrew_10mm_turn,
+        "indexer"        : MECH_GAIN.indexer_deg_turn,   
+        "conveyor"       : MECH_GAIN.conveyor_mm_turn,               
+        "rack and pinion": MECH_GAIN.rack_pinion_mm_turn                  
+        }
+        return self.askMultipleChoice(question, valid)
+
+    def forceUserToHome(self, axis):
+        if self.askYesNo("Would you like to begin homing Axis " + str(axis) + " ?") == False:
+            self.write("You must home Axis " + str(axis) + " before sending motion commands")
+            if self.askYesNo("Are you ready to home Axis " + str(axis) + "? If No, the demo will exit") == False:
+                self.quitCW()
+
+    def askForSpeedAndAcceleration(self, speedType = None, accelerationType = None):
+        if speedType is not None:
+            speed = self.askForSpeed()
+        else:
+            speed = self.askForSpeed(speedType)
+        
+        if accelerationType is not None:
+            acceleration = self.askForAcceleration()
+        else:
+            acceleration = self.askForAcceleration(accelerationType)
+
+        return speed, acceleration
+
+
+    def askForSpeed(self, speedType="global"):
+        if speedType == "global":
+            question = "Please enter a value for global speed"
+        else:
+            question = "Please enter a value for " + speedType + " speed"
+        
+        return self.askNumeric(question)
+
+    def askForAcceleration(self, accelerationType="global"):
+        if accelerationType == "global":
+            question = "Please enter a value for global acceleration"
+        else:
+            question = "Please enter a value for " + accelerationType + " acceleration"
+
+        return self.askNumeric(question)
+
+
+    def unitTest(self):
+        question = "Do you like green eggs and ham?"
+        valid = {"y":"I Do! I like them, Sam-I-Am!", "n":"I do not like them, Sam I am"}
+        response = self.askMultipleChoice(question, valid)
+        self.write(response)
+
+        question = "Would you eat them here or there?"
+        valid = {"here":"I would not like them here", "there": "I would not like them there"}
+        response = self.askMultipleChoice(question, valid)
+        self.write(response)
+
+        question = "Would you like them in a house? Would you like them with a mouse?"
+        valid = {"no":"I do not like them in a house, I do not like them with a mouse", "house":"I will eat them in a hosue", "mouse":"I will eat them with a mouse"}
+        response = self.askMultipleChoice(question, valid)
+        self.write(response)
+
+        question = "On a scale of 1-10 how much do you like green eggs and ham?"
+        response = self.askNumeric(question)
+        if response > 10:
+            self.write("Say! I do so like green eggs and ham")
+        elif response > 5:
+            self.write("I guess they're okay")
+        else:
+            self.write("I still hate green eggs and ham")
+
 
     #
     # Prompts the user to check and confirm that sensor sensor xA and sensor xB are installed, where x represents a subset of axes 1,2,3
@@ -146,63 +245,137 @@ class configWizard:
 
     def askForSingleAxis(self):
         question = "What axis would you like to test?"
-        valid = {"Drive 1":1, "Drive 2":2, "Drive 3":3}
+        valid = {"Drive 1":"drive1", "Drive 2":"drive2", "Drive 3":"drive3"}
         return self.askMultipleChoice(question, valid)
     
-    def askForMechGain(self, axis):
-        question = "What actuator do you have installed on axis " + str(axis)+ "?"
-        valid = {
-        "timing belt"    : MECH_GAIN.timing_belt_150mm_turn,
-        "ballscrew"      : MECH_GAIN.ballscrew_10mm_turn,
-        "indexer"        : MECH_GAIN.indexer_deg_turn,   
-        "conveyor"       : MECH_GAIN.conveyor_mm_turn,               
-        "rack and pinion": MECH_GAIN.rack_pinion_mm_turn                  
-        }
-        return self.askMultipleChoice(question, valid)
+    def createConfigFile(self, mm):
 
-    def forceUserToHome(self, axis):
-        if self.askYesNo("Would you like to begin homing Axis " + str(axis) + " ?") == False:
-            self.write("You must home Axis " + str(axis) + " before sending motion commands")
-            if self.askYesNo("Are you ready to home Axis " + str(axis) + "? If No, the demo will exit") == False:
-                self.quitCW()
+        #These are two helper functions that are only used in createNewConfig
+        def prettyPrintDictionary(d, indent=0):
+            for key, value in d.items():
+                if isinstance(value, dict):
+                    self.write('\t'*indent + str(key))
+                    prettyPrintDictionary(value, indent+1)
+                else:
+                    self.write('\t' * indent + str(key) + '\t-->\t' + str(value))
 
-    def askForSpeedAndAcceleration(self):
-        speed = self.askForSpeed()
-        acceleration = self.askForAcceleration()
-        return speed, acceleration
+        newConfigName = self.askString("Please enter a name for the config file")
+        
+   
 
 
-    def askForSpeed(self):
-        question = "Please enter a value for global speed"
-        return self.askNumeric(question)
+        existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
+        if existingConfigFiles is None:
+            mm.saveData("config-file-names",[])
+            existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
 
-    def askForAcceleration(self):
-        question = "Please enter a value for global acceleration"
-        return self.askNumeric(question)
+        try:
+            existingConfigFiles[newConfigName]
+            if self.askYesNo("You are about to overwrite an existing config file. Would you like to continue?"):
+                pass
+            else:
+                return self.createNewConfig(mm)
+        except (TypeError, KeyError):
+            pass
+        
+        # At this point, the user will have verified that newConfigFile is a valid name for a new config file
+
+        configFileDone = False
+
+        mechGain = {}
+        defaultSpeed = {}
+        defaultAcceleration = {}
+        maxSpeed = {}
+        maxAcceleration = {}
+        sensorA = {}
+        sensorB = {}
+
+        try:
+            while not configFileDone:
+                axis = self.askMultipleChoice("Select the drive you'd like to configure", {"Drive 1":1, "Drive 2":2, "Drive 3":3})
+                mechGain[axis] = self.askForMechGain(axis)
+
+                defaultSpeed[axis], defaultAcceleration[axis] = self.askForSpeedAndAcceleration(speedType = "default", accelerationType = "default")
+                maxSpeed[axis], maxAcceleration[axis] = self.askForSpeedAndAcceleration(speedType = "max", accelerationType = "max")
+
+                sensorA[axis] = self.askYesNo("Is sensor " + str(axis)+ "A plugged in?")
+                sensorB[axis] = self.askYesNo("Is sensor " + str(axis)+ "B plugged in?")
 
 
-    def unitTest(self):
-        question = "Do you like green eggs and ham?"
-        valid = {"y":"I Do! I like them, Sam-I-Am!", "n":"I do not like them, Sam I am"}
-        response = self.askMultipleChoice(question, valid)
-        self.write(response)
+                if self.askYesNo("Would you like to configure another drive?"):
+                    configFileDone = False
+                else:
+                    configFileDone = True
 
-        question = "Would you eat them here or there?"
-        valid = {"here":"I would not like them here", "there": "I would not like them there"}
-        response = self.askMultipleChoice(question, valid)
-        self.write(response)
+        except self.userQuit:
+            self.quitCW()
 
-        question = "Would you like them in a house? Would you like them with a mouse?"
-        valid = {"no":"I do not like them in a house, I do not like them with a mouse", "house":"I will eat them in a hosue", "mouse":"I will eat them with a mouse"}
-        response = self.askMultipleChoice(question, valid)
-        self.write(response)
 
-        question = "On a scale of 1-10 how much do you like green eggs and ham?"
-        response = self.askNumeric(question)
-        if response > 10:
-            self.write("Say! I do so like green eggs and ham")
-        elif response > 5:
-            self.write("I guess they're okay")
+        newConfigFile = {}
+        newConfigFile["mechGain"] = mechGain
+        newConfigFile["defaultSpeed"] = defaultSpeed
+        newConfigFile["defaultAcceleration"] = defaultAcceleration
+        newConfigFile["maxSpeed"] = maxSpeed
+        newConfigFile["maxAcceleration"] = mechGain
+        newConfigFile["sensorA"] = mechGain
+        newConfigFile["sensorB"] = mechGain
+
+
+
+        self.write("------------------------------")
+        self.write("Please confirm the following information is correct. If you need to make a change the wizard will restart.")
+        self.write("------------------------------")
+        prettyPrintDictionary(newConfigFile)
+
+        self.write("------------------------------")
+        if not self.askYesNo("Is this info correct?"):
+            self.quitCW()
+        try:
+            existingConfigFiles.append(newConfigName)
+        except AttributeError:
+            existingConfigFiles = list()
+            existingConfigFiles.append(newConfigName)
+
+        mm.saveData("config-file-names", json.dumps(newConfigName))
+        mm.saveData(newConfigName, newConfigFile)
+
+        self.write("Config File saved")
+        return newConfigFile
+
+    
+
+
+    def getSavedConfigs(self, mm):
+        
+
+        try:
+            print("getData")
+            existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
+            while True:
+                time.sleep(0.5)
+        except:
+            print("exception caught")
+                
+        
+        
+  
+        # while existingConfigFiles is None:
+        #     print(existingConfigFiles)
+        #     time.sleep(1)
+        
+        
+        if len(existingConfigFiles) == 0:
+            if self.askYesNo("No config files found. Would you like to create one?"):
+                return self.createConfigFile(mm)
+            else:
+                return False
         else:
-            self.write("I still hate green eggs and ham")
+            valid = {}
+            for config in existingConfigFiles:
+                valid[config] = str(config)
+            chosenFileName = self.askMultipleChoice("Please select your desired config file", valid)
+            savedConfig = mm.getData(str(chosenFileName))
+            return json.loads(savedConfig)
 
+        
+        
