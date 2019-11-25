@@ -348,16 +348,16 @@ class configWizard:
     def getSavedConfigs(self, mm):
         
 
-        try:
-            print("getData")
-            existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
-            while True:
-                time.sleep(0.5)
-        except:
-            print("exception caught")
-                
+        # try:
+        #     print("getData")
+        #     existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
+        #     while True:
+        #         time.sleep(0.5)
+        # except:
+        #     print("exception caught")
+         
         
-        
+        existingConfigFiles = mm.getData("config-file-names")
   
         # while existingConfigFiles is None:
         #     print(existingConfigFiles)

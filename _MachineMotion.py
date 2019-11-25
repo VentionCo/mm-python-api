@@ -397,6 +397,7 @@ class MachineMotion:
     validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
 
+    asyncResult = None
 
     def isIoExpanderIdValid(self, id):
         '''
@@ -815,7 +816,7 @@ class MachineMotion:
         self.mySocket.emit('saveData', json.dumps(dataPack))
         time.sleep(0.05)
 
-    def getData(self, key, callback):
+    def getData(self, key):
         '''
         desc: retreives saved/persisted data from the MachineMotion controller (in key-data pairs)
         params:
@@ -828,12 +829,30 @@ class MachineMotion:
         exampleCodePath: saveData_getData.py
         '''
 
-        #Send the request to MachineMotion
+        getDataAvailable = threading.Event()
 
-        self.mySocket.emit('getData', key)
+        def asyncGetData(key, callback):
+            #Send the request to MachineMotion
+            self.mySocket.emit('getData', key)
+            # On reception of the data invoke the callback function.
+            self.mySocket.on('getDataResponse', callback)
 
-        # On reception of the data invoke the callback function.
-        self.mySocket.on('getDataResponse', callback)
+        def asyncCallback(data):
+            self.asyncResult = data
+            getDataAvailable.set()
+
+            
+
+        print("thread called")
+        getDataThread = threading.Thread(target = asyncGetData, args=(key, asyncCallback,))
+        getDataThread.start()
+        getDataAvailable.wait()
+        getDataResult = self.asyncResult
+
+        return getDataResult
+
+
+
 
 
     def isIoExpanderAvailable(self, device):
