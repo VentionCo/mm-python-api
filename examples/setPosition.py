@@ -1,38 +1,34 @@
-##################################################
-## Set Position
-##################################################
-## Version: 1.6.8
-## Email: info@vention.cc
-## Status: tested
-##################################################
-
-enableDebug = False
-
-from _MachineMotion_1_6_8 import *
+from _MachineMotion import *
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+enableDebug = False
 def debug(data):
-    if(enableDebug): print("Debug Message: " + data + "\n")
-
-print ("Application Message: MachineMotion Program Starting \n")
+    if(enableDebug): print("Debug Message: " + data)
 
 mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
-print ("Application Message: MachineMotion Controller Connected \n")
 
-# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
-mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
-print ("Application Message: MachineMotion axis 1 configured \n")
+axis = 1                                    #The axis that you'd like to move
+speed = 400                                 #The max speed you'd like to move at
+acceleration = 500                          #The constant acceleration and decceleration value for the move
+position = 100                              #The absolute position you'd like to move to
+mechGain = MECH_GAIN.rack_pinion_mm_turn    #The mechanical gain of the actuator on the axis
 
-# Override the current position of the machine motion controller with a new value - without moving the axis.
-mm.setPosition(1, 100)
-print ("Application Message: Position set to 100 mm on axis 1\n")
+mm.configAxis(axis, MICRO_STEPS.ustep_16, mechGain)
 
-mm.emitRelativeMove(1, "negative", 50)
-print ("Application Message: Moving in the negative direction ... \n")
+mm.emitHome(axis)
+print("Axis " + str(axis) + " homed")
 
+mm.emitSpeed(speed)
+mm.emitAcceleration(acceleration)
+
+print("Absolute Moves are referenced from from home")
+mm.emitAbsoluteMove(axis, position)
 mm.waitForMotionCompletion()
-print ("Application Message: Motion completed \n")
+print("Axis " + str(axis) + " is " + str(position) + "mm away from home")
 
-print ("Application Message: Program terminating ... \n")
-time.sleep(1)
-sys.exit(0)
+mm.setPosition(axis, 0)
+print("Absolute moves on axis " + str(axis) + " are now referenced from " +  str(position) + "mm from home. ")
+position2 = 10
+mm.emitAbsoluteMove(axis, position)
+print("Axis " + str(axis) + " is now " + str(position2) + "mm from reference position and " + str(position + position2) + "mm from home")
+

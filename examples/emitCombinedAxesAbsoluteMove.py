@@ -1,52 +1,34 @@
-##################################################
-## Combined Absolute Move
-##################################################
-## Version: 2.2
-## Email: info@vention.cc
-## Status: tested
-##################################################
-
-enableDebug = False
-
-from _MachineMotion_1_6_8 import *
+from _MachineMotion import *
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+enableDebug = False
 def debug(data):
-    if(enableDebug): print("Debug Message: " + data + "\n")
+    if(enableDebug): print("Debug Message: " + data)
 
-print ("Application Message: MachineMotion Program Starting \n")
+#Declare parameters for combined absolute move
+speed = 500
+acceleration = 500
+axesToMove = [1,2,3]
+positions = [50, 100, 50]
+mechGain = MECH_GAIN.timing_belt_150mm_turn
 
+#Load parameters for combined absolute move
 mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
-print ("Application Message: MachineMotion Controller Connected \n")
-
-# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
-mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
-print ("Application Message: MachineMotion Axis 1 Configured \n")
-
-# Configuring the travel speed to 10000 mm / min
-mm.emitSpeed(10000)
-print ("Application Message: Speed configured \n")
-
-# Configuring the travel speed to 250 mm / second^2
-mm.emitAcceleration(250)
-print ("Application Message: Acceleration configured \n")
-
-# Homing axis 1
+mm.emitSpeed(speed)
+mm.emitAcceleration(acceleration)
+for axis in axesToMove:
+    mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 mm.emitHomeAll()
-print ("Application Message: Axes at home \n")
+print("All Axes homed.")
 
 # Simultaneously moves three axis:
 #   Moves axis 1 to absolute position 50
 #   Moves axis 2 to absolute position 100
 #   Moves axis 3 to absolute position 50
-mm.emitCombinedAxesAbsoluteMove([1, 2, 3], [50, 100, 50])
-print ("Application Message: Motion on-going ... \n")
-
+mm.emitCombinedAxesAbsoluteMove(axesToMove, positions)
 mm.waitForMotionCompletion()
-print ("Application Message: Motion completed \n")
+for axis in len(axesToMove):
+    print("Axis " + str(axis) + "moved to position " + positions[axis])
 
-print ("Application Message: Program terminating ... \n")
-time.sleep(1)
-sys.exit(0)
 
 

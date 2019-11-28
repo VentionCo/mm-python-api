@@ -74,6 +74,11 @@ class MECH_GAIN:
     conveyor_mm_turn                = 157
     rack_pinion_mm_turn             = 157.08
 
+class AUX_PORTS:
+    AUX1 = 0
+    AUX2 = 1
+    AUX3 = 2
+
 def fastMotionStatusCallback(data, mm):
     global motion_completed
     global waiting_motion_status
@@ -700,10 +705,8 @@ class MachineMotion:
 
         self.myGCode.__emit__(gCode)
 
+    #This function should be private in future releases.
     def isReady(self):
-        '''
-        desc: Returns true if the motion controller is ready to receive another command.
-        '''
         return self.myGCode.__isReady__()
 
     def isMotionCompleted(self):
@@ -804,7 +807,7 @@ class MachineMotion:
                 desc: The data to save to the machine. The data must be convertible to JSON format.
                 type: String
         note: The Data continues to exist even when the controller is shut off. However, writing to a previously used key will override the previous value.
-        exampleCodePath: saveData_getData.py
+        exampleCodePath: getData_saveData.py
         '''
 
         # Create a new object and augment it with the key value.
@@ -823,10 +826,7 @@ class MachineMotion:
             key:
                 desc: Uniquely identifies the data to be retreived
                 type: String
-            callback:
-                desc: A function that is invoked when the asynchronous data is received. The function must take a single input parameter.
-                type: Function
-        exampleCodePath: saveData_getData.py
+        exampleCodePath: getData_saveData.py
         '''
 
         getDataAvailable = threading.Event()
@@ -837,17 +837,18 @@ class MachineMotion:
             # On reception of the data invoke the callback function.
             self.mySocket.on('getDataResponse', callback)
 
+            #timer here to force call asyncCallback on timeout #kill timer# 
+            # If this fails, return a key value pair - key is 'error' value is description why error failed
+
         def asyncCallback(data):
+
             self.asyncResult = data
             getDataAvailable.set()
 
-            
-
-        print("thread called")
         getDataThread = threading.Thread(target = asyncGetData, args=(key, asyncCallback,))
         getDataThread.start()
         getDataAvailable.wait()
-        getDataResult = self.asyncResult
+        getDataResult = json.loads("".join(self.asyncResult))
 
         return getDataResult
 
@@ -865,8 +866,29 @@ class MachineMotion:
         '''
         return self.myIoExpanderAvailabilityState[ device-1 ]
 
+    def detectIOModules(self):
+        '''
+        desc: Returns a dictionary containing all detected IO Modules.
+        exampleCodePath: digitalRead.py
+        note: For more information, please see the digital IO datasheet <a href="#" style="color:red">here</a>
+        '''
+        class NoIOModulesFound(Exception):
+            pass
+
+        foundIOModules = {}
+        numIOModules = 0
+
+        for ioDeviceID in range(1,3):
+            if self.isIoExpanderAvailable(ioDeviceID):
+                foundIOModules["Digital IO Network Id " + str(ioDeviceID)] = ioDeviceID
+                numIOModules = numIOModules + 1
+
+        if numIOModules == 0:
+            raise NoIOModulesFound("Application Error: No IO Modules found. Please verify the connection between Digital IO and MachineMotion.")
+        else:
+            return foundIOModules
     
-    
+       
     def digitalRead(self, device, pin):
         '''
         desc: Returns the value (<span style="color:red"> HIGH/LOW? </span>) of the given device and pin.
@@ -891,7 +913,7 @@ class MachineMotion:
         
     def digitalWrite(self, device, pin, value):
         '''
-        desc: Sets voltage on specified pin of digital IO output pin to either High (5V) or Low (0V).
+        desc: Sets voltage on specified pin of digital IO output pin to either High (24V) or Low (0V).
         params:
             device:
                 desc: The device identifier to write to.
@@ -900,7 +922,7 @@ class MachineMotion:
                 desc: The pin number of the output device to write to.
                 type: Integer
             value:
-                desc: Writing '1' or HIGH will set digial output to 5V, writing 0 will set digital output to 0V.
+                desc: Writing '1' or HIGH will set digial output to 24V, writing 0 will set digital output to 0V.
                 type: Integer
         Note: The max current that can be drawn from the output pins is <span style="color:red">x mA</span>
         '''
@@ -919,18 +941,10 @@ class MachineMotion:
                 type: Integer
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
-        return self.readEncoderRealtimePosition( encoder )
+        return self.myEncoderRealtimePositions[encoder]
 
-
+    #This function is left in for legacy, however it is not documented because it is the same functionality as readEncoder
     def readEncoderRealtimePosition(self, encoder):
-        '''
-        desc: Returns the last received encoder position.
-        params:
-            encoder:
-                desc: The identifier of the encoder to read
-                type: Integer
-        note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
-        '''
         if (self.isEncoderIdValid( encoder ) == False):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return

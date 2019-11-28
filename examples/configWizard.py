@@ -264,22 +264,22 @@ class configWizard:
    
 
 
-        existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
+        existingConfigFiles = mm.getData("config-file-names")['data']
+        existingConfigFiles = json.loads(existingConfigFiles)
         if existingConfigFiles is None:
-            mm.saveData("config-file-names",[])
-            existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
+            mm.saveData(key = "config-file-names",data = [])
+            existingConfigFiles = mm.getData("config-file-names")['data']
 
         try:
             existingConfigFiles[newConfigName]
             if self.askYesNo("You are about to overwrite an existing config file. Would you like to continue?"):
                 pass
             else:
-                return self.createNewConfig(mm)
+                return self.createConfigFile(mm)
         except (TypeError, KeyError):
             pass
         
         # At this point, the user will have verified that newConfigFile is a valid name for a new config file
-
         configFileDone = False
 
         mechGain = {}
@@ -308,6 +308,7 @@ class configWizard:
                     configFileDone = True
 
         except self.userQuit:
+            self.write("No file saved because wizard quit early")
             self.quitCW()
 
 
@@ -316,9 +317,9 @@ class configWizard:
         newConfigFile["defaultSpeed"] = defaultSpeed
         newConfigFile["defaultAcceleration"] = defaultAcceleration
         newConfigFile["maxSpeed"] = maxSpeed
-        newConfigFile["maxAcceleration"] = mechGain
-        newConfigFile["sensorA"] = mechGain
-        newConfigFile["sensorB"] = mechGain
+        newConfigFile["maxAcceleration"] = maxAcceleration
+        newConfigFile["sensorA"] = sensorA
+        newConfigFile["sensorB"] = sensorB
 
 
 
@@ -329,15 +330,17 @@ class configWizard:
 
         self.write("------------------------------")
         if not self.askYesNo("Is this info correct?"):
-            self.quitCW()
+            self.createConfigFile(mm)
+            return
+
         try:
             existingConfigFiles.append(newConfigName)
         except AttributeError:
             existingConfigFiles = list()
             existingConfigFiles.append(newConfigName)
 
-        mm.saveData("config-file-names", json.dumps(newConfigName))
-        mm.saveData(newConfigName, newConfigFile)
+        mm.saveData(key = "config-file-names", data = json.dumps(existingConfigFiles))
+        mm.saveData(key = newConfigName, data = newConfigFile)
 
         self.write("Config File saved")
         return newConfigFile
@@ -347,23 +350,11 @@ class configWizard:
 
     def getSavedConfigs(self, mm):
         
-
-        # try:
-        #     print("getData")
-        #     existingConfigFiles = mm.getData("config-file-names", self.getListCallback)
-        #     while True:
-        #         time.sleep(0.5)
-        # except:
-        #     print("exception caught")
-         
-        
-        existingConfigFiles = mm.getData("config-file-names")
-  
-        # while existingConfigFiles is None:
-        #     print(existingConfigFiles)
-        #     time.sleep(1)
-        
-        
+        # Retreive the array of config files saved under the key 'config-file-names'
+        existingConfigFiles = mm.getData("config-file-names")['data']
+        # mm.getData returns a string. Use json.loads to convert the string to an array
+        existingConfigFiles = json.loads(existingConfigFiles)
+          
         if len(existingConfigFiles) == 0:
             if self.askYesNo("No config files found. Would you like to create one?"):
                 return self.createConfigFile(mm)
@@ -374,8 +365,9 @@ class configWizard:
             for config in existingConfigFiles:
                 valid[config] = str(config)
             chosenFileName = self.askMultipleChoice("Please select your desired config file", valid)
-            savedConfig = mm.getData(str(chosenFileName))
-            return json.loads(savedConfig)
+
+            savedConfig = mm.getData(chosenFileName)
+            return savedConfig
 
         
         

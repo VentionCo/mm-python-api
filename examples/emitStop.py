@@ -1,55 +1,34 @@
-##################################################
-## Immediate Stop
-##################################################
-## Version: 1.6.8
-## Email: info@vention.cc
-## Status: tested
-##################################################
-
-enableDebug = False
-
-from _MachineMotion_1_6_8 import *
+from _MachineMotion import *
+import time
 
 # Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
+enableDebug = False
 def debug(data):
-    if(enableDebug): print("Debug Message: " + data + "\n")
-
-for i in range(0, 50):
-   machine_motion_example.emitStop()
-   machine_motion_example.emitRelativeMove(1, "positive", 10)
-
+    if(enableDebug): print("Debug Message: " + data)
 mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
-print ("Application Message: MachineMotion Controller Connected \n")
 
-# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
-mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
-print ("Application Message: MachineMotion Axis 1 Configured \n")
+#Define Relative Move Parameters
+axis = 1
+speed = 200
+acceleration = 500
+distance = 1000
+direction = "positive"
+mechGain = MECH_GAIN.rack_pinion_mm_turn
 
-# Configuring the travel speed to 1000 mm / min
-mm.emitSpeed(1000)
-print ("Application Message: Speed configured \n")
+#Load Relative Move Parameters
+mm.emitSpeed(speed)
+mm.emitAcceleration(acceleration)
+mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 
-# Configuring the travel speed to 250 mm / second^2
-mm.emitAcceleration(250)
-print ("Application Message: Acceleration configured \n")
-
-# Homing axis 1
-mm.emitHome(1)
-print ("Application Message: Axis 1 is going home\n")
+#Home Axis Before Move
+mm.emitHome(axis)
 mm.waitForMotionCompletion()
-print ("Application Message: Axis 1 at home \n")
+print("Axis " + str(axis) + " homed")
 
-# Move the axis one to position 100 mm
-mm.emitRelativeMove(1, "positive", 100)
-print ("Application Message: Move on-going ... \n")
+#Begin Relative Move
+mm.emitRelativeMove(axis, direction, distance)
+print("Axis " + str(axis) + " is moving " + str(distance) + "mm in the " + direction + " direction")
 
+#This move should take 5 (distance/speed) seconds to complete. Instead, we wait 2 seconds and then stop the machine.
 time.sleep(2)
-print ("Application Message: Waiting for 2 seconds ... \n")
-
-# Instruct the controller to stop all motion immediately
 mm.emitStop()
-print ("Application Message: Motion stopped! \n")
-
-print ("Application Message: Program terminating ... \n")
-time.sleep(1)
-sys.exit(0)

@@ -1,32 +1,17 @@
 
- <head>
+<div class="row">
 
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-     <link rel ="stylesheet" href="./native.css">
-     <link rel ="stylesheet" href="./styles.css">
-     <!-- Optional theme -->
-     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-     
-     <!-- Latest compiled and minified JavaScript -->
-     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>  
 
-    
-    <!-- toc -https://afeld.github.io/bootstrap-toc/#via-data-attributes -->
-    <!-- add after bootstrap.min.css -->
-    <link
-    rel="stylesheet"
-    href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"
-    />
-    <!-- add after bootstrap.min.js -->
-    <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
 
-</head>
-<body >
-    
-    <div class ="container" style = "width:100%">
-        <div class="col-md-10">
-            <dl class="funcWrapper" >
+    <div class="col-md-10 col-sm-12" id="machine-motion-content">
+        <img  style="width:90%" src= "https://s3.amazonaws.com/ventioncms/vention_images/images/000/002/182/large/api-reference.jpg?1573771416">
+        <p class="technical-document-description">
+The MachineMotion python API can be used to quickly build custom applications to control your Vention fixture.
+If this is your first time using the machine motion controller, please follow the Python programming manual <a href="https://www.vention.io/technical-documents/c996243ecf14cdd00e01ffe122d5c317/programming-manual-python">here</a>.
+</p>
+<p></p>
+        
+        <dl class="funcWrapper" >
     
     <dt id=configAxis class="funcHeader">
         <div class = "row">
@@ -428,7 +413,7 @@
 
     <dd>
         <div class="funcDescription funcText">
-            Sets voltage on specified pin of digital IO output pin to either High (5V) or Low (0V).
+            Sets voltage on specified pin of digital IO output pin to either High (24V) or Low (0V).
         </div>
     </dd>
 
@@ -454,7 +439,7 @@
                 <span class = "funcParamType"><code>Integer</code></span>
                 -
                 <span class = "funcText">              
-                    Writing '1' or HIGH will set digial output to 5V, writing 0 will set digital output to 0V.
+                    Writing '1' or HIGH will set digial output to 24V, writing 0 will set digital output to 0V.
                 </span>
             </div>
 
@@ -564,9 +549,14 @@
 <span class="c1">## Status: tested</span>
 <span class="c1">##################################################</span>
 
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">configWizard</span>
+<span class="c1">#Adds mm-python-api to the sys path so that we can access MachineMotion.py </span>
+<span class="n">parentdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parentdir</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
 <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -577,34 +567,43 @@
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 <span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Axis 1 Configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">cw</span> <span class="o">=</span> <span class="n">configWizard</span><span class="o">.</span><span class="n">configWizard</span><span class="p">()</span>
+    <span class="n">axis</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">askForSingleAxis</span><span class="p">()</span>
+    <span class="n">mechGain</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">askForMechGain</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
+    <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;MachineMotion Axis&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; Configured&quot;</span><span class="p">)</span>
 
-<span class="c1"># Configuring the travel speed to 1000 mm / min</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Speed configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">speed</span><span class="p">,</span> <span class="n">acceleration</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">askForSpeedAndAcceleration</span><span class="p">()</span>
 
-<span class="c1"># Configuring the travel speed to 250 mm / second^2</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Acceleration configured </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+    <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Global speed configured to &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; mm/s&quot;</span><span class="p">)</span>
 
-<span class="c1"># Homing axis 1</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 going home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
+    <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Global acceleration configured to &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; mm/s^2&quot;</span><span class="p">)</span>
 
-<span class="c1"># Move the axis 1 to position 100 mm</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Homing axis</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+    <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; going home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+    <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
-<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Motion completed </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Move the axis</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">cw</span><span class="o">.</span><span class="n">askNumeric</span><span class="p">(</span><span class="s2">&quot;Please enter the absolute position you wish to move to&quot;</span><span class="p">)</span>
+        <span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+        <span class="n">cw</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Motion on-going ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cw</span><span class="o">.</span><span class="n">askYesNo</span><span class="p">(</span><span class="s2">&quot;Would you like to do another move?&quot;</span><span class="p">):</span>
+            <span class="k">break</span>
 
+    <span class="n">cw</span><span class="o">.</span><span class="n">quitCW</span><span class="p">()</span>
 
+<span class="k">except</span> <span class="n">cw</span><span class="o">.</span><span class="n">userQuit</span><span class="p">:</span>
+    <span class="n">mm</span><span class="o">.</span><span class="n">emitStop</span><span class="p">()</span>
+    <span class="k">pass</span>
 
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Program terminating ... </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
@@ -686,10 +685,12 @@
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
 <span class="c1">##################################################</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">parentdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parentdir</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">True</span>
-
-<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
 <span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
@@ -808,7 +809,7 @@
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Combined Absolute Move</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Version: 1.6.8</span>
+<span class="c1">## Version: 2.2</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
 <span class="c1">##################################################</span>
@@ -1784,7 +1785,7 @@
                     <span class="funcClassName "> mm.</span>
                     <span class = "funcName"> <b>getData</b> </span>
                         (<span class="func funcParamHeading">
-                                callback, key
+                                key
                             </span>)
                 </h4>
             </div>
@@ -1807,14 +1808,6 @@
 
 
             <div class="indent2">
-                <span class = "funcParam"><b>callback</b></span>
-                <span class = "funcParamType"><code>Function</code></span>
-                -
-                <span class = "funcText">              
-                    A function that is invoked when the asynchronous data is received. The function must take a single input parameter.
-                </span>
-            </div>
-            <div class="indent2">
                 <span class = "funcParam"><b>key</b></span>
                 <span class = "funcParamType"><code>String</code></span>
                 -
@@ -1829,14 +1822,30 @@
     <div id="getDatacollapseParent" >
         <div class="collapse" data-parent ="#getDatacollapseParent" id="getDatacollapseSource">
             <div class="card card-body  code-demo">
-                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 
-        <span class="c1">#Send the request to MachineMotion</span>
+        <span class="n">getDataAvailable</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;getData&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">asyncGetData</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
+            <span class="c1">#Send the request to MachineMotion</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;getData&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="c1"># On reception of the data invoke the callback function.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;getDataResponse&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
 
-        <span class="c1"># On reception of the data invoke the callback function.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;getDataResponse&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="p">)</span>
+            <span class="c1">#timer here to force call asyncCallback on timeout #kill timer# </span>
+            <span class="c1"># If this fails, return a key value pair - key is &#39;error&#39; value is description why error failed</span>
+
+        <span class="k">def</span> <span class="nf">asyncCallback</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">asyncResult</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="n">getDataAvailable</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
+        <span class="n">getDataThread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="n">asyncGetData</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">asyncCallback</span><span class="p">,))</span>
+        <span class="n">getDataThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">getDataAvailable</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="n">getDataResult</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asyncResult</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">getDataResult</span>
 </pre></div>
 
             </div>
@@ -1849,7 +1858,7 @@
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Save Data, Get Data Example</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Version: 2.2</span>
+<span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
 <span class="c1">##################################################</span>
@@ -2523,8 +2532,8 @@
 
         <span class="c1"># Create a new object and augment it with the key value.</span>
         <span class="n">dataPack</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">dataPack</span><span class="p">[</span><span class="s2">&quot;fileName&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span><span class="p">;</span>
-        <span class="n">dataPack</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">;</span>
+        <span class="n">dataPack</span><span class="p">[</span><span class="s2">&quot;fileName&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key</span>
+        <span class="n">dataPack</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
 
         <span class="c1"># Send the request to MachineMotion</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mySocket</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s1">&#39;saveData&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dataPack</span><span class="p">))</span>
@@ -2541,7 +2550,7 @@
                     <div class="highlight"><pre><span></span><span class="c1">##################################################</span>
 <span class="c1">## Save Data, Get Data Example</span>
 <span class="c1">##################################################</span>
-<span class="c1">## Version: 2.2</span>
+<span class="c1">## Version: 1.6.8</span>
 <span class="c1">## Email: info@vention.cc</span>
 <span class="c1">## Status: tested</span>
 <span class="c1">##################################################</span>
@@ -2708,9 +2717,11 @@
     
 </dl>
 
-        </div>
-        <div class="col-md-2 sticky">
-            
+    </div>
+
+
+    <div class="col-md-2 col-sm-0">
+        
 <div id="sideNav">
         <nav class="nav">
             <div class ="myTocHeader">
@@ -2800,8 +2811,305 @@
 
 </div>
 
-        </div>
     </div>
 
+
+</div>
+
+
         
-</body>
+<style>
+    .highlight pre { background-color: #404040 }
+.highlight .hll { background-color: #404040 }
+.highlight .c { color: #999999; font-style: italic } /* Comment */
+.highlight .err { color: #a61717; background-color: #e3d2d2 } /* Error */
+.highlight .g { color: #d0d0d0 } /* Generic */
+.highlight .k { color: #6ab825; font-weight: bold } /* Keyword */
+.highlight .l { color: #d0d0d0 } /* Literal */
+.highlight .n { color: #d0d0d0 } /* Name */
+.highlight .o { color: #d0d0d0 } /* Operator */
+.highlight .x { color: #d0d0d0 } /* Other */
+.highlight .p { color: #d0d0d0 } /* Punctuation */
+.highlight .cm { color: #999999; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #cd2828; font-weight: bold } /* Comment.Preproc */
+.highlight .c1 { color: #999999; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #e50808; font-weight: bold; background-color: #520000 } /* Comment.Special */
+.highlight .gd { color: #d22323 } /* Generic.Deleted */
+.highlight .ge { color: #d0d0d0; font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #d22323 } /* Generic.Error */
+.highlight .gh { color: #ffffff; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #589819 } /* Generic.Inserted */
+.highlight .go { color: #cccccc } /* Generic.Output */
+.highlight .gp { color: #aaaaaa } /* Generic.Prompt */
+.highlight .gs { color: #d0d0d0; font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #ffffff; text-decoration: underline } /* Generic.Subheading */
+.highlight .gt { color: #d22323 } /* Generic.Traceback */
+.highlight .kc { color: #6ab825; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #6ab825; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #6ab825; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #6ab825 } /* Keyword.Pseudo */
+.highlight .kr { color: #6ab825; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #6ab825; font-weight: bold } /* Keyword.Type */
+.highlight .ld { color: #d0d0d0 } /* Literal.Date */
+.highlight .m { color: #3677a9 } /* Literal.Number */
+.highlight .s { color: #ed9d13 } /* Literal.String */
+.highlight .na { color: #bbbbbb } /* Name.Attribute */
+.highlight .nb { color: #24909d } /* Name.Builtin */
+.highlight .nc { color: #447fcf; text-decoration: underline } /* Name.Class */
+.highlight .no { color: #40ffff } /* Name.Constant */
+.highlight .nd { color: #ffa500 } /* Name.Decorator */
+.highlight .ni { color: #d0d0d0 } /* Name.Entity */
+.highlight .ne { color: #bbbbbb } /* Name.Exception */
+.highlight .nf { color: #447fcf } /* Name.Function */
+.highlight .nl { color: #d0d0d0 } /* Name.Label */
+.highlight .nn { color: #447fcf; text-decoration: underline } /* Name.Namespace */
+.highlight .nx { color: #d0d0d0 } /* Name.Other */
+.highlight .py { color: #d0d0d0 } /* Name.Property */
+.highlight .nt { color: #6ab825; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #40ffff } /* Name.Variable */
+.highlight .ow { color: #6ab825; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #666666 } /* Text.Whitespace */
+.highlight .mf { color: #3677a9 } /* Literal.Number.Float */
+.highlight .mh { color: #3677a9 } /* Literal.Number.Hex */
+.highlight .mi { color: #3677a9 } /* Literal.Number.Integer */
+.highlight .mo { color: #3677a9 } /* Literal.Number.Oct */
+.highlight .sb { color: #ed9d13 } /* Literal.String.Backtick */
+.highlight .sc { color: #ed9d13 } /* Literal.String.Char */
+.highlight .sd { color: #ed9d13 } /* Literal.String.Doc */
+.highlight .s2 { color: #ed9d13 } /* Literal.String.Double */
+.highlight .se { color: #ed9d13 } /* Literal.String.Escape */
+.highlight .sh { color: #ed9d13 } /* Literal.String.Heredoc */
+.highlight .si { color: #ed9d13 } /* Literal.String.Interpol */
+.highlight .sx { color: #ffa500 } /* Literal.String.Other */
+.highlight .sr { color: #ed9d13 } /* Literal.String.Regex */
+.highlight .s1 { color: #ed9d13 } /* Literal.String.Single */
+.highlight .ss { color: #ed9d13 } /* Literal.String.Symbol */
+.highlight .bp { color: #24909d } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #40ffff } /* Name.Variable.Class */
+.highlight .vg { color: #40ffff } /* Name.Variable.Global */
+.highlight .vi { color: #40ffff } /* Name.Variable.Instance */
+.highlight .il { color: #3677a9 } /* Literal.Number.Integer.Long */
+</style>
+<style>
+    :root {
+--ventionBlue:#1C344F;
+--accentBlue: #197CE0;
+--CTAGreen: #1AC876;
+--ventionGrey: #Eff2f7;
+--ventionDarkGrey: #BEC9CD;
+
+
+--t1: 19px;
+--t2: 14.9px;
+--t3: 11.8px;
+--t4: 9.2px;
+
+}
+
+
+a:hover {
+    color:var(--ventionDarkGrey)
+}
+
+#div1 {
+    background-color: var(--main-bg-color);
+}
+
+
+
+.indent1{
+    margin-left: 50px;
+}
+
+.indent2{
+    margin-left: 100px;
+}
+
+
+.funcWrapper {
+    background: var(--ventionGrey);
+    border-left: 2px solid var(--accentBlue);
+    margin-top:5px;
+    padding-left: 20px;
+}
+
+.funcClassName{
+    font-size: var(--t3);
+    font-style: italic;
+    margin-left: -20px;
+}
+
+.funcHeader{
+    padding: 5px 5px 2px 5px;
+}
+
+.funcName {
+    font-size: var(--t2);
+}
+
+.funcParamHeading{
+    font-size: var(--t2);
+    font-style: italic;
+    padding-right:10px;
+    font-family: monospace;
+}
+
+.funcParam{
+    color: var(--ventionBlue);
+    font-size: var(--t2);
+    font-family: monospace;
+}
+
+.funcParamType{
+    color: var(--ventionBlue);
+    font-size: var(--t3);
+    
+}
+
+.funcDescription{
+    margin-top: 10px;
+    background: var(--ventionGrey);
+
+}
+
+.funcText{
+    font-size: var(--t2);
+}
+
+.code-demo {
+    width: 90%;
+    font-size:0.8em;
+    align-content: center;
+}
+
+
+.runCodeBtn {
+    position: relative;
+    bottom: -40px;
+    left: 78%;
+}
+
+
+#sideNav .nav{
+    border-left: 2px solid var(--ventionGrey);
+}
+
+.myTocHeader{
+    font-size: var(--t2);
+    color: var(--ventionDarkGrey);
+    margin-left: 5px;
+}
+
+.myTocItem a{
+    margin-top: 2px;
+    padding-left: 10px;
+    color: var(--ventionBlue);
+    font-size: var(--t3);
+    text-decoration: none;
+}
+
+.myTocItem a:hover{
+    padding-left: 12px;
+    color: var(--accentBlue);
+    -moz-transition: padding-left.1s ease-in;
+    -o-transition: padding-left  .1s ease-in;
+    -webkit-transition: padding-left  .1s ease-in;
+    transition: padding-left  .1s ease-in;
+}
+
+
+.sticky-side-nav {
+    padding-top: 90px;
+    position: fixed;
+    top: 0;
+    -moz-transition: padding-top.3s ease-in;
+    -o-transition: padding-top  .3s ease-in;
+    -webkit-transition: padding-top  .3s ease-in;
+    transition: padding-top  .3s ease-in;
+}
+
+.api-button{
+    font-size: var(--t3);
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.card {
+    margin: 0 auto; /* Added */
+    float: none; /* Added */
+    margin-bottom: 10px; /* Added */
+}
+
+.funcNote {
+    width: 80%;
+    margin-top: 10px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    font-style: italic;
+    font-size: var(--t3);
+
+    border-top: 1px solid var(--ventionDarkGrey);
+}
+
+
+/* used to adjust the scroll height when menu nav is clicked */
+.anchor {
+    display: block;
+    position: relative;
+    top: -250px;
+    visibility: hidden;
+}
+
+code {
+    color: var(--ventionBlue);
+}
+
+.card-text{
+    word-wrap: break-word;
+  }
+</style>
+<script>
+    $( document ).ready(function() {
+
+ 
+        var title = document.getElementsByClassName("technical-document-title")[0].parentNode
+        var content = document.getElementById("machine-motion-content")
+        content.insertBefore(title, content.childNodes[0])
+
+        var sideNav = document.getElementById('sideNav')
+
+
+
+        $(window).scroll(function(){ // scroll event
+            var windowTop = $(window).scrollTop(); // returns number
+        
+            if(windowTop > 200 - 90){
+                sideNav.classList.add("sticky-side-nav");
+               
+
+            } else {
+                sideNav.classList.remove("sticky-side-nav");
+              }
+
+        });
+    });
+
+    function copyTextToClipboard(id, funcName) {
+
+        var copyText = document.getElementById(id).innerText
+        console.log(copyText)
+        var dummy = document.createElement("textarea");
+
+        document.body.appendChild(dummy);
+       
+        dummy.value = copyText;
+        dummy.select();
+        document.execCommand("copy");
+        document.body.removeChild(dummy);
+
+        alert("Code Copied To Clipboard")
+
+    }
+
+
+</script>

@@ -24,10 +24,14 @@ mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
 
 cw = configWizard.configWizard()
 try:
-    config = cw.getSavedConfigs(mm)
+
+    if cw.askYesNo("Would you like to make a new config file?"):
+        config = cw.createConfigFile(mm)
+    elif cw.askYesNo("Would you like to load an existing config file?"):
+        config = cw.getSavedConfigs(mm)
+    
+    print(config)
 except cw.userQuit:
     pass
 cw.userQuit()
 
-
-print(config)
