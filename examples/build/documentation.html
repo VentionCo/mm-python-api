@@ -114,10 +114,15 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
+<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+   <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Controller gCode responses &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="p">)</span>
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">_u_step</span><span class="o">=</span><span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">_mech_gain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span><span class="p">)</span>
+<span class="n">axis</span> <span class="o">=</span> <span class="n">AXIS_NUMBER</span><span class="o">.</span><span class="n">DRIVE1</span>
+<span class="n">uStep</span> <span class="o">=</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span>
+<span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">_u_step</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -225,15 +230,10 @@ If this is your first time using the machine motion controller, please follow th
            <div class="card card-body code-demo" >
            <button type="button" data-parent ="#configMachineMotionIpcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('configMachineMotionIpexampleCode', 'configMachineMotionIp')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "configMachineMotionIpexampleCode">
-                    <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
-<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
-
-<span class="c1"># Define a callback to process controller gCode responses (if desired)</span>
-<span class="k">def</span> <span class="nf">templateCallback</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-   <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Controller gCode responses &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="p">)</span>
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">#Initialize MachineMotion with default IP address</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">templateCallback</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Application Message: MachineMotion Controller Connected&quot;</span><span class="p">)</span>
 
 <span class="c1">#Configure machine motion with a static IP address</span>
@@ -330,12 +330,8 @@ If this is your first time using the machine motion controller, please follow th
            <button type="button" data-parent ="#detectIOModulescollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('detectIOModulesexampleCode', 'detectIOModules')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "detectIOModulesexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
-
-<span class="c1"># Define a callback to process controller gCode responses (if desired)</span>
-<span class="k">def</span> <span class="nf">templateCallback</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-   <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Controller gCode responses &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="p">)</span>
    
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">templateCallback</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1">#Reads and Prints all input values on all connected digital IO Modules</span>
 <span class="n">detectedIOModules</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">detectIOModules</span><span class="p">()</span>
@@ -586,17 +582,9 @@ If this is your first time using the machine motion controller, please follow th
            <div class="card card-body code-demo" >
            <button type="button" data-parent ="#emitAbsoluteMovecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitAbsoluteMoveexampleCode', 'emitAbsoluteMove')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "emitAbsoluteMoveexampleCode">
-                    <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">configWizard</span>
-<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
-
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="n">axis</span> <span class="o">=</span> <span class="mi">3</span>                                    <span class="c1">#The axis that you&#39;d like to move</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">400</span>                                 <span class="c1">#The max speed you&#39;d like to move at</span>
@@ -685,16 +673,9 @@ If this is your first time using the machine motion controller, please follow th
            <div class="card card-body code-demo" >
            <button type="button" data-parent ="#emitAccelerationcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitAccelerationexampleCode', 'emitAcceleration')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "emitAccelerationexampleCode">
-                    <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">configWizard</span>
-<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>      <span class="c1"># The acceleration [mm/s^2] that all subsequent moves will move at </span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Global acceleration set to &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">acceleration</span><span class="p">))</span>
@@ -794,11 +775,6 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "emitCombinedAxesAbsoluteMoveexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-
 <span class="c1">#Declare parameters for combined absolute move</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>
@@ -807,7 +783,7 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span>
 
 <span class="c1">#Load parameters for combined absolute move</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axesToMove</span><span class="p">:</span>
@@ -936,11 +912,6 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "emitCombinedAxisRelativeMoveexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-
 <span class="c1">#declare parameters for combine move</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>
@@ -950,7 +921,7 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span>
 
 <span class="c1">#load parameters for combined move</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axesToMove</span><span class="p">:</span>
@@ -966,7 +937,7 @@ If this is your first time using the machine motion controller, please follow th
 
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">len</span><span class="p">(</span><span class="n">axesToMove</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; moved &quot;</span> <span class="o">+</span> <span class="n">distances</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; in the &quot;</span> <span class="o">+</span> <span class="n">directions</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="s2">&quot; direction.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; moved &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; in the &quot;</span> <span class="o">+</span> <span class="n">directions</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; direction.&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -1050,17 +1021,13 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "emitHomeexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">axis</span> <span class="o">=</span> <span class="n">AXIS_NUMBER</span><span class="o">.</span><span class="n">DRIVE1</span>
 
-<span class="c1"># Homing axis 1</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is going home</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="s2">&quot;Application Message: Axis &quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span><span class="s2">&quot; is going home&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Application Message: Axis 1 is at home </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Application Message: Axis &quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span><span class="s2">&quot; is at home&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -1128,11 +1095,7 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "emitHomeAllexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1"># Home All Axes Sequentially</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
@@ -1244,11 +1207,7 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "emitRelativeMoveexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1">#Define Relative Move Parameters</span>
 <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span>
@@ -1272,6 +1231,126 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">mm</span><span class="o">.</span><span class="n">emitRelativeMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">distance</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; moved &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distance</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm in the &quot;</span> <span class="o">+</span> <span class="n">direction</span> <span class="o">+</span> <span class="s2">&quot; direction&quot;</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+        
+
+    <div style="height:10px">
+    </div>
+    
+</dl>
+<dl class="funcWrapper" >
+    
+    <dt id=emitSetAxisDirection class="funcHeader">
+        <div class = "row">
+            <div class = "col-md-8">
+                <h4 > 
+                    <span class="funcClassName "> mm.</span>
+                    <span class = "funcName"> <b>emitSetAxisDirection</b> </span>
+                        (<span class="func funcParamHeading">
+                                direction, axis
+                            </span>)
+                </h4>
+            </div>
+            <div class = "col-md-4">
+                <span style="float:right">
+                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#emitSetAxisDirectioncollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#emitSetAxisDirectioncollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
+                </span> 
+            </div> 
+
+
+        </div>
+    </dt>
+
+    <dd>
+        <div class="funcDescription funcText">
+            Reversing the axis direction reverses the location of the home sensor and reverses the positive motion direction. In Normal direction, the Home sensor is xA, in Reverse the Home sensor is xB.
+        </div>
+    </dd>
+
+
+            <div class="indent2">
+                <span class = "funcParam"><b>direction</b></span>
+                <span class = "funcParamType"><code>String</code></span>
+                -
+                <span class = "funcText">              
+                    A string of value either either 'Normal' or 'Reverse'. 'Normal' direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B. Ex - "Reverse"
+                </span>
+            </div>
+            <div class="indent2">
+                <span class = "funcParam"><b>axis</b></span>
+                <span class = "funcParamType"><code>Number</code></span>
+                -
+                <span class = "funcText">              
+                    The specified axis.
+                </span>
+            </div>
+
+    <dd >
+        <div class="funcNote">
+            <div class="d-inline"><b>NOTE:</b></div>
+            <div class="d-inline">For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a></div>
+        </div>
+
+    </dd>
+
+
+
+    <div id="emitSetAxisDirectioncollapseParent" >
+        <div class="collapse" data-parent ="#emitSetAxisDirectioncollapseParent" id="emitSetAxisDirectioncollapseSource">
+            <div class="card card-body  code-demo">
+                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">emitSetAxisDirection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">direction</span><span class="p">):</span>
+    
+        <span class="c1"># Checking input parameters</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">direction</span> <span class="o">!=</span> <span class="s2">&quot;normal&quot;</span> <span class="ow">and</span> <span class="n">direction</span> <span class="o">!=</span> <span class="s2">&quot;reverse&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;direction parameter must be either &quot;normal&quot; or &quot;reversed&quot;&#39;</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="p">(</span><span class="n">axis</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">axis</span> <span class="o">!=</span><span class="mi">3</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;axis must either be 1, 2 or 3&#39;</span><span class="p">)</span>
+            
+        <span class="k">if</span><span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;reverse&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis1_steps_mm</span><span class="p">))</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis2_steps_mm</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;reverse&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis2_steps_mm</span><span class="p">))</span>
+        <span class="k">elif</span><span class="p">(</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;normal&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis3_steps_mm</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;reverse&quot;</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;M92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myAxis3_steps_mm</span><span class="p">))</span>
+</pre></div>
+
+            </div>
+        </div>
+        <div class= "collapse"  id="emitSetAxisDirectioncollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#emitSetAxisDirectioncollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitSetAxisDirectionexampleCode', 'emitSetAxisDirection')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "emitSetAxisDirectionexampleCode">
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+
+<span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">direction</span> <span class="o">=</span> <span class="s2">&quot;reverse&quot;</span> 
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSetAxisDirection</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">direction</span><span class="p">)</span>
+
+<span class="n">homesTowards</span><span class="o">=</span><span class="p">{</span>
+    <span class="s2">&quot;normal&quot;</span><span class="p">:</span> <span class="s2">&quot;sensor &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;reverse&quot;</span><span class="p">:</span> <span class="s2">&quot;sensor &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;B&quot;</span>
+<span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is set to &quot;</span> <span class="o">+</span> <span class="n">direction</span> <span class="o">+</span> <span class="s2">&quot; mode. It will home towards &quot;</span> <span class="o">+</span> <span class="n">homesTowards</span><span class="p">[</span><span class="n">direction</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -1346,15 +1425,10 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "emitSpeedexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">500</span>      <span class="c1"># The speed [mm/s] that all subsequent moves will move at </span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Global acceleration set to &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">acceleration</span><span class="p">))</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Global acceleration set to &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">speed</span><span class="p">))</span>
 </pre></div>
 
                 </div>
@@ -1436,11 +1510,7 @@ If this is your first time using the machine motion controller, please follow th
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">time</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1">#Define Relative Move Parameters</span>
 <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span>
@@ -1550,11 +1620,6 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "emitgCodeexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-
 <span class="c1">#Declare parameters for g-Code command</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>
@@ -1570,7 +1635,6 @@ If this is your first time using the machine motion controller, please follow th
     <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All Axes homed.&quot;</span><span class="p">)</span>
-
 
 <span class="c1"># Use the G0 command to move both axis 1 and 2 by 50mm</span>
 <span class="n">gCodeCommand</span> <span class="o">=</span> <span class="s2">&quot;G0 X50 Y50&quot;</span>
@@ -1671,11 +1735,7 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "getDataexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses (if desired)</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1"># Initialize the key-value pair to save on the controller</span>
 <span class="n">dataKey</span> <span class="o">=</span> <span class="s2">&quot;example_key&quot;</span>
@@ -2223,11 +2283,7 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "saveDataexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses (if desired)</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1"># Initialize the key-value pair to save on the controller</span>
 <span class="n">dataKey</span> <span class="o">=</span> <span class="s2">&quot;example_key&quot;</span>
@@ -2319,12 +2375,7 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="card card-body code-demo" id = "setPositionexampleCode">
                     <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
-<span class="c1"># Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.</span>
-<span class="n">enableDebug</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="k">if</span><span class="p">(</span><span class="n">enableDebug</span><span class="p">):</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Debug Message: &quot;</span> <span class="o">+</span> <span class="n">data</span><span class="p">)</span>
-
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span>                                    <span class="c1">#The axis that you&#39;d like to move</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">400</span>                                 <span class="c1">#The max speed you&#39;d like to move at</span>
@@ -2332,13 +2383,12 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">position</span> <span class="o">=</span> <span class="mi">100</span>                              <span class="c1">#The absolute position you&#39;d like to move to</span>
 <span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">rack_pinion_mm_turn</span>    <span class="c1">#The mechanical gain of the actuator on the axis</span>
 
+<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_16</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; homed&quot;</span><span class="p">)</span>
-
-<span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Absolute Moves are referenced from from home&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
@@ -2347,6 +2397,7 @@ If this is your first time using the machine motion controller, please follow th
 
 <span class="n">mm</span><span class="o">.</span><span class="n">setPosition</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Absolute moves on axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; are now referenced from &quot;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm from home. &quot;</span><span class="p">)</span>
+
 <span class="n">position2</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is now &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm from reference position and &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span> <span class="o">+</span> <span class="n">position2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm from home&quot;</span><span class="p">)</span>
@@ -2410,6 +2461,9 @@ If this is your first time using the machine motion controller, please follow th
             </div>
             <div class = "myTocItem">
                 <a href="#emitRelativeMove">emitRelativeMove</a>
+            </div>
+            <div class = "myTocItem">
+                <a href="#emitSetAxisDirection">emitSetAxisDirection</a>
             </div>
             <div class = "myTocItem">
                 <a href="#emitSpeed">emitSpeed</a>

@@ -1,12 +1,8 @@
-import os, sys
+
 from _MachineMotion import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
-
 #Initialize MachineMotion with default IP address
-mm = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 print("Application Message: MachineMotion Controller Connected")
 
 #Configure machine motion with a static IP address

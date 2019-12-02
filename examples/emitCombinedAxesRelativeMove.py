@@ -1,25 +1,21 @@
 from _MachineMotion import *
 
-# Define a callback to process controller gCode responses if desired. This is mostly used for debugging purposes.
-enableDebug = False
-def debug(data):
-    if(enableDebug): print("Debug Message: " + data)
-
 #declare parameters for combine move
 speed = 500
 acceleration = 500
 axesToMove = [1,2,3]
-distances = [50, 100, 50]
-directions = ["positive","negative","postive"]
+distances = dict(zip(axesToMove, [50, 100, 50]))
+directions = dict(zip(axesToMove, ["positive","negative","postive"]
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 
 #load parameters for combined move
-mm = MachineMotion(debug, DEFAULT_IP_ADDRESS.usb_windows)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 mm.emitSpeed(speed)
 mm.emitAcceleration(acceleration)
 for axis in axesToMove:
     mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 mm.emitHomeAll()
+mm.waitForMotionCompletion()
 print("All Axes homed.")
 
 # Simultaneously moves three axis:
@@ -29,6 +25,6 @@ print("All Axes homed.")
 mm.emitCombinedAxisRelativeMove(axesToMove, directions, distances)
 
 mm.waitForMotionCompletion()
-for axis in len(axesToMove):
-    print("Axis " + str(axis) + " moved " + distances[axis] + " in the " + directions[axis] " direction.")
+for axis in range(len(axesToMove)):
+    print("Axis " + str(axis) + " moved " + str(distances[axis]) + " in the " + directions[axis] + " direction.")
 

@@ -1,10 +1,8 @@
 from _MachineMotion import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )   
-mm = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
+#Adjust this line to match whichever AUX port the encoder is plugged into
 encoderPort = AUX_PORTS.AUX1
 
 print("Reading and printing encoder output for 10 seconds:")

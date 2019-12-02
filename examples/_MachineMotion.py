@@ -705,6 +705,43 @@ class MachineMotion:
 
         self.myGCode.__emit__(gCode)
 
+    def emitSetAxisDirection(self, axis, direction):
+        '''
+        desc: Reversing the axis direction reverses the location of the home sensor and reverses the positive motion direction. In Normal direction, the Home sensor is xA, in Reverse the Home sensor is xB.
+        params:
+            axis:
+                desc: The specified axis.
+                type: Number
+            direction:
+                desc: A string of value either either 'Normal' or 'Reverse'. 'Normal' direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B. Ex - "Reverse"
+                type: String
+        note: For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a>
+        exampleCodePath: emitSetAxisDirection.py
+        '''
+    
+        # Checking input parameters
+        if (direction != "normal" and direction != "reverse"):
+            raise ValueError('direction parameter must be either "normal" or "reversed"')
+            
+        if (axis != 1 and axis != 2 and axis !=3):
+            raise ValueError('axis must either be 1, 2 or 3')
+            
+        if(axis == 1):
+            if(direction == "normal"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
+            elif (direction == "reverse"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis1_steps_mm))
+        elif(axis == 2):
+            if(direction == "normal"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
+            elif (direction == "reverse"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis2_steps_mm))
+        elif(axis == 3):
+            if(direction == "normal"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
+            elif (direction == "reverse"):
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis3_steps_mm))
+
     #This function should be private in future releases.
     def isReady(self):
         return self.myGCode.__isReady__()
@@ -821,7 +858,7 @@ class MachineMotion:
 
     def getData(self, key):
         '''
-        desc: retreives saved/persisted data from the MachineMotion controller (in key-data pairs)
+        desc: Retreives saved/persisted data from the MachineMotion controller (in key-data pairs). If the controller takes more than 3 seconds to return data, the function will return with a value of "Error - getData took too long" under the given key.
         params:
             key:
                 desc: Uniquely identifies the data to be retreived
@@ -830,6 +867,7 @@ class MachineMotion:
         '''
 
         getDataAvailable = threading.Event()
+        dataTimedOut = threading.Event()
 
         def asyncGetData(key, callback):
             #Send the request to MachineMotion
@@ -839,18 +877,30 @@ class MachineMotion:
 
             #timer here to force call asyncCallback on timeout #kill timer# 
             # If this fails, return a key value pair - key is 'error' value is description why error failed
+            
 
         def asyncCallback(data):
-
             self.asyncResult = data
             getDataAvailable.set()
 
-        getDataThread = threading.Thread(target = asyncGetData, args=(key, asyncCallback,))
-        getDataThread.start()
-        getDataAvailable.wait()
-        getDataResult = json.loads("".join(self.asyncResult))
+        def threadTimeout():
+           time.sleep(3)
+           dataTimedOut.set()
 
-        return getDataResult
+
+        getDataThread = threading.Thread(target = asyncGetData, args=(key, asyncCallback,))
+        timeoutThread = threading.Thread(target = threadTimeout)
+        
+        getDataThread.start()
+        timeoutThread.start()
+        while True:
+            if getDataAvailable.isSet():
+                getDataResult = json.loads("".join(self.asyncResult))
+                return getDataResult
+            elif dataTimedOut.isSet():
+                getDataResult = json.loads('{"data":"Error - getData took too long"}')
+                return getDataResult
+
 
 
 
@@ -941,6 +991,9 @@ class MachineMotion:
                 type: Integer
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
+        if (self.isEncoderIdValid( encoder ) == False):
+            print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
+            return
         return self.myEncoderRealtimePositions[encoder]
 
     #This function is left in for legacy, however it is not documented because it is the same functionality as readEncoder
@@ -1027,7 +1080,7 @@ class MachineMotion:
         while self.isReady() != "true": pass
 
     # Class constructor
-    def __init__(self, gCodeCallback, machineIp):
+    def __init__(self, machineIp, gCodeCallback=lambda(data):None):
         global machineMotionRef
         global gCodeCallbackRef
 

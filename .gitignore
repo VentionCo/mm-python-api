@@ -1,2 +1,5 @@
-/examples/__pycache__
+/examples/_*
 /demos/*
+*.sh
+/examples/build/*
+/build/*
