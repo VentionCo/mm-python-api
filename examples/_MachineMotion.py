@@ -453,12 +453,6 @@ class MachineMotion:
         
 
     def isEncoderIdValid(self, id):
-        '''
-        desc: Returns True if the given id is valid for an encoder.
-        params:
-            id:
-                desc: <span style="color:red"> What Id is this?</span> 
-        '''
         if id >= 0 and id <= 3:
             return True
         return False
@@ -752,6 +746,7 @@ class MachineMotion:
     def isMotionCompleted(self):
         '''
         desc: Returns true if all axes have completed their movement.
+        exampleCodePath: waitForMotionCompletion.py
         '''
         global motion_completed
         return motion_completed
@@ -904,26 +899,14 @@ class MachineMotion:
                 getDataResult = json.loads('{"data":"Error - getData took too long"}')
                 return getDataResult
 
-
-
-
-
-
     def isIoExpanderAvailable(self, device):
-        '''
-        desc: Returns True if the io-expander with the given id is available
-        params:
-            device:
-                desc: The io-expander device identifier <span style="color:red">What is an example?</span>
-                type: Integer
-        '''
         return self.myIoExpanderAvailabilityState[ device-1 ]
 
     def detectIOModules(self):
         '''
         desc: Returns a dictionary containing all detected IO Modules.
-        exampleCodePath: digitalRead.py
         note: For more information, please see the digital IO datasheet <a href="#" style="color:red">here</a>
+        exampleCodePath: digitalRead.py
         '''
         class NoIOModulesFound(Exception):
             pass
@@ -952,6 +935,7 @@ class MachineMotion:
             pin:
                 desc: The pin index to read from [0,1,2,3]
                 type: Integer
+        exampleCodePath: digitalRead
         '''
         if (self.isIoExpanderInputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin) )
@@ -977,6 +961,7 @@ class MachineMotion:
             value:
                 desc: Writing '1' or HIGH will set digial output to 24V, writing 0 will set digital output to 0V.
                 type: Integer
+        exampleCodePath: digitalWrite.py
         Note: The max current that can be drawn from the output pins is <span style="color:red">x mA</span>
         '''
         if (self.isIoExpanderOutputIdValid( device, pin ) == False):
@@ -992,6 +977,7 @@ class MachineMotion:
             encoder:
                 desc: The identifier of the encoder to read
                 type: Integer
+        exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
         return self.readEncoderRealtimePosition(encoder)

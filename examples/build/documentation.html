@@ -111,18 +111,15 @@ If this is your first time using the machine motion controller, please follow th
            <div class="card card-body code-demo" >
            <button type="button" data-parent ="#configAxiscollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('configAxisexampleCode', 'configAxis')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "configAxisexampleCode">
-                    <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
-
-<span class="k">def</span> <span class="nf">debug</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-   <span class="nb">print</span> <span class="p">(</span> <span class="s2">&quot;Controller gCode responses &quot;</span> <span class="o">+</span> <span class="n">data</span> <span class="p">)</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
 <span class="c1"># Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt</span>
 <span class="n">axis</span> <span class="o">=</span> <span class="n">AXIS_NUMBER</span><span class="o">.</span><span class="n">DRIVE1</span>
 <span class="n">uStep</span> <span class="o">=</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span>
 <span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">_u_step</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">uStep</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; configured with &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">uStep</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; microstepping and &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">mechGain</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm/turn mechanical gain&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -335,10 +332,11 @@ If this is your first time using the machine motion controller, please follow th
 
 <span class="c1">#Reads and Prints all input values on all connected digital IO Modules</span>
 <span class="n">detectedIOModules</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">detectIOModules</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">IO_Name</span><span class="p">,</span> <span class="n">IO_NetworkID</span> <span class="ow">in</span> <span class="n">detectedIOModules</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">readPin</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
-        <span class="n">pinValue</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">digitalRead</span><span class="p">(</span><span class="n">IO_NetworkID</span><span class="p">,</span> <span class="n">readPin</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pin &quot;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">readPin</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; on &quot;</span> <span class="o">+</span> <span class="n">IO_Name</span> <span class="o">+</span> <span class="s2">&quot; has value &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pinValue</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">IO_Name</span><span class="p">,</span> <span class="n">IO_NetworkID</span> <span class="ow">in</span> <span class="n">detectedIOModules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">readPins</span> <span class="o">=</span><span class="p">{</span><span class="s2">&quot;Pin 1&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Pin 2&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Pin 3&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Pin 4&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">readPin</span> <span class="ow">in</span> <span class="n">readPins</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">pinValue</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">digitalRead</span><span class="p">(</span><span class="n">IO_NetworkID</span><span class="p">,</span> <span class="n">readPins</span><span class="p">[</span><span class="n">readPin</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">readPin</span> <span class="o">+</span> <span class="s2">&quot; on &quot;</span> <span class="o">+</span> <span class="n">IO_Name</span> <span class="o">+</span> <span class="s2">&quot; has value &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pinValue</span><span class="p">))</span>
   
 </pre></div>
 
@@ -369,6 +367,7 @@ If this is your first time using the machine motion controller, please follow th
             <div class = "col-md-4">
                 <span style="float:right">
                     <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#digitalReadcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#digitalReadcollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
                 </span> 
             </div> 
 
@@ -421,6 +420,15 @@ If this is your first time using the machine motion controller, please follow th
 
             </div>
         </div>
+        <div class= "collapse"  id="digitalReadcollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#digitalReadcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('digitalReadexampleCode', 'digitalRead')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "digitalReadexampleCode">
+                    None
+                </div>
+            </div>
+        </div>
     </div>
 
         
@@ -445,6 +453,7 @@ If this is your first time using the machine motion controller, please follow th
             <div class = "col-md-4">
                 <span style="float:right">
                     <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#digitalWritecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#digitalWritecollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
                 </span> 
             </div> 
 
@@ -497,6 +506,36 @@ If this is your first time using the machine motion controller, please follow th
         <span class="bp">self</span><span class="o">.</span><span class="n">myMqttClient</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s1">&#39;devices/io-expander/&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;/digital-output/&#39;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">pin</span><span class="p">),</span> <span class="s1">&#39;1&#39;</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
 </pre></div>
 
+            </div>
+        </div>
+        <div class= "collapse"  id="digitalWritecollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#digitalWritecollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('digitalWriteexampleCode', 'digitalWrite')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "digitalWriteexampleCode">
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+   
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+
+<span class="c1"># Toggles the output pins on all connected IO Modules</span>
+<span class="n">detectedIOModules</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">detectIOModules</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">IO_Name</span><span class="p">,</span> <span class="n">IO_NetworkID</span> <span class="ow">in</span> <span class="n">detectedIOModules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">writePins</span> <span class="o">=</span><span class="p">{</span><span class="s2">&quot;Pin 1&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Pin 2&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Pin 3&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Pin 4&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">writePin</span> <span class="ow">in</span> <span class="n">writePins</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">writePin</span> <span class="o">+</span> <span class="s2">&quot; on &quot;</span> <span class="o">+</span> <span class="n">IO_Name</span> <span class="o">+</span> <span class="s2">&quot; is going to flash twice&quot;</span><span class="p">)</span>
+        
+        <span class="n">mm</span><span class="o">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">IO_NetworkID</span><span class="p">,</span> <span class="n">writePins</span><span class="p">[</span><span class="n">writePin</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">mm</span><span class="o">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">IO_NetworkID</span><span class="p">,</span> <span class="n">writePins</span><span class="p">[</span><span class="n">writePin</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">mm</span><span class="o">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">IO_NetworkID</span><span class="p">,</span> <span class="n">writePins</span><span class="p">[</span><span class="n">writePin</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">mm</span><span class="o">.</span><span class="n">digitalWrite</span><span class="p">(</span><span class="n">IO_NetworkID</span><span class="p">,</span> <span class="n">writePins</span><span class="p">[</span><span class="n">writePin</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+
+  
+</pre></div>
+
+                </div>
             </div>
         </div>
     </div>
@@ -586,7 +625,7 @@ If this is your first time using the machine motion controller, please follow th
 
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
-<span class="n">axis</span> <span class="o">=</span> <span class="mi">3</span>                                    <span class="c1">#The axis that you&#39;d like to move</span>
+<span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span>                                    <span class="c1">#The axis that you&#39;d like to move</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">400</span>                                 <span class="c1">#The max speed you&#39;d like to move at</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>                          <span class="c1">#The constant acceleration and decceleration value for the move</span>
 <span class="n">position</span> <span class="o">=</span> <span class="mi">100</span>                              <span class="c1">#The absolute position you&#39;d like to move to</span>
@@ -595,12 +634,15 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; homed&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is going home.&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; homed.&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is moving towards position &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Motion Complete!&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is at position &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -779,7 +821,7 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">axesToMove</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+<span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span><span class="mi">50</span><span class="p">]</span>
 <span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span>
 
 <span class="c1">#Load parameters for combined absolute move</span>
@@ -788,7 +830,9 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axesToMove</span><span class="p">:</span>
     <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All Axes Moving Home Sequentially&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All Axes homed.&quot;</span><span class="p">)</span>
 
 <span class="c1"># Simultaneously moves three axis:</span>
@@ -797,8 +841,8 @@ If this is your first time using the machine motion controller, please follow th
 <span class="c1">#   Moves axis 3 to absolute position 50</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitCombinedAxesAbsoluteMove</span><span class="p">(</span><span class="n">axesToMove</span><span class="p">,</span> <span class="n">positions</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">len</span><span class="p">(</span><span class="n">axesToMove</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;moved to position &quot;</span> <span class="o">+</span> <span class="n">positions</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axesToMove</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; moved to position &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">positions</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>
 </pre></div>
 
                 </div>
@@ -915,9 +959,9 @@ If this is your first time using the machine motion controller, please follow th
 <span class="c1">#declare parameters for combine move</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">axesToMove</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">axesToMove</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
-<span class="n">directions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span><span class="s2">&quot;negative&quot;</span><span class="p">,</span><span class="s2">&quot;postive&quot;</span><span class="p">]</span>
+<span class="n">directions</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span><span class="s2">&quot;positive&quot;</span><span class="p">,</span><span class="s2">&quot;positive&quot;</span><span class="p">]</span>
 <span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span>
 
 <span class="c1">#load parameters for combined move</span>
@@ -927,6 +971,7 @@ If this is your first time using the machine motion controller, please follow th
 <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axesToMove</span><span class="p">:</span>
     <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All Axes homed.&quot;</span><span class="p">)</span>
 
 <span class="c1"># Simultaneously moves three axis:</span>
@@ -934,10 +979,9 @@ If this is your first time using the machine motion controller, please follow th
 <span class="c1">#   Move axis 2 in the negative direction by 100 mm</span>
 <span class="c1">#   Move axis 3 in the positive direction by 50 mm</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitCombinedAxisRelativeMove</span><span class="p">(</span><span class="n">axesToMove</span><span class="p">,</span> <span class="n">directions</span><span class="p">,</span> <span class="n">distances</span><span class="p">)</span>
-
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">len</span><span class="p">(</span><span class="n">axesToMove</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; moved &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">axis</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; in the &quot;</span> <span class="o">+</span> <span class="n">directions</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; direction.&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">axesToMove</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; moved &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">distances</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; in the &quot;</span> <span class="o">+</span> <span class="n">directions</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; direction.&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -1093,7 +1137,8 @@ If this is your first time using the machine motion controller, please follow th
            <div class="card card-body code-demo" >
            <button type="button" data-parent ="#emitHomeAllcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('emitHomeAllexampleCode', 'emitHomeAll')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "emitHomeAllexampleCode">
-                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+                    <div class="highlight"><pre><span></span>   
+<span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 
@@ -1223,6 +1268,7 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 
 <span class="c1">#Home Axis Before Move</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; moving home.&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; homed&quot;</span><span class="p">)</span>
@@ -1527,6 +1573,7 @@ If this is your first time using the machine motion controller, please follow th
 
 <span class="c1">#Home Axis Before Move</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is going home&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; homed&quot;</span><span class="p">)</span>
 
@@ -1537,6 +1584,7 @@ If this is your first time using the machine motion controller, please follow th
 <span class="c1">#This move should take 5 (distance/speed) seconds to complete. Instead, we wait 2 seconds and then stop the machine.</span>
 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitStop</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; stopped.&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -1623,16 +1671,12 @@ If this is your first time using the machine motion controller, please follow th
 <span class="c1">#Declare parameters for g-Code command</span>
 <span class="n">speed</span> <span class="o">=</span> <span class="mi">500</span>
 <span class="n">acceleration</span> <span class="o">=</span> <span class="mi">500</span>
-<span class="n">axesToMove</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]</span>
-<span class="n">positions</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
 <span class="n">mechGain</span> <span class="o">=</span> <span class="n">MECH_GAIN</span><span class="o">.</span><span class="n">timing_belt_150mm_turn</span>
 
 <span class="c1">#Load parameters for emitting g-code</span>
-<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">debug</span><span class="p">,</span> <span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitSpeed</span><span class="p">(</span><span class="n">speed</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAcceleration</span><span class="p">(</span><span class="n">acceleration</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axesToMove</span><span class="p">:</span>
-    <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_8</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHomeAll</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All Axes homed.&quot;</span><span class="p">)</span>
 
@@ -1680,7 +1724,7 @@ If this is your first time using the machine motion controller, please follow th
 
     <dd>
         <div class="funcDescription funcText">
-            retreives saved/persisted data from the MachineMotion controller (in key-data pairs)
+            Retreives saved/persisted data from the MachineMotion controller (in key-data pairs). If the controller takes more than 3 seconds to return data, the function will return with a value of "Error - getData took too long" under the given key.
         </div>
     </dd>
 
@@ -1703,6 +1747,7 @@ If this is your first time using the machine motion controller, please follow th
                 <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
 
         <span class="n">getDataAvailable</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="n">dataTimedOut</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">asyncGetData</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">callback</span><span class="p">):</span>
             <span class="c1">#Send the request to MachineMotion</span>
@@ -1712,18 +1757,29 @@ If this is your first time using the machine motion controller, please follow th
 
             <span class="c1">#timer here to force call asyncCallback on timeout #kill timer# </span>
             <span class="c1"># If this fails, return a key value pair - key is &#39;error&#39; value is description why error failed</span>
+            
 
         <span class="k">def</span> <span class="nf">asyncCallback</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-
             <span class="bp">self</span><span class="o">.</span><span class="n">asyncResult</span> <span class="o">=</span> <span class="n">data</span>
             <span class="n">getDataAvailable</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
-        <span class="n">getDataThread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="n">asyncGetData</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">asyncCallback</span><span class="p">,))</span>
-        <span class="n">getDataThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-        <span class="n">getDataAvailable</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="n">getDataResult</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asyncResult</span><span class="p">))</span>
+        <span class="k">def</span> <span class="nf">threadTimeout</span><span class="p">():</span>
+           <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+           <span class="n">dataTimedOut</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">getDataResult</span>
+
+        <span class="n">getDataThread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="n">asyncGetData</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">asyncCallback</span><span class="p">,))</span>
+        <span class="n">timeoutThread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="n">threadTimeout</span><span class="p">)</span>
+        
+        <span class="n">getDataThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="n">timeoutThread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">getDataAvailable</span><span class="o">.</span><span class="n">isSet</span><span class="p">():</span>
+                <span class="n">getDataResult</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">asyncResult</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">getDataResult</span>
+            <span class="k">elif</span> <span class="n">dataTimedOut</span><span class="o">.</span><span class="n">isSet</span><span class="p">():</span>
+                <span class="n">getDataResult</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="s1">&#39;{&quot;data&quot;:&quot;Error - getData took too long&quot;}&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">getDataResult</span>
 </pre></div>
 
             </div>
@@ -1747,130 +1803,10 @@ If this is your first time using the machine motion controller, please follow th
 
 <span class="c1"># Retreiving data from the controller</span>
 <span class="n">retrievedData</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">getData</span><span class="p">(</span><span class="n">dataKey</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data: &#39;&quot;</span> <span class="o">+</span> <span class="n">retrievedData</span> <span class="o">+</span> <span class="s2">&quot;&#39; retrieved from controller using key &#39;&quot;</span> <span class="o">+</span> <span class="n">dataKey</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data: &#39;&quot;</span> <span class="o">+</span> <span class="n">retrievedData</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39; retrieved from controller using key &#39;&quot;</span> <span class="o">+</span> <span class="n">dataKey</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
-            </div>
-        </div>
-    </div>
-
-        
-
-    <div style="height:10px">
-    </div>
-    
-</dl>
-<dl class="funcWrapper" >
-    
-    <dt id=isEncoderIdValid class="funcHeader">
-        <div class = "row">
-            <div class = "col-md-8">
-                <h4 > 
-                    <span class="funcClassName "> mm.</span>
-                    <span class = "funcName"> <b>isEncoderIdValid</b> </span>
-                        (<span class="func funcParamHeading">
-                                id
-                            </span>)
-                </h4>
-            </div>
-            <div class = "col-md-4">
-                <span style="float:right">
-                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isEncoderIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
-                </span> 
-            </div> 
-
-
-        </div>
-    </dt>
-
-    <dd>
-        <div class="funcDescription funcText">
-            Returns True if the given id is valid for an encoder.
-        </div>
-    </dd>
-
-
-            <div class="indent2">
-                <span class = "funcParam"><b>id</b></span>
-                <span class = "funcParamType"><code>No value given fortype</code></span>
-                -
-                <span class = "funcText">              
-                    <span style="color:red"> What Id is this?</span>
-                </span>
-            </div>
-
-
-
-
-    <div id="isEncoderIdValidcollapseParent" >
-        <div class="collapse" data-parent ="#isEncoderIdValidcollapseParent" id="isEncoderIdValidcollapseSource">
-            <div class="card card-body  code-demo">
-                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isEncoderIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">id</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">id</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">return</span> <span class="kc">False</span>
-</pre></div>
-
-            </div>
-        </div>
-    </div>
-
-        
-
-    <div style="height:10px">
-    </div>
-    
-</dl>
-<dl class="funcWrapper" >
-    
-    <dt id=isIoExpanderAvailable class="funcHeader">
-        <div class = "row">
-            <div class = "col-md-8">
-                <h4 > 
-                    <span class="funcClassName "> mm.</span>
-                    <span class = "funcName"> <b>isIoExpanderAvailable</b> </span>
-                        (<span class="func funcParamHeading">
-                                device
-                            </span>)
-                </h4>
-            </div>
-            <div class = "col-md-4">
-                <span style="float:right">
-                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderAvailablecollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
-                </span> 
-            </div> 
-
-
-        </div>
-    </dt>
-
-    <dd>
-        <div class="funcDescription funcText">
-            Returns True if the io-expander with the given id is available
-        </div>
-    </dd>
-
-
-            <div class="indent2">
-                <span class = "funcParam"><b>device</b></span>
-                <span class = "funcParamType"><code>Integer</code></span>
-                -
-                <span class = "funcText">              
-                    The io-expander device identifier <span style="color:red">What is an example?</span>
-                </span>
-            </div>
-
-
-
-
-    <div id="isIoExpanderAvailablecollapseParent" >
-        <div class="collapse" data-parent ="#isIoExpanderAvailablecollapseParent" id="isIoExpanderAvailablecollapseSource">
-            <div class="card card-body  code-demo">
-                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderAvailable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">myIoExpanderAvailabilityState</span><span class="p">[</span> <span class="n">device</span><span class="o">-</span><span class="mi">1</span> <span class="p">]</span>
-</pre></div>
-
             </div>
         </div>
     </div>
@@ -2099,6 +2035,7 @@ If this is your first time using the machine motion controller, please follow th
             <div class = "col-md-4">
                 <span style="float:right">
                     <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isMotionCompletedcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#isMotionCompletedcollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
                 </span> 
             </div> 
 
@@ -2127,6 +2064,26 @@ If this is your first time using the machine motion controller, please follow th
 
             </div>
         </div>
+        <div class= "collapse"  id="isMotionCompletedcollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#isMotionCompletedcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('isMotionCompletedexampleCode', 'isMotionCompleted')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "isMotionCompletedexampleCode">
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Move the axis one to position 100 mm</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This message gets printed immediately&quot;</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This message gets printed once machine is finished moving&quot;</span><span class="p">)</span>
+</pre></div>
+
+                </div>
+            </div>
+        </div>
     </div>
 
         
@@ -2151,6 +2108,7 @@ If this is your first time using the machine motion controller, please follow th
             <div class = "col-md-4">
                 <span style="float:right">
                     <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#readEncodercollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
+                    <button class="button button-xs button-outline api-button"   data-toggle="collapse" href= "#readEncodercollapseExample">Example Code <i class="fas fa-chevron-down"></i></button>
                 </span> 
             </div> 
 
@@ -2188,9 +2146,32 @@ If this is your first time using the machine motion controller, please follow th
         <div class="collapse" data-parent ="#readEncodercollapseParent" id="readEncodercollapseSource">
             <div class="card card-body  code-demo">
                 <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">readEncoder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">encoder</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">myEncoderRealtimePositions</span><span class="p">[</span><span class="n">encoder</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">readEncoderRealtimePosition</span><span class="p">(</span><span class="n">encoder</span><span class="p">)</span>
 </pre></div>
 
+            </div>
+        </div>
+        <div class= "collapse"  id="readEncodercollapseExample">
+
+           <div class="card card-body code-demo" >
+           <button type="button" data-parent ="#readEncodercollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('readEncoderexampleCode', 'readEncoder')"><i class="fas fa-copy"></i>  Copy Code</button>
+                <div class="card card-body code-demo" id = "readEncoderexampleCode">
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+
+<span class="c1">#Adjust this line to match whichever AUX port the encoder is plugged into</span>
+<span class="n">encoderPort</span> <span class="o">=</span> <span class="n">AUX_PORTS</span><span class="o">.</span><span class="n">AUX1</span>
+<span class="n">encoderPortLabel</span> <span class="o">=</span> <span class="p">{</span><span class="n">AUX_PORTS</span><span class="o">.</span><span class="n">AUX1</span><span class="p">:</span> <span class="s2">&quot;AUX 1&quot;</span><span class="p">,</span> <span class="n">AUX_PORTS</span><span class="o">.</span><span class="n">AUX2</span><span class="p">:</span> <span class="s2">&quot;AUX 2&quot;</span><span class="p">,</span> <span class="n">AUX_PORTS</span><span class="o">.</span><span class="n">AUX3</span><span class="p">:</span> <span class="s2">&quot;AUX 3&quot;</span><span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reading and printing encoder output for 10 seconds:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">):</span>
+   <span class="n">encoderOutput</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">readEncoder</span><span class="p">(</span><span class="n">encoderPort</span><span class="p">)</span>
+   <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Encoder on port &quot;</span> <span class="o">+</span> <span class="n">encoderPortLabel</span><span class="p">[</span><span class="n">encoderPort</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; reads a value of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">encoderOutput</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; counts&quot;</span><span class="p">)</span>
+   <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+
+                </div>
             </div>
         </div>
     </div>
@@ -2295,7 +2276,7 @@ If this is your first time using the machine motion controller, please follow th
 
 <span class="c1"># Retreiving data from the controller</span>
 <span class="n">retrievedData</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">getData</span><span class="p">(</span><span class="n">dataKey</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data: &#39;&quot;</span> <span class="o">+</span> <span class="n">retrievedData</span> <span class="o">+</span> <span class="s2">&quot;&#39; retrieved from controller using key &#39;&quot;</span> <span class="o">+</span> <span class="n">dataKey</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Data: &#39;&quot;</span> <span class="o">+</span> <span class="n">retrievedData</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;&#39; retrieved from controller using key &#39;&quot;</span> <span class="o">+</span> <span class="n">dataKey</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span><span class="p">)</span>
 </pre></div>
 
                 </div>
@@ -2364,6 +2345,9 @@ If this is your first time using the machine motion controller, please follow th
         <div class="collapse" data-parent ="#setPositioncollapseParent" id="setPositioncollapseSource">
             <div class="card card-body  code-demo">
                 <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">setPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">):</span>
+        <span class="c1"># Transmit move command</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__emit__</span><span class="p">(</span><span class="s2">&quot;G92 &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">myGCode</span><span class="o">.</span><span class="n">__getTrueAxis__</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">))</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">isReady</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;true&quot;</span><span class="p">:</span> <span class="k">pass</span>
 </pre></div>
 
             </div>
@@ -2388,18 +2372,21 @@ If this is your first time using the machine motion controller, please follow th
 <span class="n">mm</span><span class="o">.</span><span class="n">configAxis</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">MICRO_STEPS</span><span class="o">.</span><span class="n">ustep_16</span><span class="p">,</span> <span class="n">mechGain</span><span class="p">)</span>
 
 <span class="n">mm</span><span class="o">.</span><span class="n">emitHome</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; homed&quot;</span><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Absolute Moves are referenced from from home&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Absolute Moves are referenced from home&quot;</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
 <span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm away from home&quot;</span><span class="p">)</span>
 
 <span class="n">mm</span><span class="o">.</span><span class="n">setPosition</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Absolute moves on axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; are now referenced from &quot;</span> <span class="o">+</span>  <span class="nb">str</span><span class="p">(</span><span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm from home. &quot;</span><span class="p">)</span>
-
-<span class="n">position2</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span>
+<span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Now moving to absolute Position 10 mm, referenced from location &#39;setPosition&#39; was called&quot;</span><span class="p">)</span>
+<span class="n">position2</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">emitAbsoluteMove</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">position2</span><span class="p">)</span>
+<span class="n">mm</span><span class="o">.</span><span class="n">waitForMotionCompletion</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Axis &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; is now &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm from reference position and &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">position</span> <span class="o">+</span> <span class="n">position2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;mm from home&quot;</span><span class="p">)</span>
 </pre></div>
 
@@ -2476,12 +2463,6 @@ If this is your first time using the machine motion controller, please follow th
             </div>
             <div class = "myTocItem">
                 <a href="#getData">getData</a>
-            </div>
-            <div class = "myTocItem">
-                <a href="#isEncoderIdValid">isEncoderIdValid</a>
-            </div>
-            <div class = "myTocItem">
-                <a href="#isIoExpanderAvailable">isIoExpanderAvailable</a>
             </div>
             <div class = "myTocItem">
                 <a href="#isIoExpanderIdValid">isIoExpanderIdValid</a>
