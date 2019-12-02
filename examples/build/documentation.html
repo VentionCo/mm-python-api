@@ -425,7 +425,20 @@ If this is your first time using the machine motion controller, please follow th
            <div class="card card-body code-demo" >
            <button type="button" data-parent ="#digitalReadcollapseParent"  class="runCodeBtn button button-success button-xs" onclick="copyTextToClipboard('digitalReadexampleCode', 'digitalRead')"><i class="fas fa-copy"></i>  Copy Code</button>
                 <div class="card card-body code-demo" id = "digitalReadexampleCode">
-                    None
+                    <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">_MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
+   
+<span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">(</span><span class="n">DEFAULT_IP_ADDRESS</span><span class="o">.</span><span class="n">usb_windows</span><span class="p">)</span>
+
+<span class="c1">#Reads and Prints all input values on all connected digital IO Modules</span>
+<span class="n">detectedIOModules</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">detectIOModules</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">IO_Name</span><span class="p">,</span> <span class="n">IO_NetworkID</span> <span class="ow">in</span> <span class="n">detectedIOModules</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">readPins</span> <span class="o">=</span><span class="p">{</span><span class="s2">&quot;Pin 1&quot;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Pin 2&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Pin 3&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Pin 4&quot;</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">readPin</span> <span class="ow">in</span> <span class="n">readPins</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">pinValue</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">digitalRead</span><span class="p">(</span><span class="n">IO_NetworkID</span><span class="p">,</span> <span class="n">readPins</span><span class="p">[</span><span class="n">readPin</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">readPin</span> <span class="o">+</span> <span class="s2">&quot; on &quot;</span> <span class="o">+</span> <span class="n">IO_Name</span> <span class="o">+</span> <span class="s2">&quot; has value &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pinValue</span><span class="p">))</span>
+  
+</pre></div>
+
                 </div>
             </div>
         </div>
@@ -1819,210 +1832,6 @@ If this is your first time using the machine motion controller, please follow th
 </dl>
 <dl class="funcWrapper" >
     
-    <dt id=isIoExpanderIdValid class="funcHeader">
-        <div class = "row">
-            <div class = "col-md-8">
-                <h4 > 
-                    <span class="funcClassName "> mm.</span>
-                    <span class = "funcName"> <b>isIoExpanderIdValid</b> </span>
-                        (<span class="func funcParamHeading">
-                                id
-                            </span>)
-                </h4>
-            </div>
-            <div class = "col-md-4">
-                <span style="float:right">
-                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
-                </span> 
-            </div> 
-
-
-        </div>
-    </dt>
-
-    <dd>
-        <div class="funcDescription funcText">
-            Returns true if the given id is valid for an IO Expander
-        </div>
-    </dd>
-
-
-            <div class="indent2">
-                <span class = "funcParam"><b>id</b></span>
-                <span class = "funcParamType"><code>Integer</code></span>
-                -
-                <span class = "funcText">              
-                    Device identifier <span style="color:red">revise</span>
-                </span>
-            </div>
-
-
-
-
-    <div id="isIoExpanderIdValidcollapseParent" >
-        <div class="collapse" data-parent ="#isIoExpanderIdValidcollapseParent" id="isIoExpanderIdValidcollapseSource">
-            <div class="card card-body  code-demo">
-                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nb">id</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="nb">id</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
-</pre></div>
-
-            </div>
-        </div>
-    </div>
-
-        
-
-    <div style="height:10px">
-    </div>
-    
-</dl>
-<dl class="funcWrapper" >
-    
-    <dt id=isIoExpanderInputIdValid class="funcHeader">
-        <div class = "row">
-            <div class = "col-md-8">
-                <h4 > 
-                    <span class="funcClassName "> mm.</span>
-                    <span class = "funcName"> <b>isIoExpanderInputIdValid</b> </span>
-                        (<span class="func funcParamHeading">
-                                pinId, deviceId
-                            </span>)
-                </h4>
-            </div>
-            <div class = "col-md-4">
-                <span style="float:right">
-                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderInputIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
-                </span> 
-            </div> 
-
-
-        </div>
-    </dt>
-
-    <dd>
-        <div class="funcDescription funcText">
-            Returns true if the given input pin identifier is valid for an IO Expander
-        </div>
-    </dd>
-
-
-            <div class="indent2">
-                <span class = "funcParam"><b>pinId</b></span>
-                <span class = "funcParamType"><code>Integer</code></span>
-                -
-                <span class = "funcText">              
-                    Pin identifier
-                </span>
-            </div>
-            <div class="indent2">
-                <span class = "funcParam"><b>deviceId</b></span>
-                <span class = "funcParamType"><code>Integer</code></span>
-                -
-                <span class = "funcText">              
-                    Device identifier
-                </span>
-            </div>
-
-
-
-
-    <div id="isIoExpanderInputIdValidcollapseParent" >
-        <div class="collapse" data-parent ="#isIoExpanderInputIdValidcollapseParent" id="isIoExpanderInputIdValidcollapseSource">
-            <div class="card card-body  code-demo">
-                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderInputIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deviceId</span><span class="p">,</span> <span class="n">pinId</span><span class="p">):</span>
-                
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isIoExpanderIdValid</span><span class="p">(</span> <span class="n">deviceId</span> <span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">pinId</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">pinId</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
-</pre></div>
-
-            </div>
-        </div>
-    </div>
-
-        
-
-    <div style="height:10px">
-    </div>
-    
-</dl>
-<dl class="funcWrapper" >
-    
-    <dt id=isIoExpanderOutputIdValid class="funcHeader">
-        <div class = "row">
-            <div class = "col-md-8">
-                <h4 > 
-                    <span class="funcClassName "> mm.</span>
-                    <span class = "funcName"> <b>isIoExpanderOutputIdValid</b> </span>
-                        (<span class="func funcParamHeading">
-                                pinId, deviceId
-                            </span>)
-                </h4>
-            </div>
-            <div class = "col-md-4">
-                <span style="float:right">
-                    <button class="button button-xs button-outline api-button" data-toggle="collapse" href= "#isIoExpanderOutputIdValidcollapseSource">Source Code <i class="fas fa-chevron-down"></i></button>
-                </span> 
-            </div> 
-
-
-        </div>
-    </dt>
-
-    <dd>
-        <div class="funcDescription funcText">
-            Returns True if the given output pin identifier is valid for an IO Expander.
-        </div>
-    </dd>
-
-
-            <div class="indent2">
-                <span class = "funcParam"><b>pinId</b></span>
-                <span class = "funcParamType"><code>Integer</code></span>
-                -
-                <span class = "funcText">              
-                    Pin Identifier
-                </span>
-            </div>
-            <div class="indent2">
-                <span class = "funcParam"><b>deviceId</b></span>
-                <span class = "funcParamType"><code>Integer</code></span>
-                -
-                <span class = "funcText">              
-                    Device Identifier
-                </span>
-            </div>
-
-
-
-
-    <div id="isIoExpanderOutputIdValidcollapseParent" >
-        <div class="collapse" data-parent ="#isIoExpanderOutputIdValidcollapseParent" id="isIoExpanderOutputIdValidcollapseSource">
-            <div class="card card-body  code-demo">
-                <div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">isIoExpanderOutputIdValid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deviceId</span><span class="p">,</span> <span class="n">pinId</span><span class="p">):</span>
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">isIoExpanderIdValid</span><span class="p">(</span> <span class="n">deviceId</span> <span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">pinId</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">pinId</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
-</pre></div>
-
-            </div>
-        </div>
-    </div>
-
-        
-
-    <div style="height:10px">
-    </div>
-    
-</dl>
-<dl class="funcWrapper" >
-    
     <dt id=isMotionCompleted class="funcHeader">
         <div class = "row">
             <div class = "col-md-8">
@@ -2463,15 +2272,6 @@ If this is your first time using the machine motion controller, please follow th
             </div>
             <div class = "myTocItem">
                 <a href="#getData">getData</a>
-            </div>
-            <div class = "myTocItem">
-                <a href="#isIoExpanderIdValid">isIoExpanderIdValid</a>
-            </div>
-            <div class = "myTocItem">
-                <a href="#isIoExpanderInputIdValid">isIoExpanderInputIdValid</a>
-            </div>
-            <div class = "myTocItem">
-                <a href="#isIoExpanderOutputIdValid">isIoExpanderOutputIdValid</a>
             </div>
             <div class = "myTocItem">
                 <a href="#isMotionCompleted">isMotionCompleted</a>

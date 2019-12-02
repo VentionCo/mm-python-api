@@ -405,28 +405,11 @@ class MachineMotion:
     asyncResult = None
 
     def isIoExpanderIdValid(self, id):
-        '''
-        desc: Returns true if the given id is valid for an IO Expander
-        params:
-            id: 
-                desc: Device identifier <span style="color:red">revise</span>
-                type: Integer
-        '''
         if (id < 1 or id > 3):
             return False
         return True
         
     def isIoExpanderInputIdValid(self, deviceId, pinId):
-        '''
-        desc: Returns true if the given input pin identifier is valid for an IO Expander
-        params:
-            deviceId:
-                desc: Device identifier
-                type: Integer
-            pinId:
-                desc: Pin identifier
-                type: Integer
-        '''
                 
         if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
@@ -435,16 +418,6 @@ class MachineMotion:
         return True
         
     def isIoExpanderOutputIdValid(self, deviceId, pinId):
-        '''
-        desc: Returns True if the given output pin identifier is valid for an IO Expander.
-        params:
-            deviceId:
-                desc: Device Identifier
-                type: Integer
-            pinId:
-                desc: Pin Identifier
-                type: Integer
-        '''
         if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
         if (pinId < 0 or pinId > 3):
@@ -935,7 +908,7 @@ class MachineMotion:
             pin:
                 desc: The pin index to read from [0,1,2,3]
                 type: Integer
-        exampleCodePath: digitalRead
+        exampleCodePath: digitalRead.py
         '''
         if (self.isIoExpanderInputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin) )
