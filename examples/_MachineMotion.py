@@ -688,6 +688,9 @@ class MachineMotion:
                 type: Number
         exampleCodePath: setPosition.py
         '''
+        # Transmit move command
+        self.myGCode.__emit__("G92 " + self.myGCode.__getTrueAxis__(axis) + str(position))
+        while self.isReady() != "true": pass
 
     def emitgCode(self, gCode):
         '''
@@ -991,10 +994,7 @@ class MachineMotion:
                 type: Integer
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
-        if (self.isEncoderIdValid( encoder ) == False):
-            print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
-            return
-        return self.myEncoderRealtimePositions[encoder]
+        return self.readEncoderRealtimePosition(encoder)
 
     #This function is left in for legacy, however it is not documented because it is the same functionality as readEncoder
     def readEncoderRealtimePosition(self, encoder):

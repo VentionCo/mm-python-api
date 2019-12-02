@@ -3,9 +3,9 @@ from _MachineMotion import *
 #declare parameters for combine move
 speed = 500
 acceleration = 500
-axesToMove = [1,2,3]
-distances = dict(zip(axesToMove, [50, 100, 50]))
-directions = dict(zip(axesToMove, ["positive","negative","postive"]
+axesToMove = [1,2]
+distances = [50, 100, 50]
+directions = ["positive","positive","positive"]
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 
 #load parameters for combined move
@@ -23,8 +23,7 @@ print("All Axes homed.")
 #   Move axis 2 in the negative direction by 100 mm
 #   Move axis 3 in the positive direction by 50 mm
 mm.emitCombinedAxisRelativeMove(axesToMove, directions, distances)
-
 mm.waitForMotionCompletion()
-for axis in range(len(axesToMove)):
-    print("Axis " + str(axis) + " moved " + str(distances[axis]) + " in the " + directions[axis] + " direction.")
+for index, axis in enumerate(axesToMove):
+    print("Axis " + str(axis) + " moved " + str(distances[index]) + " in the " + directions[index] + " direction.")
 

@@ -16,6 +16,7 @@ mm.emitAcceleration(acceleration)
 mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 
 #Home Axis Before Move
+print("Axis " + str(axis) + " moving home.")
 mm.emitHome(axis)
 mm.waitForMotionCompletion()
 print("Axis " + str(axis) + " homed")

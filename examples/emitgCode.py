@@ -3,16 +3,12 @@ from _MachineMotion import *
 #Declare parameters for g-Code command
 speed = 500
 acceleration = 500
-axesToMove = [1,2,3]
-positions = [50, 100, 50]
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 
 #Load parameters for emitting g-code
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 mm.emitSpeed(speed)
 mm.emitAcceleration(acceleration)
-for axis in axesToMove:
-    mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 mm.emitHomeAll()
 print("All Axes homed.")
 

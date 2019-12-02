@@ -4,7 +4,7 @@ from _MachineMotion import *
 speed = 500
 acceleration = 500
 axesToMove = [1,2,3]
-positions = dict(zip(axesToMove, [50, 100, 50]))
+positions = [50, 100,50]
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 
 #Load parameters for combined absolute move
@@ -24,8 +24,8 @@ print("All Axes homed.")
 #   Moves axis 3 to absolute position 50
 mm.emitCombinedAxesAbsoluteMove(axesToMove, positions)
 mm.waitForMotionCompletion()
-for axis in axesToMove:
-    print("Axis " + str(axis) + "moved to position " + str(positions[axis]))
+for index, axis in enumerate(axesToMove):
+    print("Axis " + str(axis) + " moved to position " + str(positions[index]))
 
 
 

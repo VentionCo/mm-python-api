@@ -11,8 +11,9 @@ mechGain = MECH_GAIN.rack_pinion_mm_turn    #The mechanical gain of the actuator
 mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 
 mm.emitHome(axis)
+print("Axis " + str(axis) + " is going home.")
 mm.waitForMotionCompletion()
-print("Axis " + str(axis) + " homed")
+print("Axis " + str(axis) + " homed.")
 mm.emitSpeed(speed)
 mm.emitAcceleration(acceleration)
 mm.emitAbsoluteMove(axis, position)

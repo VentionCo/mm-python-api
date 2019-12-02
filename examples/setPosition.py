@@ -13,17 +13,20 @@ mm.emitAcceleration(acceleration)
 mm.configAxis(axis, MICRO_STEPS.ustep_16, mechGain)
 
 mm.emitHome(axis)
+mm.waitForMotionCompletion()
 print("Axis " + str(axis) + " homed")
 
-print("Absolute Moves are referenced from from home")
+print("Absolute Moves are referenced from home")
 mm.emitAbsoluteMove(axis, position)
 mm.waitForMotionCompletion()
 print("Axis " + str(axis) + " is " + str(position) + "mm away from home")
 
 mm.setPosition(axis, 0)
 print("Absolute moves on axis " + str(axis) + " are now referenced from " +  str(position) + "mm from home. ")
-
-position2 = 10
-mm.emitAbsoluteMove(axis, position)
+time.sleep(2)
+print("Now moving to absolute Position 10 mm, referenced from location 'setPosition' was called")
+position2 = 30
+mm.emitAbsoluteMove(axis, position2)
+mm.waitForMotionCompletion()
 print("Axis " + str(axis) + " is now " + str(position2) + "mm from reference position and " + str(position + position2) + "mm from home")
 
