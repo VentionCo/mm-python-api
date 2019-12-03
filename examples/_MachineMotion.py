@@ -75,9 +75,14 @@ class MECH_GAIN:
     rack_pinion_mm_turn             = 157.08
 
 class AUX_PORTS:
-    AUX1 = 0
-    AUX2 = 1
-    AUX3 = 2
+    aux_1 = 0
+    aux_2 = 1
+    aux_3 = 2
+
+
+class ENCODER_TYPE:
+    real_time = "realtime-position"
+    stable = "stable-position"
 
 def fastMotionStatusCallback(data, mm):
     global motion_completed
@@ -394,6 +399,7 @@ class MachineMotion:
     myMqttClient = None
     myIoExpanderAvailabilityState = [ False, False, False, False ]
     myEncoderRealtimePositions    = [ 0, 0, 0 ]
+    myEncoderStablePositions    = [ 0, 0, 0 ]
 
     myAxis1_steps_mm = "notInitialized"
     myAxis2_steps_mm = "notInitialized"
@@ -717,14 +723,14 @@ class MachineMotion:
         return self.myGCode.__isReady__()
 
     def isMotionCompleted(self):
-        '''
-        desc: Returns true if all axes have completed their movement.
-        exampleCodePath: waitForMotionCompletion.py
-        '''
         global motion_completed
         return motion_completed
 
     def waitForMotionCompletion(self):
+        '''
+        desc: Pauses Execution until machine has finished its current movement.
+        exampleCodePath: waitForMotionCompletion.py
+        '''
         global waiting_motion_status
 
         waiting_motion_status = "true"
@@ -943,17 +949,28 @@ class MachineMotion:
         self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
             
 
-    def readEncoder(self, encoder):
+    def readEncoder(self, encoder, readingType="realTime"):
         '''
         desc: Returns the last received encoder position.
         params:
             encoder:
                 desc: The identifier of the encoder to read
                 type: Integer
+            readingType:
+                desc: 
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
-        return self.readEncoderRealtimePosition(encoder)
+        if (self.isEncoderIdValid( encoder ) == False):
+            print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
+            return
+
+        if(str(readingType) == "realTime"):
+            return self.myEncoderRealtimePositions[encoder]
+        elif(readingType == "stable"):
+            return self.myEncoderStablePositions[encoder]
+    
+
 
     #This function is left in for legacy, however it is not documented because it is the same functionality as readEncoder
     def readEncoderRealtimePosition(self, encoder):
@@ -975,6 +992,7 @@ class MachineMotion:
             self.myMqttClient.subscribe('devices/io-expander/+/available')
             self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
             self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
+            self.myMqttClient.subscribe('devices/encoder/+/stable-position')
 
     # ------------------------------------------------------------------------
     # Update our internal state from the messages received from the MQTT broker
@@ -1006,8 +1024,18 @@ class MachineMotion:
             self.digitalInputs[device][pin]= value
             return
         if (deviceType == 'encoder'):
-            position = float( msg.payload )
-            self.myEncoderRealtimePositions[device] = position
+            encoderReadingType = topicParts[3]
+            if encoderReadingType == "realtime-position":
+                position = float( msg.payload )
+                self.myEncoderRealtimePositions[device] = position
+                return
+            elif encoderReadingType == "stable-position":
+                position = float( msg.payload )
+                self.myEncoderStablePositions[device] = position
+                return
+
+
+
 
     def __onDisconnect(self, client, userData, rc):
        print( "Disconnected with rtn code [%d]"% (rc) )
