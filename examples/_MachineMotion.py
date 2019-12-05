@@ -41,13 +41,21 @@ class CONTROL_DEVICE_PORTS:
     SENSOR6 = "SENSOR6"
 
 class DIRECTION:
-    positive = "positive"
-    negative = "negative"
+    normal = "normal"
+    reverse = "reverse"
 
 class AXIS_NUMBER:
     DRIVE1 = 1
     DRIVE2 = 2
     DRIVE3 = 3
+
+class UNITS_SPEED:
+    mm_per_min = "mm per minute"
+    mm_per_sec =  "mm per second"
+
+class UNITS_ACCEL:
+    mm_per_min_sqr = "mm per minute"
+    mm_per_sec_sqr =  "mm per second"
 
 class DEFAULT_IP_ADDRESS:
     usb_windows     = "192.168.7.2"
@@ -79,10 +87,12 @@ class AUX_PORTS:
     aux_2 = 1
     aux_3 = 2
 
-
 class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
+
+
+
 
 def fastMotionStatusCallback(data, mm):
     global motion_completed
@@ -391,24 +401,56 @@ class WaitForSocketTopic:
 #
 class MachineMotion:
     # Class variables
-    mySocket = "notInitialized"
-    myConfiguration = {"machineIp": "notInitialized", "machineGateway": "notInitialized", "machineNetmask": "notInitialized"}
-    myGCode = "notInitialized"
-    myGCode = "notInitialized"
+    mySocket = None
+    myConfiguration = {"machineIp": None, "machineGateway": None, "machineNetmask": None}
+    myGCode = None
 
     myMqttClient = None
     myIoExpanderAvailabilityState = [ False, False, False, False ]
     myEncoderRealtimePositions    = [ 0, 0, 0 ]
     myEncoderStablePositions    = [ 0, 0, 0 ]
 
-    myAxis1_steps_mm = "notInitialized"
-    myAxis2_steps_mm = "notInitialized"
-    myAxis3_steps_mm = "notInitialized"
+    myAxis1_steps_mm = None
+    myAxis2_steps_mm = None
+    myAxis3_steps_mm = None
+
+    myAxis1_direction = None
+    myAxis2_direction = None
+    myAxis3_direction = None
 
     validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
 
     asyncResult = None
+
+    #Takes tuples of parameter variables and the class they belong to.
+    #If the parameter does not belong to the class, it raises a descriptive error. 
+    def _checkInputValues(self, argParameters, argClasses):
+        
+        def getValidParameters(inspectClass):
+            validParameters = [i for i in inspectClass.__dict__.keys() if i[:1] != '_']
+            return validParameters
+        
+        class InvalidChoice(Exception):
+            pass
+    
+        try:
+            if len(argParameters) == len(argClasses):
+                continue
+            else:
+                class InputError(Exception):
+                    pass
+                raise InputError("The list of arguments must match the list of classes")
+        except:
+            #Then only one parameter was entered
+            validInputs = getValidParameters(argClasses)
+            if argParameters in validInputs:
+                continue
+            else:
+                raise InvalidChoice("An invalid selection was made. 
+
+        raise UnitsError("You entered " + str(units) + " as units for speed. Our only excepted units are:" + getClassParameters(UNITS_SPEED))
+        return
 
     def isIoExpanderIdValid(self, id):
         if (id < 1 or id > 3):
@@ -493,30 +535,49 @@ class MachineMotion:
 
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
 
-    def emitSpeed(self, mm_per_min):
+    def emitSpeed(self, speed, units = UNITS_SPEED.mm_per_min):
         '''
         desc: Sets the global speed for all movement commands on all axes.
         params:
-            mm_per_min:
+            speed:
                 desc: The global max speed in mm/min.
                 type: Number
+            units:
+                desc: Either `UNITS_SPEED.mm_per_min` or `UNITS_SPEED.mm_per_sec`
+                type: String
         exampleCodePath: emitSpeed.py
         '''
-
-        self.myGCode.__emit__("G0 F" +str(mm_per_min))
+        if units == UNITS_SPEED.mm_per_min:
+            speed_mm_per_min = speed
+        elif units == UNITS_SPEED.mm_per_sec: 
+            speed_mm_per_min = 60*speed
+        else:
+           
+        self.myGCode.__emit__("G0 F" + str(speed_mm_per_min))
         while self.isReady() != "true": pass
 
-    def emitAcceleration(self, mm_per_sec_sqr):
+    def emitAcceleration(self, acceleration, units=UNITS_ACCEL.mm_per_sec_sqr):
         '''
         desc: Sets the global acceleration for all movement commands on all axes.
         params:
             mm_per_sec_sqr:
                 desc: The global acceleration in mm/s^2.
                 type: Number
+            units:
+                desc: Either `UNITS.mm_per_min_sqr` or `UNITS_ACCEL.mm_per_sec_sqr`
+                type: String
         exampleCodePath:  emitAcceleration.py
         '''
-
-        self.myGCode.__emit__("M204 T" + str(mm_per_sec_sqr))
+        if units == UNITS_ACCEL.mm_per_sec_sqr:
+            accel_mm_per_sec_sqr = acceleration
+        elif units == UNITS_ACCEL.mm_per_min_sqr: 
+            accel_mm_per_sec_sqr = acceleration/3600
+        else:
+            class UnitsError(Exception):
+                pass
+            raise UnitsError("You entered " + str(units) + " as units for speed. Our only excepted units are:\n" + getClassParameters(UNITS_ACCEL))
+    
+        self.myGCode.__emit__("M204 T" + str(accel_mm_per_sec_sqr))
         while self.isReady() != "true": pass
 
     def emitAbsoluteMove(self, axis, position):
@@ -703,9 +764,10 @@ class MachineMotion:
             raise ValueError('axis must either be 1, 2 or 3')
             
         if(axis == 1):
-            if(direction == "normal"):
+            self.myAxis1_direction = direction
+            if(direction == DIRECTION.normal):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
-            elif (direction == "reverse"):
+            elif (direction == DIRECTION.reverse):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis1_steps_mm))
         elif(axis == 2):
             if(direction == "normal"):
@@ -797,11 +859,11 @@ class MachineMotion:
                 self.myAxis1_steps_mm = 200 * u_step / mech_gain
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
             elif(axis == 2):
-                self.myAxis1_steps_mm = 200 * u_step / mech_gain
-                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
+                self.myAxis2_steps_mm = 200 * u_step / mech_gain
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
             elif(axis == 3):
-                self.myAxis1_steps_mm = 200 * u_step / mech_gain
-                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
+                self.myAxis3_steps_mm = 200 * u_step / mech_gain
+                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
             else:
                 pass
                 # print "Argument error, {configAxis(self, axis, u_step, mech_gain)}, {axis} argument is invalid"
@@ -947,7 +1009,19 @@ class MachineMotion:
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
         self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
-            
+    
+    def emitDwell(self, milli):
+        '''
+        desc: Pauses motion for a specified time. This function is non-blocking; your program may accomplish other tasks while the machine is dwelling.
+        params:
+            milli:
+                desc: The amount of time to pause MachineMotion movement.
+                type: Integer
+        note: The timer starts after all previous MachineMotion movement commands have finished execution.
+        exampleCodePath: emitDwell.py
+        '''
+        self.myGCode.__emit__("G4 P"+str(milli))
+        while self.isReady() != "true": pass
 
     def readEncoder(self, encoder, readingType="realTime"):
         '''
@@ -957,7 +1031,8 @@ class MachineMotion:
                 desc: The identifier of the encoder to read
                 type: Integer
             readingType:
-                desc: 
+                desc: Either 'real time' or 'stable'. In 'real time' mode, readEncoder will return the most recently received encoder information. In 'stable' mode, readEncoder will update its return value only after the encoder output has stabilized around a specific value, such as when the axis has stopped motion.
+                type: String 
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
@@ -1032,7 +1107,7 @@ class MachineMotion:
             elif encoderReadingType == "stable-position":
                 position = float( msg.payload )
                 self.myEncoderStablePositions[device] = position
-                return
+  
 
 
 
