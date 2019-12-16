@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # File name:            _MachineMotion.py                           #
 # Author:               Francois Giguere                            #
 # Note:                 Information about all the g-Code            #
@@ -5,8 +6,12 @@
 #                       the following location of the SDK:          #
 #                       ./documentation                             #
 
+# from __future__ import absolute_import, division, print_function, unicode_literals
+# from builtins import *
+
 # Import standard libraries
 import json, time, threading, sys
+from ._constants import *
 
 # Import package dependent libraries
 from pathlib import Path
@@ -21,76 +26,6 @@ waiting_current_position = "false"
 machineMotionRef = None
 gCodeCallbackRef = None
 lastSendTimeStamp = None
-
-class CONTROL_DEVICE_SIGNALS:
-    SIGNAL0 = "SIGNAL0"
-    SIGNAL1 = "SIGNAL1"
-    SIGNAL2 = "SIGNAL2"
-    SIGNAL3 = "SIGNAL3"
-    SIGNAL4 = "SIGNAL4"
-    SIGNAL5 = "SIGNAL5"
-    SIGNAL6 = "SIGNAL6"
-
-class CONTROL_DEVICE_TYPE:
-    IO_EXPANDER_GENERIC = "IO_EXPANDER_GENERIC"
-    ENCODER             = "ENCODER"
-
-class CONTROL_DEVICE_PORTS:
-    SENSOR4 = "SENSOR4"
-    SENSOR5 = "SENSOR5"
-    SENSOR6 = "SENSOR6"
-
-class AXIS_DIRECTION:
-    normal = "normal"
-    reverse = "reverse"
-
-class AXIS_NUMBER:
-    DRIVE1 = 1
-    DRIVE2 = 2
-    DRIVE3 = 3
-
-class UNITS_SPEED:
-    mm_per_min = "mm per minute"
-    mm_per_sec =  "mm per second"
-
-class UNITS_ACCEL:
-    mm_per_min_sqr = "mm per minute"
-    mm_per_sec_sqr =  "mm per second"
-
-class DEFAULT_IP_ADDRESS:
-    usb_windows     = "192.168.7.2"
-    usb_mac_linux   = "192.168.6.2"
-    ethernet        = "192.168.0.2"
-
-class NETWORK_MODE:
-    static  = "static"
-    dhcp    = "dhcp"
-
-class MICRO_STEPS:
-    ustep_full  = 1
-    ustep_2     = 2
-    ustep_4     = 4
-    ustep_8     = 8
-    ustep_16    = 16
-
-class MECH_GAIN:
-    timing_belt_150mm_turn          = 150
-    legacy_timing_belt_200_mm_turn  = 200
-    ballscrew_10mm_turn             = 10
-    legacy_ballscrew_5_mm_turn      = 5
-    indexer_deg_turn                = 85
-    conveyor_mm_turn                = 157
-    rack_pinion_mm_turn             = 157.08
-
-class AUX_PORTS:
-    aux_1 = 0
-    aux_2 = 1
-    aux_3 = 2
-
-class ENCODER_TYPE:
-    real_time = "realtime-position"
-    stable = "stable-position"
-
 
 
 
@@ -422,6 +357,9 @@ class MachineMotion:
     valid_u_step = [1, 2, 4, 8, 16]
 
     asyncResult = None
+
+    #Boolean Flags
+    enableDebugMessages = False
 
     #Takes tuples of parameter variables and the class they belong to.
     #If the parameter does not belong to the class, it raises a descriptive error. 
@@ -970,7 +908,7 @@ class MachineMotion:
         foundIOModules = {}
         numIOModules = 0
 
-        for ioDeviceID in range(1,3):
+        for ioDeviceID in range(0,3):
             if self.isIoExpanderAvailable(ioDeviceID):
                 foundIOModules["Digital IO Network Id " + str(ioDeviceID)] = ioDeviceID
                 numIOModules = numIOModules + 1
@@ -1127,13 +1065,21 @@ class MachineMotion:
     # @param userData - The user data we have supply on registration (none)
     # @param msg      - The MQTT message recieved
     def __onMessage(self, client, userData, msg):
+        
         topicParts = msg.topic.split('/')
+        print(topicParts)
         deviceType = topicParts[1]
-        device = int( topicParts[2] )
+
+        # topicParts = topicParts.decode('utf-8')
+        # msg.payload = msg.payload.decode('utf-8')
+
         if (deviceType == 'io-expander'):
+            device = int(topicParts[2])
+            # print("IOMessage:\t" + "\t".join(topicParts) + "\t Message:\t" + msg.payload)
             if (topicParts[3] == 'available'):
-                availability = str( msg.payload ).lower()
-                if ( availability == 'true' ):
+                # availability = str( msg.payload ).lower()
+                availability = msg.payload.decode('utf-8')
+                if ( availability == 'true'):
                     self.myIoExpanderAvailabilityState[device-1] = True
                     return
                 else:
@@ -1192,8 +1138,15 @@ class MachineMotion:
         self.emitgCode("M111 S247")
         while self.isReady() != "true": pass
 
+    def _defaultGCodeCallback(data = ""):
+        if self.enableDebugMessages:
+            print(data)
+        else:
+            pass
+
+
     # Class constructor
-    def __init__(self, machineIp, gCodeCallback=lambda(data):None):
+    def __init__(self, machineIp, gCodeCallback=None):
         global machineMotionRef
         global gCodeCallbackRef
 
@@ -1208,7 +1161,12 @@ class MachineMotion:
         self.myMqttClient.loop_start()
 
         machineMotionRef = self
-        gCodeCallbackRef = gCodeCallback
+        if(gCodeCallback):
+            gCodeCallbackRef = gCodeCallback
+        else:
+            def emptyCallBack(data):
+                pass
+            gCodeCallbackRef = emptyCallBack
 
         self.__establishConnection(False)
 

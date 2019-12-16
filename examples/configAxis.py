@@ -1,4 +1,4 @@
-from _MachineMotion import *
+from MachineMotion import *
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
 # Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
