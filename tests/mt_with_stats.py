@@ -4,7 +4,7 @@ import threading
 import time
 import sys
 
-sys.path.append("../examples")
+sys.path.append("..")
 
 from _MachineMotion import *
 
@@ -18,7 +18,9 @@ avg_perf_M114 = {"count": 0, "total": 0}
 
 def move(mm):
     while True:
-      mm.emitgCode("G0 X%s" % (random.randint(10, 3000)-1500))
+      pos = random.randint(10, 3000) - 1500
+      print ("moving to %s" % pos)
+      mm.emitgCode("G0 X%s" % pos)
       mm.waitForMotionCompletion()
       time.sleep(random.random() * 2)
 
