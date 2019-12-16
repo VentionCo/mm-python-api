@@ -40,7 +40,7 @@ class CONTROL_DEVICE_PORTS:
     SENSOR5 = "SENSOR5"
     SENSOR6 = "SENSOR6"
 
-class DIRECTION:
+class AXIS_DIRECTION:
     normal = "normal"
     reverse = "reverse"
 
@@ -425,32 +425,22 @@ class MachineMotion:
 
     #Takes tuples of parameter variables and the class they belong to.
     #If the parameter does not belong to the class, it raises a descriptive error. 
-    def _checkInputValues(self, argParameters, argClasses):
-        
-        def getValidParameters(inspectClass):
-            validParameters = [i for i in inspectClass.__dict__.keys() if i[:1] != '_']
-            return validParameters
-        
-        class InvalidChoice(Exception):
-            pass
-    
-        try:
-            if len(argParameters) == len(argClasses):
-                continue
-            else:
-                class InputError(Exception):
-                    pass
-                raise InputError("The list of arguments must match the list of classes")
-        except:
-            #Then only one parameter was entered
-            validInputs = getValidParameters(argClasses)
-            if argParameters in validInputs:
-                continue
-            else:
-                raise InvalidChoice("An invalid selection was made. 
+    def _restrictInputValue(self, argName, argValue, argClass):
+      
+        validParams = [i for i in argClass.__dict__.keys() if i[:1] != '_']
+        validValues = [argClass.__dict__[i] for i in validParams]
 
-        raise UnitsError("You entered " + str(units) + " as units for speed. Our only excepted units are:" + getClassParameters(UNITS_SPEED))
-        return
+        if argValue in validValues:
+            pass
+        else:
+            class InvalidInput(Exception):
+                pass
+            errorMessage = "An invalid selection was made. Given parameter '" + str(argName) + "' must be one of the following values:"
+            for param in validParams:
+                errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
+            raise InvalidInput(errorMessage)
+
+
 
     def isIoExpanderIdValid(self, id):
         if (id < 1 or id > 3):
@@ -529,6 +519,8 @@ class MachineMotion:
         note: If setAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If setAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
         exampleCodePath: emitHome.py
         '''
+        self._restrictInputValue("axis", axis, AXIS_NUMBER)
+
         global motion_completed
 
         motion_completed = "false"
@@ -543,15 +535,18 @@ class MachineMotion:
                 desc: The global max speed in mm/min.
                 type: Number
             units:
-                desc: Either `UNITS_SPEED.mm_per_min` or `UNITS_SPEED.mm_per_sec`
+                desc: Either `UNITS_SPEED.mm_per_min` or `UNITS_SPEED.mm_per_sec`.
                 type: String
         exampleCodePath: emitSpeed.py
         '''
+
+        self._restrictInputValue("units", units, UNITS_SPEED)
+
         if units == UNITS_SPEED.mm_per_min:
             speed_mm_per_min = speed
         elif units == UNITS_SPEED.mm_per_sec: 
             speed_mm_per_min = 60*speed
-        else:
+        
            
         self.myGCode.__emit__("G0 F" + str(speed_mm_per_min))
         while self.isReady() != "true": pass
@@ -568,15 +563,14 @@ class MachineMotion:
                 type: String
         exampleCodePath:  emitAcceleration.py
         '''
+
+        self._restrictInputValue("units", units, UNITS_ACCEL)
+
         if units == UNITS_ACCEL.mm_per_sec_sqr:
             accel_mm_per_sec_sqr = acceleration
         elif units == UNITS_ACCEL.mm_per_min_sqr: 
             accel_mm_per_sec_sqr = acceleration/3600
-        else:
-            class UnitsError(Exception):
-                pass
-            raise UnitsError("You entered " + str(units) + " as units for speed. Our only excepted units are:\n" + getClassParameters(UNITS_ACCEL))
-    
+
         self.myGCode.__emit__("M204 T" + str(accel_mm_per_sec_sqr))
         while self.isReady() != "true": pass
 
@@ -592,6 +586,7 @@ class MachineMotion:
                 type: Number
         exampleCodePath: emitAbsoluteMove.py
         '''
+        self._restrictInputValue("axis", axis, AXIS_NUMBER)
         global motion_completed
 
         motion_completed = "false"
@@ -616,8 +611,15 @@ class MachineMotion:
                 type: List
         exampleCodePath: emitCombinedAxesAbsoluteMove.py
         '''
-        if (not isinstance(axes, list) or not isinstance(positions, list)):
-            raise TypeError("Axes and Postions must be lists")
+
+        try: 
+            axes = list(axes)
+            positions = list(positions)
+        except TypeError:
+            raise TypeError("Axes and Postions must be either lists or convertible to lists")
+
+        for axis in axes:
+            self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         global motion_completed
 
@@ -649,6 +651,10 @@ class MachineMotion:
                 type: Number
         exampleCodePath: emitRelativeMove.py
         '''
+
+        self._restrictInputValue("axis",axis, AXIS_NUMBER)
+        self._restrictInputValue("direction", direction, AXIS_DIRECTION)
+
         global motion_completed
 
         motion_completed = "false"
@@ -684,8 +690,17 @@ class MachineMotion:
         exampleCodePath: emitCombinedAxesRelativeMove.py
         '''
 
-        if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
-            raise TypeError("All parameters must be lists")
+        try: 
+            axes = list(axes)
+            directions = list(directions)
+            distances = list(distances)
+        except TypeError:
+            raise TypeError("Axes, positions and distances must be either lists or convertible to lists")
+
+        for axis in axes:
+            self._restrictInputValue("axis", axis, AXIS_NUMBER)
+        for direction in directions:
+            self._restrictInputValue("direction", direction, directions)
         
         global motion_completed
 
@@ -722,6 +737,8 @@ class MachineMotion:
                 type: Number
         exampleCodePath: setPosition.py
         '''
+        self._restrictInputValue("axis", axis, AXIS_NUMBER)
+
         # Transmit move command
         self.myGCode.__emit__("G92 " + self.myGCode.__getTrueAxis__(axis) + str(position))
         while self.isReady() != "true": pass
@@ -756,28 +773,24 @@ class MachineMotion:
         exampleCodePath: emitSetAxisDirection.py
         '''
     
-        # Checking input parameters
-        if (direction != "normal" and direction != "reverse"):
-            raise ValueError('direction parameter must be either "normal" or "reversed"')
-            
-        if (axis != 1 and axis != 2 and axis !=3):
-            raise ValueError('axis must either be 1, 2 or 3')
+        self._restrictInputValue("axis", axis, AXIS_NUMBER)
+        self._restrictInputValue("direction", direction, AXIS_DIRECTION)
             
         if(axis == 1):
             self.myAxis1_direction = direction
-            if(direction == DIRECTION.normal):
+            if(direction == AXIS_DIRECTION.normal):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
-            elif (direction == DIRECTION.reverse):
+            elif (direction == AXIS_DIRECTION.reverse):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis1_steps_mm))
         elif(axis == 2):
-            if(direction == "normal"):
+            if(direction == AXIS_DIRECTION.normal):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
-            elif (direction == "reverse"):
+            elif (direction == AXIS_DIRECTION.reverse):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis2_steps_mm))
         elif(axis == 3):
-            if(direction == "normal"):
+            if(direction == AXIS_DIRECTION.normal):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
-            elif (direction == "reverse"):
+            elif (direction == AXIS_DIRECTION.reverse):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis3_steps_mm))
 
     #This function should be private in future releases.
@@ -849,6 +862,8 @@ class MachineMotion:
         note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch. 
         exampleCodePath: configAxis.py
         '''
+        self._restrictInputValue("axis", axis,  AXIS_NUMBER)
+        self._restrictInputValue("_u_step", _u_step, MICRO_STEPS)
 
         u_step    = float(_u_step)
         mech_gain = float(_mech_gain)
@@ -1025,7 +1040,7 @@ class MachineMotion:
 
     def readEncoder(self, encoder, readingType="realTime"):
         '''
-        desc: Returns the last received encoder position.
+        desc: Returns the last received encoder position in counts.
         params:
             encoder:
                 desc: The identifier of the encoder to read
@@ -1036,14 +1051,50 @@ class MachineMotion:
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
+        self._restrictInputValue("readingType", readingType, ENCODER_TYPE)
+
         if (self.isEncoderIdValid( encoder ) == False):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return
 
-        if(str(readingType) == "realTime"):
+        if readingType == ENCODER_TYPE.real_time:
             return self.myEncoderRealtimePositions[encoder]
-        elif(readingType == "stable"):
+        elif readingType == ENCODER_TYPE.stable:
             return self.myEncoderStablePositions[encoder]
+
+    def readEncoderDistance(self, encoder, readingType="realTime", axis = None):
+        '''
+        desc: Returns the last received encoder position in mm.
+        params:
+            encoder:
+                desc: The identifier of the encoder to read
+                type: Integer
+            readingType:
+                desc: Either 'real time' or 'stable'. In 'real time' mode, readEncoder will return the most recently received encoder information. In 'stable' mode, readEncoder will update its return value only after the encoder output has stabilized around a specific value, such as when the axis has stopped motion.
+                type: String 
+        exampleCodePath: readEncoder.py
+        note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
+        '''
+        
+        self._restrictInputValue("axis", axis, AXIS_NUMBER)
+        self._restrictInputValue("readingType", readingType, ENCODER_TYPE)
+        try:
+            if(readingType == ENCODER_TYPE.real_time):
+                if axis == AXIS_NUMBER.DRIVE1 :
+                    return self.myEncoderRealtimePositions[encoder]/self.myAxis1_steps_mm
+                elif axis == AXIS_NUMBER.DRIVE2:
+                    return self.myEncoderRealtimePositions[encoder]/self.myAxis2_steps_mm
+                elif axis == AXIS_NUMBER.DRIVE3:
+                    return self.myEncoderRealtimePositions[encoder]/self.myAxis3_steps_mm
+            elif (readingType == ENCODER_TYPE.stable):
+                if axis == AXIS_NUMBER.DRIVE1 :
+                    return self.myEncoderStablePositions[encoder]/self.myAxis1_steps_mm
+                elif axis == AXIS_NUMBER.DRIVE2:
+                    return self.myEncoderStablePositions[encoder]/self.myAxis2_steps_mm
+                elif axis == AXIS_NUMBER.DRIVE3:
+                    return self.myEncoderStablePositions[encoder]/self.myAxis3_steps_mm
+        except TypeError:
+            raise TypeError("ConfigAxis must be called prior to readEncoderDistance")
     
 
 
