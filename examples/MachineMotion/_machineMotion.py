@@ -340,7 +340,10 @@ class MachineMotion:
     myConfiguration = {"machineIp": None, "machineGateway": None, "machineNetmask": None}
     myGCode = None
 
-    myMqttClient = None
+    mqttEncoderClient = None
+    mqttIOClient = None
+
+    digitalInputs = [[0 for numModules in range(6)] for pins in range(4)] 
     myIoExpanderAvailabilityState = [ False, False, False, False ]
     myEncoderRealtimePositions    = [ 0, 0, 0 ]
     myEncoderStablePositions    = [ 0, 0, 0 ]
@@ -931,15 +934,7 @@ class MachineMotion:
                 type: Integer
         exampleCodePath: digitalRead.py
         '''
-        if (self.isIoExpanderInputIdValid( device, pin ) == False):
-            print ( "DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin) )
-            return
-        if (not hasattr(self, 'digitalInputs')):
-            self.digitalInputs = {}
-        if (not device in self.digitalInputs):
-            self.digitalInputs[device] = {}
-        if (not pin in self.digitalInputs[device]):
-            self.digitalInputs[device][pin] = 0
+
         return self.digitalInputs[device][pin]
         
     def digitalWrite(self, device, pin, value):
@@ -961,7 +956,7 @@ class MachineMotion:
         if (self.isIoExpanderOutputIdValid( device, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
-        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
+        self.mqttIOClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
     
     def emitDwell(self, milli):
         '''
@@ -996,6 +991,7 @@ class MachineMotion:
             return
 
         if readingType == ENCODER_TYPE.real_time:
+            self.myEncoderStablePositions
             return self.myEncoderRealtimePositions[encoder]
         elif readingType == ENCODER_TYPE.stable:
             return self.myEncoderStablePositions[encoder]
@@ -1044,73 +1040,7 @@ class MachineMotion:
         return self.myEncoderRealtimePositions[encoder]
         
 
-    # ------------------------------------------------------------------------
-    # Register to the MQTT broker on each connection.
-    #
-    # @param client   - The MQTT client identifier (us)
-    # @param userData - The user data we have supply on registration (none)
-    # @param flags    - Connection flags
-    # @param rc       - The connection return code
-    def __onConnect(self, client, userData, flags, rc):
-        if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/available')
-            self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
-            self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
-            self.myMqttClient.subscribe('devices/encoder/+/stable-position')
 
-    # ------------------------------------------------------------------------
-    # Update our internal state from the messages received from the MQTT broker
-    #
-    # @param client   - The MQTT client identifier (us)
-    # @param userData - The user data we have supply on registration (none)
-    # @param msg      - The MQTT message recieved
-    def __onMessage(self, client, userData, msg):
-        
-        topicParts = msg.topic.split('/')
-        print(topicParts)
-        deviceType = topicParts[1]
-
-        # topicParts = topicParts.decode('utf-8')
-        # msg.payload = msg.payload.decode('utf-8')
-
-        if (deviceType == 'io-expander'):
-            device = int(topicParts[2])
-            # print("IOMessage:\t" + "\t".join(topicParts) + "\t Message:\t" + msg.payload)
-            if (topicParts[3] == 'available'):
-                # availability = str( msg.payload ).lower()
-                availability = msg.payload.decode('utf-8')
-                if ( availability == 'true'):
-                    self.myIoExpanderAvailabilityState[device-1] = True
-                    return
-                else:
-                    self.myIoExpanderAvailabilityState[device-1] = False
-                    return
-            pin = int( topicParts[4] )
-            if (self.isIoExpanderInputIdValid(device, pin) == False):
-                return
-            value  = int( msg.payload )
-            if (not hasattr(self, 'digitalInputs')):
-                self.digitalInputs = {}
-            if (not device in self.digitalInputs):
-                self.digitalInputs[device] = {}
-            self.digitalInputs[device][pin]= value
-            return
-        if (deviceType == 'encoder'):
-            encoderReadingType = topicParts[3]
-            if encoderReadingType == "realtime-position":
-                position = float( msg.payload )
-                self.myEncoderRealtimePositions[device] = position
-                return
-            elif encoderReadingType == "stable-position":
-                position = float( msg.payload )
-                self.myEncoderStablePositions[device] = position
-  
-
-
-
-
-    def __onDisconnect(self, client, userData, rc):
-       print( "Disconnected with rtn code [%d]"% (rc) )
 
     def __establishConnection(self, isReconnection):
         global gCodeCallbackRef
@@ -1143,6 +1073,72 @@ class MachineMotion:
             print(data)
         else:
             pass
+    
+    
+    #------- Encoder client ------
+    def mqttEncoderConnect(self, client, userData, flags, rc):
+        print("Encoder Connected")
+        if rc == 0:
+            self.mqttEncoderClient.subscribe('devices/encoder/+/realtime-position')
+            self.mqttEncoderClient.subscribe('devices/encoder/+/stable-position')
+    
+    def mqttEncoderMessage(self, client, userData, msg):
+        
+        position = float(msg.payload.decode('utf-8'))
+        device = int(msg.topic.split("/")[2])
+        if "realtime-position" in str(msg.topic):
+            self.myEncoderRealtimePositions[device] = position
+            return
+        elif "stable-position" in str(msg.topic):
+            self.myEncoderStablePositions[device] = position
+            return
+
+    def mqttEncoderDisconnect(self, client, userData, msg):
+        self.mqttEncoderClient.unsubscribe('devices/encoder/+/realtime-position')
+        self.mqttEncoderClient.unsubscribe('devices/encoder/+/stable-position')
+        print( "Encoder disconnected with rtn code [%d]"% (rc) )
+
+    #-----DIGITAL IO CLIENT------
+        # ------------------------------------------------------------------------
+    # Register to the MQTT broker on each connection.
+    #
+    # @param client   - The MQTT client identifier (us)
+    # @param userData - The user data we have supply on registration (none)
+    # @param flags    - Connection flags
+    # @param rc       - The connection return code
+    def mqttIOConnect(self, client, userData, flags, rc):
+        if rc == 0:
+            self.mqttIOClient.subscribe('devices/io-expander/+/available')
+            self.mqttIOClient.subscribe('devices/io-expander/+/digital-input/#')
+
+
+    # ------------------------------------------------------------------------
+    # Update our internal state from the messages received from the MQTT broker
+    #
+    # @param client   - The MQTT client identifier (us)
+    # @param userData - The user data we have supply on registration (none)
+    # @param msg      - The MQTT message recieved
+    def mqttIOMessage(self, client, userData, msg):
+        device = int(msg.topic.split("/")[2])
+        if "available" in str(msg.topic):
+            # availability = str( msg.payload ).lower()
+            availability = msg.payload.decode('utf-8')
+            if availability == 'true':
+                self.myIoExpanderAvailabilityState[device-1] = True
+                return
+            else:
+                self.myIoExpanderAvailabilityState[device-1] = False
+                return
+        elif "digital-input" in str(msg.topic):
+            pin = int(msg.topic.split("/")[4])
+            value = int(msg.payload)
+            self.digitalInputs[device][pin]= value
+            return
+       
+
+
+    def mqttIODisconnect(self, client, userData, rc):
+       print( "IO Disconnected with rtn code [%d]"% (rc) )
 
 
     # Class constructor
@@ -1153,12 +1149,21 @@ class MachineMotion:
         self.myConfiguration['machineIp'] = machineIp
 
         # MQTT
-        self.myMqttClient = mqtt.Client()
-        self.myMqttClient.on_connect = self.__onConnect
-        self.myMqttClient.on_message = self.__onMessage
-        self.myMqttClient.on_disconnect = self.__onDisconnect
-        self.myMqttClient.connect_async(machineIp)
-        self.myMqttClient.loop_start()
+        self.mqttIOClient = mqtt.Client()
+        self.mqttIOClient.on_connect = self.mqttIOConnect
+        self.mqttIOClient.on_message = self.mqttIOMessage
+        self.mqttIOClient.on_disconnect = self.mqttIODisconnect
+        self.mqttIOClient.connect_async(machineIp)
+        self.mqttIOClient.loop_start()
+        
+        self.mqttEncoderClient = mqtt.Client()
+        self.mqttEncoderClient.on_connect = self.mqttEncoderConnect
+        self.mqttEncoderClient.on_message = self.mqttEncoderMessage
+        self.mqttEncoderClient.on_disconnect = self.mqttEncoderDisconnect
+        self.mqttEncoderClient.connect_async(machineIp)
+        self.mqttEncoderClient.loop_start()
+
+
 
         machineMotionRef = self
         if(gCodeCallback):
