@@ -20,3 +20,4 @@ setup(name='MachineMotion',
 # https://packaging.python.org/guides/distributing-packages-using-setuptools/#install-requires
 # https://dzone.com/articles/executable-package-pip-install
 # https://docs.python.org/3/distutils/examples.html
+# https://stackoverflow.com/questions/714063/importing-modules-from-parent-folder

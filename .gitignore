@@ -3,3 +3,4 @@
 *.sh
 /examples/build/*
 /build/*
+/Interactive/*
