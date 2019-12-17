@@ -1,16 +1,13 @@
-# Required for code to be compatible with python 2 & 3
-from builtins import *
-
-from mm-python-api import _MachineMotion
+from MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
-axis = 2                                      #The axis that you'd like to move
+axis = 1                                      #The axis that you'd like to move
 speed = 400                                    #The max speed you'd like to move at
 acceleration = 500                             #The constant acceleration and decceleration value for the move
 position = 100                                 #The absolute position you'd like to move to
 mechGain = MECH_GAIN.timing_belt_150mm_turn    #The mechanical gain of the actuator on the axis
-mm.configAxis(3, MICRO_STEPS.ustep_8, mechGain)
+mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 
 # Home Axis before absolute move
 mm.emitHome(axis)

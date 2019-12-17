@@ -1068,16 +1068,10 @@ class MachineMotion:
         self.emitgCode("M111 S247")
         while self.isReady() != "true": pass
 
-    def _defaultGCodeCallback(data = ""):
-        if self.enableDebugMessages:
-            print(data)
-        else:
-            pass
-    
+   
     
     #------- Encoder client ------
     def mqttEncoderConnect(self, client, userData, flags, rc):
-        print("Encoder Connected")
         if rc == 0:
             self.mqttEncoderClient.subscribe('devices/encoder/+/realtime-position')
             self.mqttEncoderClient.subscribe('devices/encoder/+/stable-position')
@@ -1140,7 +1134,6 @@ class MachineMotion:
     def mqttIODisconnect(self, client, userData, rc):
        print( "IO Disconnected with rtn code [%d]"% (rc) )
 
-
     # Class constructor
     def __init__(self, machineIp, gCodeCallback=None):
         global machineMotionRef
@@ -1148,7 +1141,7 @@ class MachineMotion:
 
         self.myConfiguration['machineIp'] = machineIp
 
-        # MQTT
+        #MQTT for Digital IO
         self.mqttIOClient = mqtt.Client()
         self.mqttIOClient.on_connect = self.mqttIOConnect
         self.mqttIOClient.on_message = self.mqttIOMessage
@@ -1156,6 +1149,7 @@ class MachineMotion:
         self.mqttIOClient.connect_async(machineIp)
         self.mqttIOClient.loop_start()
         
+        #MQTT for Encoder
         self.mqttEncoderClient = mqtt.Client()
         self.mqttEncoderClient.on_connect = self.mqttEncoderConnect
         self.mqttEncoderClient.on_message = self.mqttEncoderMessage
