@@ -27,6 +27,8 @@ print("All Axes homed.")
 #   Move axis 2 in the negative direction by 100 mm
 #   Move axis 3 in the positive direction by 50 mm
 mm.emitCombinedAxisRelativeMove(axesToMove, directions, distances)
+
+
 mm.waitForMotionCompletion()
 for index, axis in enumerate(axesToMove):
     print("Axis " + str(axis) + " moved " + str(distances[index]) + " in the " + directions[index] + " direction.")

@@ -641,7 +641,7 @@ class MachineMotion:
         for axis in axes:
             self._restrictInputValue("axis", axis, AXIS_NUMBER)
         for direction in directions:
-            self._restrictInputValue("direction", direction, directions)
+            self._restrictInputValue("direction", direction, AXIS_DIRECTION)
         
         global motion_completed
 
@@ -656,8 +656,8 @@ class MachineMotion:
             # Transmit move command
             command = "G0 "
             for axis, direction, distance in zip(axes, directions, distances):
-                if direction == "positive": distance = "" + str(distance)
-                elif direction  == "negative": distance = "-" + str(distance)
+                if direction == AXIS_DIRECTION.positive: distance = "" + str(distance)
+                elif direction  == AXIS_DIRECTION.negative: distance = "-" + str(distance)
                 command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
             self.myGCode.__emit__(command)
             while self.isReady() != "true": pass

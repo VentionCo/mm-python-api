@@ -18,8 +18,12 @@ class CONTROL_DEVICE_PORTS:
     SENSOR6 = "SENSOR6"
 
 class AXIS_DIRECTION:
-    normal = "normal"
-    reverse = "reverse"
+    positive = "positive"
+    negative = "negative"
+    normal = positive
+    reverse = negative
+    clockwise = positive
+    counterclockwise = negative
 
 class AXIS_NUMBER:
     DRIVE1 = 1

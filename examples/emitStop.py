@@ -9,7 +9,7 @@ mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
 #Define Relative Move Parameters
 axis = 1
-speed = 200
+speed = 400
 acceleration = 500
 distance = 1000
 direction = "positive"

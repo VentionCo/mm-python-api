@@ -12,4 +12,3 @@ uStep = MICRO_STEPS.ustep_8
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 mm.configAxis(axis, uStep, mechGain)
 print("Axis " + str(axis) + " configured with " + str(uStep) + " microstepping and " + str(mechGain) + "mm/turn mechanical gain")
-
