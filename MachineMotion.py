@@ -8,8 +8,6 @@
 import json, time, threading, sys
 
 # Import package dependent libraries
-#from pathlib import Path
-from socketIO_client import SocketIO, BaseNamespace
 import paho.mqtt.client as mqtt
 
 import logging
