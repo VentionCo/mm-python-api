@@ -1,5 +1,11 @@
 #!/usr/bin/python
-from _MachineMotion import *
+
+# System imports
+import sys
+# Custom imports
+sys.path.append("..")
+
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -24,15 +30,15 @@ mm.waitForMotionCompletion()
 i = 0
 
 for i in range (0, 100000):
-    
-    
+
+
     mm.emitSpeed(150000)
     mm.emitAcceleration(12000)
 
     x = 0
     for x in range (0, 3):
         mm.emitgCode("G0 X500 Y500 Z500")
-        mm.emitgCode("G0 X10 Y10 Z10")    
+        mm.emitgCode("G0 X10 Y10 Z10")
     mm.waitForMotionCompletion()
 
     mm.emitSpeed(100000)
@@ -42,9 +48,9 @@ for i in range (0, 100000):
     mm.emitAbsoluteMove(3, 500)
     mm.emitAbsoluteMove(1, 10)
     mm.emitAbsoluteMove(2, 10)
-    mm.emitAbsoluteMove(3, 10)    
-    
+    mm.emitAbsoluteMove(3, 10)
+
     mm.waitForMotionCompletion()
-    
+
 
 print ( "--> Example completed." )

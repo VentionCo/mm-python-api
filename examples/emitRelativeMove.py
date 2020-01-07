@@ -1,5 +1,11 @@
 #!/usr/bin/python
-from _MachineMotion import *
+
+# System imports
+import sys
+# Custom imports
+sys.path.append("..")
+
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
