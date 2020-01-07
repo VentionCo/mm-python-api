@@ -14,6 +14,8 @@ machine_motion_example.emitSpeed(10000)
 machine_motion_example.emitAcceleration(1000)
 
 # Homing axis one
+machine_motion_example.emitgCode("M92 X10")
+#machine_motion_example.emitgCode("V2 X500")
 machine_motion_example.emitHome(1)
 machine_motion_example.waitForMotionCompletion()
 
