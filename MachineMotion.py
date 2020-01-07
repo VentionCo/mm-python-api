@@ -50,7 +50,7 @@ class AXIS_NUMBER:
 
 class DEFAULT_IP_ADDRESS:
     usb_windows     = "192.168.7.2"
-    usb_mac_linux   = "192.168.6.2"
+    usb_mac_linux   = "192.168.7.2"
     ethernet        = "192.168.0.2"
 
 class NETWORK_MODE:
@@ -226,7 +226,7 @@ class MachineMotion :
     # Class constructor
     def __init__(self, gCodeCallback, machineIp) :
         global machineMotionRef
-        global gCodeCallbackRef
+        #global gCodeCallbackRef
 
         self.mySocket = "notInitialized"
         self.myConfiguration = {"machineIp": "notInitialized", "machineGateway": "notInitialized", "machineNetmask": "notInitialized"}
@@ -247,9 +247,9 @@ class MachineMotion :
         self.myMqttClient.loop_start()
 
         machineMotionRef = self
-        gCodeCallbackRef = gCodeCallback
+        #gCodeCallbackRef = gCodeCallback
 
-        self.__establishConnection(False)
+        self.__establishConnection(False, gCodeCallback)
 
         return
 
@@ -914,14 +914,12 @@ class MachineMotion :
 
        return
 
-    def __establishConnection(self, isReconnection):
-
-        global gCodeCallbackRef
+    def __establishConnection(self, isReconnection, callback):
 
         # Create the web socket
         self.myGCode = GCode(self.mySocket, self.myConfiguration['machineIp'])
 
         # Set the callback to the user specified function. This callback is used to process incoming messages from the machineMotion controller
-        self.myGCode.__setUserCallback__(gCodeCallbackRef)
+        self.myGCode.__setUserCallback__(callback)
 
         return
