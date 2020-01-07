@@ -684,7 +684,7 @@ class MachineMotion :
     # @note:           --- For the MachineMotion to access the Internet after an configIp() call, the MachineMotion device must be rebooted.
     # @status
     #
-    def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway):
+    def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway) :
 
         # Create a new object and augment it with the key value.
         self.myConfiguration["mode"] = mode

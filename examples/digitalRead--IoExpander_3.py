@@ -1,10 +1,16 @@
 #!/usr/bin/python
-from _MachineMotion import *
+
+# System imports
+import sys
+# Custom imports
+sys.path.append("..")
+
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
-   
+
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_mac_linux)
 
 # -- Read the input on the IO Expander. --
@@ -24,4 +30,3 @@ for count in range (0, 100):
         value= machine_motion_example.digitalRead(device, 3)
         print ( "Device= "+str(device)+", pin= 3, value= " + str(value) )
     time.sleep(1)
-
