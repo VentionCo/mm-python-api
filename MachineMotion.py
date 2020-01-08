@@ -71,6 +71,9 @@ class MECH_GAIN:
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
     conveyor_mm_turn                = 157
+
+class STEPPER_MOTOR:
+    steps_per_turn      = 200
 #
 # Class that handles all gCode related communications
 # @status
@@ -212,10 +215,6 @@ class GCode:
 class MachineMotion :
     # Class variables
 
-    myAxis1_steps_mm = "notInitialized"
-    myAxis2_steps_mm = "notInitialized"
-    myAxis3_steps_mm = "notInitialized"
-
     validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
 
@@ -249,9 +248,147 @@ class MachineMotion :
         machineMotionRef = self
         #gCodeCallbackRef = gCodeCallback
 
+        # Initializing axis parameters
+        self.steps_mm = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
+        self.u_step = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
+        self.mech_gain = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
+
         self.__establishConnection(False, gCodeCallback)
 
         return
+
+    # ------------------------------------------------------------------------
+    # Moves a motor with a certain set of parameters
+    #
+    # @param {int} motor - motor # to move
+    # @param {float} rotation - number of rotation to do
+    # @param {float} speed - motor speed in rotation/sec
+    # @param {float} accel - motor acceleration in rotation/sec²
+    # @param {string} reference - "absolute" (default) or "relative"
+    # @param {string} type - "synchronous" (default) or "asychronous"
+    # @return {bool} - True if command completed properly
+
+    def move(self, motor, rotation = None, speed = None, accel = None, reference = "absolute", type = "synchronous") :
+
+        if rotation is not None :
+            # set motor to position mode
+            reply = self.myGCode.__emit__("V5 " + self.getAxisName(motor) + "1")
+
+            if ( "echo" in reply and "ok" in reply ) : pass
+            else :
+                raise Exception('Error in gCode execution')
+                return False
+
+            if speed is not None :
+                # send speed command (need to convert rotation/s to mm/min )
+                reply = self.myGCode.__emit__("G0 F" + str(speed * 60 * self.mech_gain[motor]))
+
+                if ( "echo" in reply and "ok" in reply ) : pass
+                else :
+                    raise Exception('Error in gCode execution')
+                    return False
+
+
+            if accel is not None :
+                # send accel command (need to convert rotation/s² to mm/s²)
+                reply = self.myGCode.__emit__("M204 T" + str(accel * self.mech_gain[motor]))
+
+                if ( "echo" in reply and "ok" in reply ) : pass
+                else :
+                    raise Exception('Error in gCode execution')
+                    return False
+
+            if reference is "absolute" :
+                # send absolute move command
+
+                # Set to absolute motion mode
+                reply = self.myGCode.__emit__("G90")
+
+                if ( "echo" in reply and "ok" in reply ) :
+
+                    # Transmit move command
+                    reply = self.myGCode.__emit__("G0 " + self.getAxisName(motor) + str(rotation * self.mech_gain[motor]))
+
+                    if ( "echo" in reply and "ok" in reply ) : pass
+                    else :
+                        raise Exception('Error in gCode execution')
+                        return False
+
+                else :
+                    raise Exception('Error in gCode execution')
+                    return False
+
+            elif reference is "relative" :
+                # send relative move command
+                # Set to relative motion mode
+                reply = self.myGCode.__emit__("G91")
+
+                if ( "echo" in reply and "ok" in reply ) :
+                    # Transmit move command
+                    reply = self.myGCode.__emit__("G0 " + self.getAxisName(motor) + str(rotation * self.mech_gain[motor]))
+
+                    if ( "echo" in reply and "ok" in reply ) : pass
+                    else :
+                        raise Exception('Error in gCode execution')
+                        return False
+
+                else :
+                    raise Exception('Error in gCode execution')
+                    return False
+
+            else :
+                return False
+
+            if type is "synchronous" :
+                self.waitForMotionCompletion()
+                return True
+
+            elif type is "asynchronous" :
+                return True
+        else :
+            if speed is not None :
+                # set motor to speed mode
+                reply = self.myGCode.__emit__("V5 " + self.getAxisName(motor) + "2")
+
+                if ( "echo" in reply and "ok" in reply ) : pass
+                else :
+                    raise Exception('Error in gCode execution')
+                    return False
+
+                if accel is not None :
+                    # Send speed command
+                    reply = self.myGCode.__emit__("V4 S" + str(speed * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " A" + str(accel * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+
+                    if ( "echo" in reply and "ok" in reply ) : pass
+                    else :
+                        raise Exception('Error in gCode execution')
+                        return False
+
+                else :
+                    reply = self.myGCode.__emit__("V4 S" + str(speed * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+
+                    if ( "echo" in reply and "ok" in reply ) : pass
+                    else :
+                        raise Exception('Error in gCode execution')
+                        return False
+
+            else :
+                return False
+
+        return False
+
+    #
+    # Function to map API axis labels to motion controller drive labels
+    # PRIVATE
+    # @param axis --- Description: The API axis label.
+    # @status
+    #
+    def getAxisName(self, drive):
+        if drive == 1: return "X"
+        elif drive == 2: return "Y"
+        elif drive == 3: return "Z"
+        else: return "Axis Error"
+
 
     # ------------------------------------------------------------------------
     # Determines if the given id is valid for an IO Exapnder.
@@ -706,33 +843,16 @@ class MachineMotion :
     # @status
     #
     def configAxis(self, axis, _u_step, _mech_gain) :
-        u_step    = float(_u_step)
-        mech_gain = float(_mech_gain)
+        self.u_step[axis] = float(_u_step)
+        self.mech_gain[axis] = float(_mech_gain)
 
         # validate that the uStep setting is valid
-        if (self.valid_u_step.index(u_step) != -1):
-            if(axis == 1):
-                self.myAxis1_steps_mm = 200 * u_step / mech_gain
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
+        if (self.valid_u_step.index(self.u_step[axis]) != -1):
+            self.steps_mm[axis] = STEPPER_MOTOR.steps_per_turn * self.u_step[axis] / self.mech_gain[axis]
+            reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.steps_mm[axis]))
 
-                if ( "echo" in reply and "ok" in reply ) : pass
-                else : raise Exception('Error in gCode execution')
-
-            elif(axis == 2):
-                self.myAxis1_steps_mm = 200 * u_step / mech_gain
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
-
-                if ( "echo" in reply and "ok" in reply ) : pass
-                else : raise Exception('Error in gCode execution')
-
-            elif(axis == 3):
-                self.myAxis1_steps_mm = 200 * u_step / mech_gain
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
-
-                if ( "echo" in reply and "ok" in reply ) : pass
-                else : raise Exception('Error in gCode execution')
-
-            else: pass
+            if ( "echo" in reply and "ok" in reply ) : pass
+            else : raise Exception('Error in gCode execution')
 
         else: pass
 
