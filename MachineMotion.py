@@ -9,6 +9,7 @@ import json, time, threading, sys
 
 # Import package dependent libraries
 import paho.mqtt.client as mqtt
+import paho.mqtt.subscribe as MQTTsubscribe
 
 import logging
 import traceback
@@ -74,6 +75,17 @@ class MECH_GAIN:
 
 class STEPPER_MOTOR:
     steps_per_turn      = 200
+
+class MQTT :
+    class PATH :
+        ESTOP = "estop"
+        ESTOP_STATUS = ESTOP + "/status"
+        ESTOP_TRIGGER_REQUEST = ESTOP + "/trigger/request"
+        ESTOP_TRIGGER_RESPONSE = ESTOP + "/trigger/response"
+        ESTOP_RELEASE_REQUEST = ESTOP + "/release/request"
+        ESTOP_RELEASE_RESPONSE = ESTOP + "/release/response"
+        ESTOP_SYSTEMRESET_REQUEST = ESTOP + "/systemreset/request"
+        ESTOP_SYSTEMRESET_RESPONSE = ESTOP + "/systemreset/response"
 #
 # Class that handles all gCode related communications
 # @status
@@ -733,7 +745,7 @@ class MachineMotion :
     # @param distances are the distances of the relative moves --- Type: list of strings or numbers.
     # @status
     #
-    def emitCombinedAxisRelativeMove(self, axes, directions, distances):
+    def emitCombinedAxisRelativeMove(self, axes, directions, distances) :
         if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
             raise TypeError("Axes and Postions must be lists")
 
@@ -981,6 +993,69 @@ class MachineMotion :
         return self.myEncoderRealtimePositions[encoder]
 
     # ------------------------------------------------------------------------
+    # Reacts to an eStop event
+    #
+    # @param {bool} status - true or false
+    # @return : call to callback function
+
+    def eStopEvent(self, status) :
+        self.eStopCallback(status)
+        return
+
+    # ------------------------------------------------------------------------
+    # Triggers the software eStop
+    #
+    # @param : none
+    # @return : none
+
+    def triggerEstop (self) :
+        # Publish trigger request on MQTT
+        self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, "message is not important")
+        # Wait for response
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_TRIGGER_RESPONSE, retained = False, hostname = self.myConfiguration['machineIp'])
+
+        return
+
+    # ------------------------------------------------------------------------
+    # Releases the software eStop
+    #
+    # @param : none
+    # @return : none
+
+    def releaseEstop (self) :
+        # Publish release request on MQTT
+        self.myMqttClient.publish(MQTT.PATH.ESTOP_RELEASE_REQUEST, "message is not important")
+        # Wait for response
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_RELEASE_RESPONSE, retained = False, hostname = self.myConfiguration['machineIp'])
+
+        return
+
+    # ------------------------------------------------------------------------
+    # Resets the system
+    #
+    # @param : none
+    # @return : none
+
+    def resetSystem (self) :
+
+        # Publish reset system request on MQTT
+        self.myMqttClient.publish(MQTT.PATH.ESTOP_SYSTEMRESET_REQUEST, "message is not important")
+        # Wait for response
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_SYSTEMRESET_RESPONSE, retained = False, hostname = self.myConfiguration['machineIp'])
+
+        return
+
+    # ------------------------------------------------------------------------
+    # Binds eStop event to a callback function
+    #
+    # @param : callback function
+    # @return : nothing
+
+    def bindeStopEvent (self, callback_function) :
+        self.eStopCallback = callback_function
+        return
+
+    # ------------------------------------------------------------------------
     # Register to the MQTT broker on each connection.
     #
     # @param client   - The MQTT client identifier (us)
@@ -992,6 +1067,7 @@ class MachineMotion :
             self.myMqttClient.subscribe('devices/io-expander/+/available')
             self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
             self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
+            self.myMqttClient.subscribe(MQTT.PATH.ESTOP_STATUS)
 
         return
 
@@ -1004,7 +1080,10 @@ class MachineMotion :
     def __onMessage(self, client, userData, msg):
         topicParts = msg.topic.split('/')
         deviceType = topicParts[1]
-        device = int( topicParts[2] )
+
+        if len(topicParts) > 2 :
+            device = int( topicParts[2] )
+
         if (deviceType == 'io-expander'):
             if (topicParts[3] == 'available'):
                 availability = str( msg.payload ).lower()
@@ -1027,6 +1106,10 @@ class MachineMotion :
         if (deviceType == 'encoder'):
             position = float( msg.payload )
             self.myEncoderRealtimePositions[device] = position
+
+        if (topicParts[0] == MQTT.PATH.ESTOP) :
+            if (topicParts[1] == "status") :
+                self.eStopEvent(json.loads(msg.payload))
 
         return
 
