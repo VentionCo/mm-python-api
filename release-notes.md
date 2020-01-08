@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Version 2.0
 
 The MachineMotion Python API V2.0 aims at simplifying the interfaces to the digital input / outputs and the encoder position.
@@ -20,6 +21,33 @@ The MachineMotion Python API V2.0 aims at simplifying the interfaces to the digi
     - digitalWrite(device, pin, value)
     - readEncoderRealtimePosition(device)
 
+=======
+# Version 1.6.8
+
+- Date:         September 27<sup>th</sup>, 2019
+- Released by:  Francois Giguere
+
+## Compatibility
+
+### Interface Changes
+
+#### Obsoleted Interfaces
+- none
+
+#### New Interfaces
+- setPosition
+- setAxisDirection
+- emitCombinedAxisRelativeMove
+- emitCombinedAxesAbsoluteMove
+
+## Improvements:
+- Added the multi-axis move commands
+- Revised the entire API document
+- Revised all examples and updated them to reflect all new changes
+
+## Bug Fixes:
+- Fixed bug that was present in the writeControlDevice function that was using the v2.1 Python version nomenclature in the MQTT topics.
+>>>>>>> 5f849f5314c68b5636b4bb9a3019ae381650ce0d
 
 # Version 1.6.7
 
@@ -27,8 +55,12 @@ Date: July 16<sup>th</sup>, 2019
 
 ## Improvements:
 - Added support for Python3 and Python2.
+<<<<<<< HEAD
 - Updated the REAMDME to include the new MQTT library dependency.
 
+=======
+- Fixed rounding errors in the configAxis function by using floats for incoming parameters
+>>>>>>> 5f849f5314c68b5636b4bb9a3019ae381650ce0d
 
 # Version: 1.6.6
 

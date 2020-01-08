@@ -1,9 +1,11 @@
-# How-to Guide: MachineMotion Python SDK
+# MachineMotion Programming with Python
 
-<div style="text-align: center;"><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/021/large/cover_python_guide.png?1550698357" width="80%" /></div>
+<p style="text-align:center;" ><img src="__documentation/_media/CE-CL-105-0003_+python.png" width="75%" height="75%"></p>
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 1: MachineMotion Controller.</em></p>
 
 <p>&nbsp;</p>
 
+<<<<<<< HEAD
 ## Introduction
 
 This guide will cover the setup and use of Vention’s MachineMotion™ Python Software Development Kit (SDK). After reading this guide, you will be ready to deploy custom motion and control applications using Vention’s MachineMotion controller. Before you begin, we recommended reading the <a href="https://www.vention.io/technical_documents/machine_motion_docs/vention_machine_motion_user_guide" target="_blank">MachineMotion Quick Start Guide</a> to get familiar with the technology.
@@ -47,27 +49,36 @@ Many systems are built by centralizing application-level software on a host comp
 
 Using MachineMotion with Python is ideal for these types of applications, especially where an easy to deploy motion control system is necessary.
 
+=======
+>>>>>>> 5f849f5314c68b5636b4bb9a3019ae381650ce0d
 ## Installation
 
-### Windows
+To set up the MachineMotion Python Library on your computer, follow the steps below:
 
-To set up the MachineMotion Python library:  
+- Download the version of the library that you require on [GitHub](https://github.com/VentionCo/mm-python-api/releases)
 
+<<<<<<< HEAD
 - Download the latest
 <a href="https://github.com/VentionCo/mm-python-api/releases" target="_blank">Python SDK</a>
+=======
+>>>>>>> 5f849f5314c68b5636b4bb9a3019ae381650ce0d
 
-- Unzip the content on your computer. This location will be your workspace.
+    - Controllers with software v1.2.11 and earlier are compatible with the Python API v1.6.8 and earlier
+    - Controllers with software v1.12.0+ are compatible with the Python API v2.0+
 
-- Install
-<a href="https://www.python.org/download/releases/2.7/" target="_blank">Python 2.7</a> 
+- Install Python on your computer. The MachineMotion library supports both Python 2.7 and Python 3.6.
 
-*++Note for Windows users++: Make sure to add Python.exe to the PATH environment variable as shown in *Figure 2*.*
+    - If installing on Windows, make sure to add Python.exe to the PATH environment variable as shown in *Figure 2* and *Figure 3*.
 
-<p style="text-align:center;" ><img src="https://s3.amazonaws.com/ventioncms/vention_images/images/000/001/026/large/auto_HTG0006_pythonInstPathInstruction.png?1550763013" width="45%" height="45%"></p>
+<p style="text-align:center;" ><img src="__documentation/_media/python_2.7_install_edited.png" width="45%" height="45%" <img style="border:1px solid grey;"></p>
 
 <p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 2: Make sure to select "Add python.exe to path" if installing on Windows.</em></p>
 
-- Open the command prompt (for Windows) or the terminal (for Mac or Linux users) and run the following installations  
+<p style="text-align:center;" ><img src="__documentation/_media/python_3.6_install_edited.png" width="45%" height="45%" <img style="border:1px solid grey;"></p>
+
+<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Figure 3: Make sure to click "Add Python 3.6 to PATH" if installing on Windows.</em></p>
+
+- Open the command prompt (for Windows) or the terminal (for Mac or Linux) and run the following installations  
 
   ```console
   pip install -U socketIO-client
@@ -81,6 +92,7 @@ To set up the MachineMotion Python library:
   pip install -U paho-mqtt
   ```
 
+<<<<<<< HEAD
 - The MachineMotion Python library is now ready to use. Programs can be created and ran from the workspace folder.
 
 ## Connectivity Setup
@@ -1046,19 +1058,19 @@ Below, we've listed some handy G-Code commands that can be utilized via the emit
 </div>
 
 <p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Table 3: G-Code Communication Functions</em></p>
+=======
+- The MachineMotion Python library is now ready to use. Programs can be created and ran from the examples folder.
+>>>>>>> 5f849f5314c68b5636b4bb9a3019ae381650ce0d
 
-**Note on Axis Mapping**
+## Connecting to MachineMotion
 
-Note that when using direct G-Code commands, the axis name mapping in *Table 4* applies.
+If you require more information about how to setup you controller to communicate with your computer or network, consult the resource below.
 
-<div class="markdown-body" style="font-family:Larsseit; display: table;">
+[QuickStart: Connecting to MachineMotion](__documentation/quick_start/machine_motion--quickstart.md)
 
-| **G-Code Axis Name** | **MachineMotion Axis Name** | 
-| :---: | :---: |
-| X | 1 |  
-| Y | 2 | 
-| z | 3 | 
+## API Documentation
 
-</div>
+[Application Programming Interface: Python v1.6.8](__documentation/api/machine_motion_python_api--v1.6.8.md)
 
-<p style="text-align: center;"><span style="color: #808080; font-size: 11pt;"><em>Table 4: G-Code to MachineMotion Axis Mapping.</em></p>
+## Release Notes
+[Release Notes: Python v1.6.8](release-notes.md)
