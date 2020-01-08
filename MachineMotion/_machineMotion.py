@@ -381,6 +381,21 @@ class MachineMotion:
                 errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
             raise InvalidInput(errorMessage)
 
+    def _restrictInputToSubset(self, argName, argValue, argClass):
+      
+        validParams = [i for i in argClass.__dict__.keys() if i[:1] != '_']
+        validValues = [argClass.__dict__[i] for i in validParams]
+
+        if set(argValue).issubset(set(validValues)):
+            pass
+        else:
+            class InvalidInput(Exception):
+                pass
+            errorMessage = "An invalid selection was made. Given parameter '" + str(argName) + "' must be one of the following values:"
+            for param in validParams:
+                errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
+            raise InvalidInput(errorMessage)
+
 
 
     def isIoExpanderIdValid(self, id):
@@ -468,7 +483,7 @@ class MachineMotion:
 
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
 
-    def emitSpeed(self, speed, units = UNITS_SPEED.mm_per_min):
+    def emitSpeed(self, speed, units = UNITS_SPEED.mm_per_sec):
         '''
         desc: Sets the global speed for all movement commands on all axes.
         params:
@@ -786,6 +801,77 @@ class MachineMotion:
 
         self.mySocket.emit('configIp', json.dumps(self.myConfiguration))
         time.sleep(1)
+
+    def setHomingSpeed(self, axes, speeds, units = UNITS_SPEED.mm_per_sec):
+        '''
+        desc: Sets homing speed for all 3 axes
+        params: 
+            axes:
+                desc: The axes to configure
+                type: List
+            speeds:
+                desc: The speeds for each axes
+                type: List
+        note: Once set, the homing speed will apply to all programs, including MachineLogic
+        '''
+        try:
+            axes = list(axes)
+            speeds = list(speeds)
+        except TypeError:
+            axes = [axes]
+            speeds = [speeds]
+
+        self._restrictInputToSubset("axes",axes,AXIS_NUMBER)
+        if len(axes) != len(speeds):
+            class InputsError(Exception):
+                pass
+            raise InputsError("axes and speeds must be of same length")
+
+        gCodeCommand = "V2 "
+        for idx, axis in enumerate(axes):
+
+            if units == UNITS_SPEED.mm_per_sec:
+                speed_mm_per_min = speeds[idx] * 60
+            elif units == UNITS_SPEED.mm_per_min:
+                speed_mm_per_min = speeds[idx]
+
+            gCodeCommand = gCodeCommand + self.myGCode.__getTrueAxis__(axis) + str(speed_mm_per_min) + " "
+        
+        while self.isReady() == False: pass
+        gCodeCommand = gCodeCommand.strip()
+        self.emitgCode(gCodeCommand)
+
+    def setMinMaxHomingSpeed(self, axes, minspeeds, maxspeeds, units = UNITS_SPEED.mm_per_sec):
+        '''
+        desc: Sets the minimum and maximum homing speeds for each axis
+        params:
+            axes: 
+                desc: a list of the axis that require minimum and maximum homing speeds
+                type: List
+            minspeeds:
+                desc: the minimum speeds for each axis, in the same order as the axes parameter
+                type: List
+            maxspeeds:
+                desc: the maximum speeds for each axis, in the same order as the axes parameter
+                type: List
+        note: Once set, the homing speed minimum and maximum values will apply to all programs, including MachineLogic
+        '''
+        gCodeCommand = "V1 "
+        for idx, axis in enumerate(axes):
+
+            if units == UNITS_SPEED.mm_per_sec:
+                min_speed_mm_per_min = minspeeds[idx] * 60
+                max_speed_mm_per_min = maxspeeds[idx] * 60
+            elif units == UNITS_SPEED.mm_per_min:
+                min_speed_mm_per_min = minspeeds[idx]
+                max_speed_mm_per_min = maxspeeds[idx]
+
+            gCodeCommand = gCodeCommand + self.myGCode.__getTrueAxis__(axis) + str(min_speed_mm_per_min) + ":" + str(max_speed_mm_per_min) + " "
+        
+        while self.isReady() == False: pass
+        gCodeCommand = gCodeCommand.strip()
+        self.emitgCode(gCodeCommand)
+
 
     def configAxis(self, axis, _u_step, _mech_gain):
         '''
