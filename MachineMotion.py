@@ -263,7 +263,7 @@ class MachineMotion :
     # @param {int} motor - motor # to move
     # @param {float} rotation - number of rotation to do
     # @param {float} speed - motor speed in rotation/sec
-    # @param {float} accel - motor acceleration in rotation/sec²
+    # @param {float} accel - motor acceleration in rotation/sec^2
     # @param {string} reference - "absolute" (default) or "relative"
     # @param {string} type - "synchronous" (default) or "asychronous"
     # @return {bool} - True if command completed properly
@@ -290,7 +290,7 @@ class MachineMotion :
 
 
             if accel is not None :
-                # send accel command (need to convert rotation/s² to mm/s²)
+                # send accel command (need to convert rotation/s^2 to mm/s^2)
                 reply = self.myGCode.__emit__("M204 T" + str(accel * self.mech_gain[motor]))
 
                 if ( "echo" in reply and "ok" in reply ) : pass
@@ -365,6 +365,7 @@ class MachineMotion :
                         return False
 
                 else :
+                    # Send speed command
                     reply = self.myGCode.__emit__("V4 S" + str(speed * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
 
                     if ( "echo" in reply and "ok" in reply ) : pass
