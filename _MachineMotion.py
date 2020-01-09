@@ -898,7 +898,7 @@ class MachineMotion:
         self.mySocket.emit('configIp', json.dumps(self.myConfiguration))
         time.sleep(1)
 
-    def setHomingSpeed(self, axes, speeds, units = UNITS_SPEED.mm_per_sec):
+    def configHomingSpeed(self, axes, speeds, units = UNITS_SPEED.mm_per_sec):
         '''
         desc: Sets homing speed for all 3 axes
         params:
@@ -944,7 +944,7 @@ class MachineMotion:
         gCodeCommand = gCodeCommand.strip()
         self.emitgCode(gCodeCommand)
 
-    def setMinMaxHomingSpeed(self, axes, minspeeds, maxspeeds, units = UNITS_SPEED.mm_per_sec):
+    def configMinMaxHomingSpeed(self, axes, minspeeds, maxspeeds, units = UNITS_SPEED.mm_per_sec):
         '''
         desc: Sets the minimum and maximum homing speeds for each axis
         params:
