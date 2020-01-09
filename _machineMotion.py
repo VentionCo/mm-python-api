@@ -434,6 +434,39 @@ class MachineMotion:
     #Boolean Flags
     enableDebugMessages = False
 
+    # Class constructor
+    def __init__(self, machineIp, gCodeCallback=None):
+        global machineMotionRef
+        global gCodeCallbackRef
+
+        self.myConfiguration['machineIp'] = machineIp
+
+        #MQTT for Digital IO
+        self.mqttIOClient = mqtt.Client()
+        self.mqttIOClient.on_connect = self.mqttIOConnect
+        self.mqttIOClient.on_message = self.mqttIOMessage
+        self.mqttIOClient.on_disconnect = self.mqttIODisconnect
+        self.mqttIOClient.connect_async(machineIp)
+        self.mqttIOClient.loop_start()
+
+        #MQTT for Encoder
+        self.mqttEncoderClient = mqtt.Client()
+        self.mqttEncoderClient.on_connect = self.mqttEncoderConnect
+        self.mqttEncoderClient.on_message = self.mqttEncoderMessage
+        self.mqttEncoderClient.on_disconnect = self.mqttEncoderDisconnect
+        self.mqttEncoderClient.connect_async(machineIp)
+        self.mqttEncoderClient.loop_start()
+
+        machineMotionRef = self
+        if(gCodeCallback):
+            gCodeCallbackRef = gCodeCallback
+        else:
+            def emptyCallBack(data):
+                pass
+            gCodeCallbackRef = emptyCallBack
+
+        self.__establishConnection(False)
+
     #Takes tuples of parameter variables and the class they belong to.
     #If the parameter does not belong to the class, it raises a descriptive error.
     def _restrictInputValue(self, argName, argValue, argClass):
@@ -1204,40 +1237,6 @@ class MachineMotion:
     def mqttIODisconnect(self, client, userData, rc):
        print( "IO Disconnected with rtn code [%d]"% (rc) )
 
-    # Class constructor
-    def __init__(self, machineIp, gCodeCallback=None):
-        global machineMotionRef
-        global gCodeCallbackRef
-
-        self.myConfiguration['machineIp'] = machineIp
-
-        #MQTT for Digital IO
-        self.mqttIOClient = mqtt.Client()
-        self.mqttIOClient.on_connect = self.mqttIOConnect
-        self.mqttIOClient.on_message = self.mqttIOMessage
-        self.mqttIOClient.on_disconnect = self.mqttIODisconnect
-        self.mqttIOClient.connect_async(machineIp)
-        self.mqttIOClient.loop_start()
-
-        #MQTT for Encoder
-        self.mqttEncoderClient = mqtt.Client()
-        self.mqttEncoderClient.on_connect = self.mqttEncoderConnect
-        self.mqttEncoderClient.on_message = self.mqttEncoderMessage
-        self.mqttEncoderClient.on_disconnect = self.mqttEncoderDisconnect
-        self.mqttEncoderClient.connect_async(machineIp)
-        self.mqttEncoderClient.loop_start()
-
-
-
-        machineMotionRef = self
-        if(gCodeCallback):
-            gCodeCallbackRef = gCodeCallback
-        else:
-            def emptyCallBack(data):
-                pass
-            gCodeCallbackRef = emptyCallBack
-
-        self.__establishConnection(False)
 
 class MySocketCallbacks(BaseNamespace):
 
