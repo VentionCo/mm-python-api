@@ -410,7 +410,7 @@ class MachineMotion:
     myIoExpanderAvailabilityState = [ False, False, False, False ]
     myEncoderRealtimePositions    = [ 0, 0, 0 ]
     myEncoderStablePositions    = [ 0, 0, 0 ]
-digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
+    digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
 
     myAxis1_steps_mm = None
     myAxis2_steps_mm = None
@@ -427,6 +427,9 @@ digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
 
     #Boolean Flags
     enableDebugMessages = False
+
+    class HomingSpeedOutOfBounds(Exception):
+        pass
 
     # Class constructor
     def __init__(self, machineIp, gCodeCallback=None):
@@ -453,6 +456,8 @@ digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
 
         self.__establishConnection(False)
 
+        return
+
     #Takes tuples of parameter variables and the class they belong to.
     #If the parameter does not belong to the class, it raises a descriptive error.
     def _restrictInputValue(self, argName, argValue, argClass):
@@ -470,7 +475,24 @@ digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
                 errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
             raise InvalidInput(errorMessage)
 
+        return
 
+    def _restrictInputToSubset(self, argName, argValue, argClass):
+
+        validParams = [i for i in argClass.__dict__.keys() if i[:1] != '_']
+        validValues = [argClass.__dict__[i] for i in validParams]
+
+        if set(argValue).issubset(set(validValues)):
+            pass
+        else:
+            class InvalidInput(Exception):
+                pass
+            errorMessage = "An invalid selection was made. Given parameter '" + str(argName) + "' must be one of the following values:"
+            for param in validParams:
+                errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
+            raise InvalidInput(errorMessage)
+
+        return
 
     def isIoExpanderIdValid(self, id):
         if (id < 1 or id > 3):
@@ -557,7 +579,7 @@ digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
 
         self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
 
-    def emitSpeed(self, speed, units = UNITS_SPEED.mm_per_min):
+    def emitSpeed(self, speed, units = UNITS_SPEED.mm_per_sec):
         '''
         desc: Sets the global speed for all movement commands on all axes.
         params:
@@ -875,6 +897,89 @@ digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
 
         self.mySocket.emit('configIp', json.dumps(self.myConfiguration))
         time.sleep(1)
+
+    def setHomingSpeed(self, axes, speeds, units = UNITS_SPEED.mm_per_sec):
+        '''
+        desc: Sets homing speed for all 3 axes
+        params:
+            axes:
+                desc: The axes to configure
+                type: List
+            speeds:
+                desc: The speeds for each axes
+                type: List
+        note: Once set, the homing speed will apply to all programs, including MachineLogic
+        '''
+        try:
+            axes = list(axes)
+            speeds = list(speeds)
+        except TypeError:
+            axes = [axes]
+            speeds = [speeds]
+
+        self._restrictInputToSubset("axes",axes,AXIS_NUMBER)
+        if len(axes) != len(speeds):
+            class InputsError(Exception):
+                pass
+            raise InputsError("axes and speeds must be of same length")
+
+        gCodeCommand = "V2 "
+        for idx, axis in enumerate(axes):
+
+            if units == UNITS_SPEED.mm_per_sec:
+                speed_mm_per_min = speeds[idx] * 60
+            elif units == UNITS_SPEED.mm_per_min:
+                speed_mm_per_min = speeds[idx]
+
+
+
+            if speed_mm_per_min < HARDWARE_MIN_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/sec).")
+            if speed_mm_per_min > HARDWARE_MAX_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/sec)")
+
+            gCodeCommand = gCodeCommand + self.myGCode.__getTrueAxis__(axis) + str(speed_mm_per_min) + " "
+
+        while self.isReady() == False: pass
+        gCodeCommand = gCodeCommand.strip()
+        self.emitgCode(gCodeCommand)
+
+    def setMinMaxHomingSpeed(self, axes, minspeeds, maxspeeds, units = UNITS_SPEED.mm_per_sec):
+        '''
+        desc: Sets the minimum and maximum homing speeds for each axis
+        params:
+            axes:
+                desc: a list of the axis that require minimum and maximum homing speeds
+                type: List
+            minspeeds:
+                desc: the minimum speeds for each axis, in the same order as the axes parameter
+                type: List
+            maxspeeds:
+                desc: the maximum speeds for each axis, in the same order as the axes parameter
+                type: List
+        note: Once set, the homing speed minimum and maximum values will apply to all programs, including MachineLogic
+        '''
+        gCodeCommand = "V1 "
+        for idx, axis in enumerate(axes):
+
+            if units == UNITS_SPEED.mm_per_sec:
+                min_speed_mm_per_min = minspeeds[idx] * 60
+                max_speed_mm_per_min = maxspeeds[idx] * 60
+            elif units == UNITS_SPEED.mm_per_min:
+                min_speed_mm_per_min = minspeeds[idx]
+                max_speed_mm_per_min = maxspeeds[idx]
+
+            if min_speed_mm_per_min < HARDWARE_MIN_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(min_speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/sec).")
+            if max_speed_mm_per_min > HARDWARE_MAX_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(max_speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/sec)")
+
+            gCodeCommand = gCodeCommand + self.myGCode.__getTrueAxis__(axis) + str(min_speed_mm_per_min) + ":" + str(max_speed_mm_per_min) + " "
+
+        while self.isReady() == False: pass
+        gCodeCommand = gCodeCommand.strip()
+        self.emitgCode(gCodeCommand)
+
 
     def configAxis(self, axis, _u_step, _mech_gain):
         '''
