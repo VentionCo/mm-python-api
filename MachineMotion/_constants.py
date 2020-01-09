@@ -72,6 +72,6 @@ class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
 
-# units are mm/min
+# units are mm/min. See vention_gcode.cpp for source of number (vention_gcode.h is misleading)
 HARDWARE_MAX_HOMING_FEEDRATE = 15999
 HARDWARE_MIN_HOMING_FEEDRATE = 251
