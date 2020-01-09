@@ -1,6 +1,0 @@
-paho-mqtt ==1.4.0
-socketIO-client ==0.7.2
-pathlib ==1.0.1
-pathlib2 ==2.3.5
-
-

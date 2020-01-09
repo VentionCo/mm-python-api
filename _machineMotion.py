@@ -11,7 +11,6 @@
 
 # Import standard libraries
 import json, time, threading, sys
-from ._constants import *
 
 # Import package dependent libraries
 from pathlib import Path
@@ -27,7 +26,78 @@ machineMotionRef = None
 gCodeCallbackRef = None
 lastSendTimeStamp = None
 
+class CONTROL_DEVICE_SIGNALS:
+    SIGNAL0 = "SIGNAL0"
+    SIGNAL1 = "SIGNAL1"
+    SIGNAL2 = "SIGNAL2"
+    SIGNAL3 = "SIGNAL3"
+    SIGNAL4 = "SIGNAL4"
+    SIGNAL5 = "SIGNAL5"
+    SIGNAL6 = "SIGNAL6"
 
+class CONTROL_DEVICE_TYPE:
+    IO_EXPANDER_GENERIC = "IO_EXPANDER_GENERIC"
+    ENCODER             = "ENCODER"
+
+class CONTROL_DEVICE_PORTS:
+    SENSOR4 = "SENSOR4"
+    SENSOR5 = "SENSOR5"
+    SENSOR6 = "SENSOR6"
+
+class AXIS_DIRECTION:
+    positive = "positive"
+    negative = "negative"
+    normal = positive
+    reverse = negative
+    clockwise = positive
+    counterclockwise = negative
+
+class AXIS_NUMBER:
+    DRIVE1 = 1
+    DRIVE2 = 2
+    DRIVE3 = 3
+
+class UNITS_SPEED:
+    mm_per_min = "mm per minute"
+    mm_per_sec =  "mm per second"
+
+class UNITS_ACCEL:
+    mm_per_min_sqr = "mm per minute"
+    mm_per_sec_sqr =  "mm per second"
+
+class DEFAULT_IP_ADDRESS:
+    usb_windows     = "192.168.7.2"
+    usb_mac_linux   = "192.168.6.2"
+    ethernet        = "192.168.0.2"
+
+class NETWORK_MODE:
+    static  = "static"
+    dhcp    = "dhcp"
+
+class MICRO_STEPS:
+    ustep_full  = 1
+    ustep_2     = 2
+    ustep_4     = 4
+    ustep_8     = 8
+    ustep_16    = 16
+
+class MECH_GAIN:
+    timing_belt_150mm_turn          = 150
+    legacy_timing_belt_200_mm_turn  = 200
+    ballscrew_10mm_turn             = 10
+    legacy_ballscrew_5_mm_turn      = 5
+    indexer_deg_turn                = 85
+    conveyor_mm_turn                = 157
+    rack_pinion_mm_turn             = 157.08
+
+class AUX_PORTS:
+    aux_1 = 0
+    aux_2 = 1
+    aux_3 = 2
+
+class ENCODER_TYPE:
+    real_time = "realtime-position"
+    stable = "stable-position"
 
 def fastMotionStatusCallback(data, mm):
     global motion_completed
@@ -343,7 +413,7 @@ class MachineMotion:
     mqttEncoderClient = None
     mqttIOClient = None
 
-    digitalInputs = [[0 for numModules in range(6)] for pins in range(4)] 
+    digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
     myIoExpanderAvailabilityState = [ False, False, False, False ]
     myEncoderRealtimePositions    = [ 0, 0, 0 ]
     myEncoderStablePositions    = [ 0, 0, 0 ]
@@ -365,9 +435,9 @@ class MachineMotion:
     enableDebugMessages = False
 
     #Takes tuples of parameter variables and the class they belong to.
-    #If the parameter does not belong to the class, it raises a descriptive error. 
+    #If the parameter does not belong to the class, it raises a descriptive error.
     def _restrictInputValue(self, argName, argValue, argClass):
-      
+
         validParams = [i for i in argClass.__dict__.keys() if i[:1] != '_']
         validValues = [argClass.__dict__[i] for i in validParams]
 
@@ -387,22 +457,22 @@ class MachineMotion:
         if (id < 1 or id > 3):
             return False
         return True
-        
+
     def isIoExpanderInputIdValid(self, deviceId, pinId):
-                
+
         if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
         if (pinId < 0 or pinId > 3):
             return False
         return True
-        
+
     def isIoExpanderOutputIdValid(self, deviceId, pinId):
         if (self.isIoExpanderIdValid( deviceId ) == False):
             return False
         if (pinId < 0 or pinId > 3):
             return False
         return True
-        
+
 
     def isEncoderIdValid(self, id):
         if id >= 0 and id <= 3:
@@ -453,7 +523,7 @@ class MachineMotion:
     def emitHome(self, axis):
         '''
         desc: Initiates the homing sequence for the specified axis.
-        params: 
+        params:
             axis:
                 desc: The number of the axis that you would like to home.
                 type: Number
@@ -485,10 +555,10 @@ class MachineMotion:
 
         if units == UNITS_SPEED.mm_per_min:
             speed_mm_per_min = speed
-        elif units == UNITS_SPEED.mm_per_sec: 
+        elif units == UNITS_SPEED.mm_per_sec:
             speed_mm_per_min = 60*speed
-        
-           
+
+
         self.myGCode.__emit__("G0 F" + str(speed_mm_per_min))
         while self.isReady() != "true": pass
 
@@ -509,7 +579,7 @@ class MachineMotion:
 
         if units == UNITS_ACCEL.mm_per_sec_sqr:
             accel_mm_per_sec_sqr = acceleration
-        elif units == UNITS_ACCEL.mm_per_min_sqr: 
+        elif units == UNITS_ACCEL.mm_per_min_sqr:
             accel_mm_per_sec_sqr = acceleration/3600
 
         self.myGCode.__emit__("M204 T" + str(accel_mm_per_sec_sqr))
@@ -518,8 +588,8 @@ class MachineMotion:
     def emitAbsoluteMove(self, axis, position):
         '''
         desc: Moves the specified axis to a desired end location.
-        params: 
-            axis: 
+        params:
+            axis:
                 desc: The axis which will perform the absolute move command.
                 type: Number
             position:
@@ -553,7 +623,7 @@ class MachineMotion:
         exampleCodePath: emitCombinedAxesAbsoluteMove.py
         '''
 
-        try: 
+        try:
             axes = list(axes)
             positions = list(positions)
         except TypeError:
@@ -585,7 +655,7 @@ class MachineMotion:
                 desc: The axis to move.
                 type: Integer
             direction:
-                desc: The direction of travel. Ex - "positive" or "negative" 
+                desc: The direction of travel. Ex - "positive" or "negative"
                 type: String
             distance:
                 desc: The travel distance in mm.
@@ -623,7 +693,7 @@ class MachineMotion:
                 desc: The axes to move. Ex-[1,3]
                 type: List
             direction:
-                desc: The direction of travel of each specified axis. Ex - ["positive", "negative"] 
+                desc: The direction of travel of each specified axis. Ex - ["positive", "negative"]
                 type: String
             distance:
                 desc: The travel distances in mm. Ex - [10, 40]
@@ -631,7 +701,7 @@ class MachineMotion:
         exampleCodePath: emitCombinedAxesRelativeMove.py
         '''
 
-        try: 
+        try:
             axes = list(axes)
             directions = list(directions)
             distances = list(distances)
@@ -642,7 +712,7 @@ class MachineMotion:
             self._restrictInputValue("axis", axis, AXIS_NUMBER)
         for direction in directions:
             self._restrictInputValue("direction", direction, AXIS_DIRECTION)
-        
+
         global motion_completed
 
         motion_completed = "false"
@@ -661,11 +731,11 @@ class MachineMotion:
                 command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
             self.myGCode.__emit__(command)
             while self.isReady() != "true": pass
-        
+
         finally:
             self.myGCode.__emit__("G91")
             while self.isReady() != "true": pass
-        
+
     def setPosition(self, axis, position):
         '''
         desc: Override the current position of the specified axis to a new value.
@@ -691,7 +761,7 @@ class MachineMotion:
             gCode:
                 desc: The g-code that will be passed directly to the controller.
                 type: string
-        note: All movement commands sent to the controller are by default in mm. 
+        note: All movement commands sent to the controller are by default in mm.
         exampleCodePath: emitgCode.py
         '''
         global motion_completed
@@ -713,10 +783,10 @@ class MachineMotion:
         note: For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a>
         exampleCodePath: emitSetAxisDirection.py
         '''
-    
+
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
         self._restrictInputValue("direction", direction, AXIS_DIRECTION)
-            
+
         if(axis == 1):
             self.myAxis1_direction = direction
             if(direction == AXIS_DIRECTION.normal):
@@ -755,12 +825,12 @@ class MachineMotion:
 
     def configMachineMotionIp(self, mode, machineIp="", machineNetmask="", machineGateway=""):
         '''
-        desc: Set up the required network information for the Machine Motion controller. The router can be configured in either DHCP mode or 
+        desc: Set up the required network information for the Machine Motion controller. The router can be configured in either DHCP mode or
         params:
             mode:
                 desc: Sets Network Mode to either DHCP or static addressing. Either <code>NETWORK_MODE.static</code> or <code>NETWORK_MODE.dhcp</code>
                 type: Constant
-            machineIp: 
+            machineIp:
                 desc: The static IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
                 type: String
             machineNetmask:
@@ -778,7 +848,7 @@ class MachineMotion:
                print("NETWORK ERROR: machineIp, machineNetmask and machineGateway cannot be left blank in static mode")
                quit()
 
-        # Create a new object and augment it with the key value.    
+        # Create a new object and augment it with the key value.
         self.myConfiguration["mode"] = mode
         self.myConfiguration["machineIp"] = machineIp
         self.myConfiguration["machineNetmask"] = machineNetmask
@@ -797,10 +867,10 @@ class MachineMotion:
             _u_step:
                 desc: The number of microsteps taken by the stepper motor. Must be either 1, 2, 5, 8 or 16.
                 type: Number
-            _mech_gain: 
+            _mech_gain:
                 desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
                 type: Number
-        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch. 
+        note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch.
         exampleCodePath: configAxis.py
         '''
         self._restrictInputValue("axis", axis,  AXIS_NUMBER)
@@ -870,9 +940,9 @@ class MachineMotion:
             # On reception of the data invoke the callback function.
             self.mySocket.on('getDataResponse', callback)
 
-            #timer here to force call asyncCallback on timeout #kill timer# 
+            #timer here to force call asyncCallback on timeout #kill timer#
             # If this fails, return a key value pair - key is 'error' value is description why error failed
-            
+
 
         def asyncCallback(data):
             self.asyncResult = data
@@ -885,7 +955,7 @@ class MachineMotion:
 
         getDataThread = threading.Thread(target = asyncGetData, args=(key, asyncCallback,))
         timeoutThread = threading.Thread(target = threadTimeout)
-        
+
         getDataThread.start()
         timeoutThread.start()
         while True:
@@ -920,8 +990,8 @@ class MachineMotion:
             raise NoIOModulesFound("Application Error: No IO Modules found. Please verify the connection between Digital IO and MachineMotion.")
         else:
             return foundIOModules
-    
-       
+
+
     def digitalRead(self, device, pin):
         '''
         desc: Returns the value (<span style="color:red"> HIGH/LOW? </span>) of the given device and pin.
@@ -936,7 +1006,7 @@ class MachineMotion:
         '''
 
         return self.digitalInputs[device][pin]
-        
+
     def digitalWrite(self, device, pin, value):
         '''
         desc: Sets voltage on specified pin of digital IO output pin to either High (24V) or Low (0V).
@@ -957,7 +1027,7 @@ class MachineMotion:
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
             return
         self.mqttIOClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
-    
+
     def emitDwell(self, milli):
         '''
         desc: Pauses motion for a specified time. This function is non-blocking; your program may accomplish other tasks while the machine is dwelling.
@@ -980,7 +1050,7 @@ class MachineMotion:
                 type: Integer
             readingType:
                 desc: Either 'real time' or 'stable'. In 'real time' mode, readEncoder will return the most recently received encoder information. In 'stable' mode, readEncoder will update its return value only after the encoder output has stabilized around a specific value, such as when the axis has stopped motion.
-                type: String 
+                type: String
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
@@ -1005,11 +1075,11 @@ class MachineMotion:
                 type: Integer
             readingType:
                 desc: Either 'real time' or 'stable'. In 'real time' mode, readEncoder will return the most recently received encoder information. In 'stable' mode, readEncoder will update its return value only after the encoder output has stabilized around a specific value, such as when the axis has stopped motion.
-                type: String 
+                type: String
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
         '''
-        
+
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
         self._restrictInputValue("readingType", readingType, ENCODER_TYPE)
         try:
@@ -1029,7 +1099,7 @@ class MachineMotion:
                     return self.myEncoderStablePositions[encoder]/self.myAxis3_steps_mm
         except TypeError:
             raise TypeError("ConfigAxis must be called prior to readEncoderDistance")
-    
+
 
 
     #This function is left in for legacy, however it is not documented because it is the same functionality as readEncoder
@@ -1038,7 +1108,7 @@ class MachineMotion:
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return
         return self.myEncoderRealtimePositions[encoder]
-        
+
 
 
 
@@ -1068,16 +1138,16 @@ class MachineMotion:
         self.emitgCode("M111 S247")
         while self.isReady() != "true": pass
 
-   
-    
+
+
     #------- Encoder client ------
     def mqttEncoderConnect(self, client, userData, flags, rc):
         if rc == 0:
             self.mqttEncoderClient.subscribe('devices/encoder/+/realtime-position')
             self.mqttEncoderClient.subscribe('devices/encoder/+/stable-position')
-    
+
     def mqttEncoderMessage(self, client, userData, msg):
-        
+
         position = float(msg.payload.decode('utf-8'))
         device = int(msg.topic.split("/")[2])
         if "realtime-position" in str(msg.topic):
@@ -1128,7 +1198,7 @@ class MachineMotion:
             value = int(msg.payload)
             self.digitalInputs[device][pin]= value
             return
-       
+
 
 
     def mqttIODisconnect(self, client, userData, rc):
@@ -1148,7 +1218,7 @@ class MachineMotion:
         self.mqttIOClient.on_disconnect = self.mqttIODisconnect
         self.mqttIOClient.connect_async(machineIp)
         self.mqttIOClient.loop_start()
-        
+
         #MQTT for Encoder
         self.mqttEncoderClient = mqtt.Client()
         self.mqttEncoderClient.on_connect = self.mqttEncoderConnect
