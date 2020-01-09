@@ -71,3 +71,7 @@ class AUX_PORTS:
 class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
+
+# units are mm/min
+HARDWARE_MAX_HOMING_FEEDRATE = 15999
+HARDWARE_MIN_HOMING_FEEDRATE = 251

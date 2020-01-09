@@ -16,11 +16,11 @@ mm.emitSpeed(speed)
 mm.emitAcceleration(acceleration)
 
 minHomingSpeeds = [10, 10, 10]
-maxHomingSpeeds = [1100, 1100, 1100]
+maxHomingSpeeds = [250, 250, 250]
 
 mm.setMinMaxHomingSpeed([1,2,3], minHomingSpeeds, maxHomingSpeeds)
 
-homingSpeeds = [20, 200, 1000]
+homingSpeeds = [20, 50, 100]
 
 for homingSpeed in homingSpeeds:
     print("Moving to position = 2000")

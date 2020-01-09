@@ -363,6 +363,8 @@ class MachineMotion:
 
     #Boolean Flags
     enableDebugMessages = False
+    class HomingSpeedOutOfBounds(Exception):
+        pass
 
     #Takes tuples of parameter variables and the class they belong to.
     #If the parameter does not belong to the class, it raises a descriptive error. 
@@ -834,7 +836,14 @@ class MachineMotion:
                 speed_mm_per_min = speeds[idx] * 60
             elif units == UNITS_SPEED.mm_per_min:
                 speed_mm_per_min = speeds[idx]
+            
+            
 
+            if speed_mm_per_min < HARDWARE_MIN_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/sec).")
+            if speed_mm_per_min > HARDWARE_MAX_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/sec)")
+            
             gCodeCommand = gCodeCommand + self.myGCode.__getTrueAxis__(axis) + str(speed_mm_per_min) + " "
         
         while self.isReady() == False: pass
@@ -866,12 +875,17 @@ class MachineMotion:
                 min_speed_mm_per_min = minspeeds[idx]
                 max_speed_mm_per_min = maxspeeds[idx]
 
+            if min_speed_mm_per_min < HARDWARE_MIN_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(min_speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/sec).")
+            if max_speed_mm_per_min > HARDWARE_MAX_HOMING_FEEDRATE:
+                raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(max_speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/sec)")
+            
             gCodeCommand = gCodeCommand + self.myGCode.__getTrueAxis__(axis) + str(min_speed_mm_per_min) + ":" + str(max_speed_mm_per_min) + " "
         
         while self.isReady() == False: pass
         gCodeCommand = gCodeCommand.strip()
         self.emitgCode(gCodeCommand)
-
+        
 
     def configAxis(self, axis, _u_step, _mech_gain):
         '''
@@ -1232,7 +1246,7 @@ class MachineMotion:
         self.mqttIOClient.on_connect = self.mqttIOConnect
         self.mqttIOClient.on_message = self.mqttIOMessage
         self.mqttIOClient.on_disconnect = self.mqttIODisconnect
-        self.mqttIOClient.connect_async(machineIp)
+        self.mqttIOClient.connect(machineIp)
         self.mqttIOClient.loop_start()
         
         #MQTT for Encoder
@@ -1240,7 +1254,7 @@ class MachineMotion:
         self.mqttEncoderClient.on_connect = self.mqttEncoderConnect
         self.mqttEncoderClient.on_message = self.mqttEncoderMessage
         self.mqttEncoderClient.on_disconnect = self.mqttEncoderDisconnect
-        self.mqttEncoderClient.connect_async(machineIp)
+        self.mqttEncoderClient.connect(machineIp)
         self.mqttEncoderClient.loop_start()
 
 
