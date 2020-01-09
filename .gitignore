@@ -1,3 +1,6 @@
+# Ignore python compiled files
+*.pyc
+
 /examples/_*
 /demos/*
 *.sh
