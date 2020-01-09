@@ -254,7 +254,7 @@ class MachineMotion :
         self.myMqttClient.on_connect = self.__onConnect
         self.myMqttClient.on_message = self.__onMessage
         self.myMqttClient.on_disconnect = self.__onDisconnect
-        self.myMqttClient.connect_async(machineIp)
+        self.myMqttClient.connect(machineIp)
         self.myMqttClient.loop_start()
 
         machineMotionRef = self
