@@ -6,7 +6,7 @@ import sys
 
 sys.path.append("..")
 
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def debug(data): pass
