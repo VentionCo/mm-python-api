@@ -770,7 +770,7 @@ class MachineMotion:
 
         self.myGCode.__emit__(gCode)
 
-    def emitSetAxisDirection(self, axis, direction):
+    def configAxisDirection(self, axis, direction):
         '''
         desc: Reversing the axis direction reverses the location of the home sensor and reverses the positive motion direction. In Normal direction, the Home sensor is xA, in Reverse the Home sensor is xB.
         params:
