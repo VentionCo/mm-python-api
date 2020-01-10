@@ -825,15 +825,18 @@ class MachineMotion :
     # @note:           --- For the MachineMotion to access the Internet after an configIp() call, the MachineMotion device must be rebooted.
     # @status
     #
-    def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway) :
+    def configMachineMotionIp(self, mode = None, machineIp = None, machineNetmask = None, machineGateway = None) :
+
+        oldIP = self.myConfiguration["machineIp"]
 
         # Create a new object and augment it with the key value.
-        self.myConfiguration["mode"] = mode
-        self.myConfiguration["machineIp"] = machineIp
-        self.myConfiguration["machineNetmask"] = machineNetmask
-        self.myConfiguration["machineGateway"] = machineGateway
 
-        HTTPSend("localhost:8000", "/configIp", json.dumps(self.myConfiguration))
+        if mode is not None : self.myConfiguration["mode"] = mode
+        if machineIp is not None : self.myConfiguration["machineIp"] = machineIp
+        if machineNetmask is not None : self.myConfiguration["machineNetmask"] = machineNetmask
+        if machineGateway is not None : self.myConfiguration["machineGateway"] = machineGateway
+
+        HTTPSend(oldIP + ":8000", "/configIp", json.dumps(self.myConfiguration))
 
         time.sleep(1)
 
@@ -894,7 +897,7 @@ class MachineMotion :
         dataPack["data"] = data
 
         # Send the request to MachineMotion
-        HTTPSend("localhost:8000", "/saveData", json.dumps(dataPack))
+        HTTPSend(self.myConfiguration['machineIp'] + ":8000", "/saveData", json.dumps(dataPack))
         time.sleep(0.05)
 
         return
@@ -906,7 +909,7 @@ class MachineMotion :
     # @status
     #
     def getData(self, key, callback) :
-        callback(HTTPSend("localhost:8000", "/getData", key))
+        callback(HTTPSend(self.myConfiguration['machineIp'] + ":8000", "/getData", key))
 
     # ------------------------------------------------------------------------
     # Determines if the io-expander with the given id is available
