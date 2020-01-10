@@ -14,12 +14,14 @@ homesTowards={
 
 direction = AXIS_DIRECTION.positive 
 print("Axis " + str(axis) + " is set to " + direction + " mode. It will now home towards " + homesTowards[direction] + "." )
-mm.emitSetAxisDirection(axis, direction)
+mm.configAxisDirection(axis, direction)
 mm.emitHome(axis)
 
 mm.waitForMotionCompletion()
 
 direction = AXIS_DIRECTION.negative 
 print("Axis " + str(axis) + " is set to " + direction + " mode. It will now home towards " + homesTowards[direction] + "." )
-mm.emitSetAxisDirection(axis, direction)
+mm.configAxisDirection(axis, direction)
 mm.emitHome(axis)
+
+mm.waitForMotionCompletion()
