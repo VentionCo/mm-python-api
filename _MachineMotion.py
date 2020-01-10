@@ -94,6 +94,9 @@ class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
 
+HARDWARE_MIN_HOMING_FEEDRATE =5
+HARDWARE_MAX_HOMING_FEEDRATE= 5000
+
 def fastMotionStatusCallback(data, mm):
     global motion_completed
     global waiting_motion_status
@@ -481,15 +484,15 @@ class MachineMotion:
         validParams = [i for i in argClass.__dict__.keys() if i[:1] != '_']
         validValues = [argClass.__dict__[i] for i in validParams]
 
-        if set(argValue).issubset(set(validValues)):
-            pass
-        else:
-            class InvalidInput(Exception):
-                pass
-            errorMessage = "An invalid selection was made. Given parameter '" + str(argName) + "' must be one of the following values:"
-            for param in validParams:
-                errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
-            raise InvalidInput(errorMessage)
+        # if set(argValue).issubset(set(validValues)):
+        #     pass
+        # else:
+        #     class InvalidInput(Exception):
+        #         pass
+        #     errorMessage = "An invalid selection was made. Given parameter '" + str(argName) + "' must be one of the following values:"
+        #     for param in validParams:
+        #         errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
+        #     raise InvalidInput(errorMessage)
 
         return
 

@@ -1,26 +1,27 @@
 import sys
-sys.path.append("..")
+sys.path.insert(1,"C:\\Users\\Jack\\Documents\\Vention\\Repos\\2.2\\py22\\mm-python-api\\_MachineMotion.py")
+sys.path.insert(1,"C:\\Users\\Jack\\Documents\\Vention\\Repos\\2.2\\py22\\mm-python-api\\")
 from _MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
-axis = 1                                    #The axis that you'd like to move
-speed = 500                                 #The max speed you'd like to move at
-acceleration = 500                          #The constant acceleration and decceleration value for the move
-mechGain = MECH_GAIN.rack_pinion_mm_turn    #The mechanical gain of the actuator on the axis
+axes = [1,2,3]    
+axis =3                                #The axis that you'd like to move
+speeds = [25,25,25]                                 #The max speed you'd like to move at
+acceleration = 10                          #The constant acceleration and decceleration value for the move
 
-mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
-mm.emitSpeed(speed)
-mm.emitAcceleration(acceleration)
-homingSpeeds = [20, 500, 1000]
+mm.emitSpeed(15)
+mm.emitAcceleration(10)
+mm.emitAbsoluteMove(3, 40)
+mm.emitCombinedAxesAbsoluteMove([1,2], [50,50])
+mm.configAxis(3, 8, 17)
 
-for homingSpeed in homingSpeeds:
-    print("Moving to position = 500")
-    mm.emitAbsoluteMove(axis, 500)
-    mm.waitForMotionCompletion()
-    print("Now going home at " + str(homingSpeed) + " mm/s")
-    mm.configHomingSpeed(axis, homingSpeed)
-    mm.emitHome(axis)
-    mm.waitForMotionCompletion()
+print("Moving to position = 100")
+mm.emitAbsoluteMove(axis, 100)
+mm.waitForMotionCompletion()
+mm.configHomingSpeed(axes, speeds)
+mm.waitForMotionCompletion()
+mm.emitHome(axis)
+mm.waitForMotionCompletion()
 
-print("All future homing commands will now be set at " + str(homingSpeed) + " mm/s")
+

@@ -1,6 +1,7 @@
 import sys
 sys.path.append("..")
 from _MachineMotion import *
+
 #Declare parameters for g-Code command
 axis = 3
 speed = 1000
