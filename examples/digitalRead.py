@@ -9,6 +9,7 @@ detectedIOModules = mm.detectIOModules()
 for IO_Name, IO_NetworkID in detectedIOModules.items():
     readPins ={"Pin 1":0, "Pin 2":1, "Pin 3": 2, "Pin 4":3}
     for readPin in readPins.keys():
+        print("IO_NetworkID, :  " + str(IO_NetworkID) + " &&  readPins[readPin] " + str(readPins))
         pinValue = mm.digitalRead(IO_NetworkID, readPins[readPin])
         print(readPin + " on " + IO_Name + " has value " + str(pinValue))
   

@@ -4,7 +4,7 @@ from _MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
-axis = 1                                      #The axis that you'd like to move
+axis = 1                                       #The axis that you'd like to move
 speed = 400                                    #The max speed you'd like to move at
 acceleration = 500                             #The constant acceleration and decceleration value for the move
 position = 100                                 #The absolute position you'd like to move to
