@@ -567,7 +567,7 @@ class MachineMotion:
             axis:
                 desc: The number of the axis that you would like to home.
                 type: Number
-        note: If setAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If setAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
+        note: If configAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If configAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
         exampleCodePath: emitHome.py
         '''
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
@@ -821,7 +821,7 @@ class MachineMotion:
                 desc: A string of value either either 'Normal' or 'Reverse'. 'Normal' direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B. Ex - "Reverse"
                 type: String
         note: For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a>
-        exampleCodePath: emitSetAxisDirection.py
+        exampleCodePath: configAxisDirection.py
         '''
 
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
