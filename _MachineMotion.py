@@ -94,8 +94,8 @@ class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
 
-HARDWARE_MIN_HOMING_FEEDRATE =5
-HARDWARE_MAX_HOMING_FEEDRATE= 5000
+HARDWARE_MIN_HOMING_FEEDRATE =251
+HARDWARE_MAX_HOMING_FEEDRATE= 15999
 
 def fastMotionStatusCallback(data, mm):
     global motion_completed
@@ -479,23 +479,6 @@ class MachineMotion:
 
         return
 
-    def _restrictInputToSubset(self, argName, argValue, argClass):
-
-        validParams = [i for i in argClass.__dict__.keys() if i[:1] != '_']
-        validValues = [argClass.__dict__[i] for i in validParams]
-
-        # if set(argValue).issubset(set(validValues)):
-        #     pass
-        # else:
-        #     class InvalidInput(Exception):
-        #         pass
-        #     errorMessage = "An invalid selection was made. Given parameter '" + str(argName) + "' must be one of the following values:"
-        #     for param in validParams:
-        #         errorMessage = errorMessage + "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
-        #     raise InvalidInput(errorMessage)
-
-        return
-
     def isIoExpanderIdValid(self, id):
         if (id < 1 or id > 3):
             return False
@@ -589,7 +572,8 @@ class MachineMotion:
                 desc: The global max speed in mm/min.
                 type: Number
             units:
-                desc: Either `UNITS_SPEED.mm_per_min` or `UNITS_SPEED.mm_per_sec`.
+                desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
+                defaultVaue: UNITS_SPEED.mm_per_sec
                 type: String
         exampleCodePath: emitSpeed.py
         '''
@@ -613,7 +597,8 @@ class MachineMotion:
                 desc: The global acceleration in mm/s^2.
                 type: Number
             units:
-                desc: Either `UNITS.mm_per_min_sqr` or `UNITS_ACCEL.mm_per_sec_sqr`
+                desc: Units for speed. Can be switched to UNITS_ACCEL.mm_per_min_sqr
+                defaultVaue: UNITS_ACCEL.mm_per_sec_sqr
                 type: String
         exampleCodePath:  emitAcceleration.py
         '''
@@ -910,6 +895,10 @@ class MachineMotion:
             speeds:
                 desc: The speeds for each axes
                 type: List
+            units: 
+                desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
+                defaultVaue: UNITS_SPEED.mm_per_sec
+                type: String
         note: Once set, the homing speed will apply to all programs, including MachineLogic
         '''
         try:
@@ -919,7 +908,6 @@ class MachineMotion:
             axes = [axes]
             speeds = [speeds]
 
-        self._restrictInputToSubset("axes",axes,AXIS_NUMBER)
         if len(axes) != len(speeds):
             class InputsError(Exception):
                 pass
@@ -948,7 +936,7 @@ class MachineMotion:
 
     def configMinMaxHomingSpeed(self, axes, minspeeds, maxspeeds, units = UNITS_SPEED.mm_per_sec):
         '''
-        desc: Sets the minimum and maximum homing speeds for each axis
+        desc: Sets the minimum and maximum homing speeds for each axis. 
         params:
             axes:
                 desc: a list of the axis that require minimum and maximum homing speeds
@@ -959,7 +947,7 @@ class MachineMotion:
             maxspeeds:
                 desc: the maximum speeds for each axis, in the same order as the axes parameter
                 type: List
-        note: Once set, the homing speed minimum and maximum values will apply to all programs, including MachineLogic
+        note: This function can be used to set safe limits on homing speed. Because homing speed is configured only through software aPI, this safeguards against developers accidently modifying homing speed to unsafe levels.
         '''
         gCodeCommand = "V1 "
         for idx, axis in enumerate(axes):
@@ -983,46 +971,38 @@ class MachineMotion:
         self.emitgCode(gCodeCommand)
 
 
-    def configAxis(self, axis, _u_step, _mech_gain):
+    def configAxis(self, axis, uStep, mechGain):
         '''
         desc: Initializes parameters for proper axis control.
         params:
             axis:
                 desc: The axis to configure.
                 type: Number
-            _u_step:
+            uStep:
                 desc: The number of microsteps taken by the stepper motor. Must be either 1, 2, 5, 8 or 16.
                 type: Number
-            _mech_gain:
+            mechGain:
                 desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
                 type: Number
         note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch.
         exampleCodePath: configAxis.py
         '''
         self._restrictInputValue("axis", axis,  AXIS_NUMBER)
-        self._restrictInputValue("_u_step", _u_step, MICRO_STEPS)
+        self._restrictInputValue("uStep", uStep, MICRO_STEPS)
 
-        u_step    = float(_u_step)
-        mech_gain = float(_mech_gain)
+        uStep    = float(uStep)
+        mechGain = float(mechGain)
 
-        # validate that the uStep setting is valid
-        if (self.valid_u_step.index(u_step) != -1):
-            if(axis == 1):
-                self.myAxis1_steps_mm = 200 * u_step / mech_gain
-                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
-            elif(axis == 2):
-                self.myAxis2_steps_mm = 200 * u_step / mech_gain
-                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
-            elif(axis == 3):
-                self.myAxis3_steps_mm = 200 * u_step / mech_gain
-                self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
-            else:
-                pass
-                # print "Argument error, {configAxis(self, axis, u_step, mech_gain)}, {axis} argument is invalid"
+        if(axis == 1):
+            self.myAxis1_steps_mm = 200 * uStep / mechGain
+            self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
+        elif(axis == 2):
+            self.myAxis2_steps_mm = 200 * uStep / mechGain
+            self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
+        elif(axis == 3):
+            self.myAxis3_steps_mm = 200 * uStep / mechGain
+            self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
 
-        else:
-            pass
-            # print "Argument error, {configAxis(self, axis, u_step, mech_gain)}, {u_step} argument is invalid"
 
     def saveData(self, key, data):
         '''
@@ -1055,6 +1035,7 @@ class MachineMotion:
                 desc: Uniquely identifies the data to be retreived
                 type: String
         exampleCodePath: getData_saveData.py
+        returnValue: A dictionary containing the saved data. 
         '''
 
         getDataAvailable = threading.Event()
@@ -1066,10 +1047,6 @@ class MachineMotion:
             # On reception of the data invoke the callback function.
             self.mySocket.on('getDataResponse', callback)
 
-            #timer here to force call asyncCallback on timeout #kill timer#
-            # If this fails, return a key value pair - key is 'error' value is description why error failed
-
-
         def asyncCallback(data):
             self.asyncResult = data
             getDataAvailable.set()
@@ -1078,7 +1055,8 @@ class MachineMotion:
            time.sleep(3)
            dataTimedOut.set()
 
-
+        #timer here to force call asyncCallback on timeout #kill timer#
+        # If this fails, return a key value pair - key is 'error' value is description why error failed
         getDataThread = threading.Thread(target = asyncGetData, args=(key, asyncCallback,))
         timeoutThread = threading.Thread(target = threadTimeout)
 
@@ -1098,7 +1076,8 @@ class MachineMotion:
     def detectIOModules(self):
         '''
         desc: Returns a dictionary containing all detected IO Modules.
-        note: For more information, please see the digital IO datasheet <a href="#" style="color:red">here</a>
+        note: For more information, please see the digital IO datasheet <a href="https://www.vention.io/technical-documents/digital-io-module-datasheet-70">here</a>
+        returnValue: Dictionary with keys of format: "Digital IO Network Id X" and values: X where X is the network IDs of all found digital IO modules.
         exampleCodePath: digitalRead.py
         '''
         class NoIOModulesFound(Exception):
@@ -1118,27 +1097,29 @@ class MachineMotion:
             return foundIOModules
 
 
-    def digitalRead(self, device, pin):
+    def digitalRead(self, deviceNetworkId, pin):
         '''
-        desc: Returns the value (<span style="color:red"> HIGH/LOW? </span>) of the given device and pin.
+        desc: Reads the state of a digital IO modules input pins. 
         params:
-            device:
-                desc: The device identifier to read from (1, 2, 3) <span style="color:red">Is this AUX1, AUX2, AUX3?</span>
+            deviceNetworkId:
+                desc: The IO Modules device network ID. It can be found printed on the product sticker on the back of the digital IO module.
                 type: Integer
             pin:
-                desc: The pin index to read from [0,1,2,3]
+                desc: The index of the input pin. 
                 type: Integer
+        ReturnValue: Returns 1 if the input pin is logic HIGH (24V) and returns 0 if the input pin is logic LOW (0V)
         exampleCodePath: digitalRead.py
+        note: The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalRead(deviceNetworkId, 2)  will read the value on input pin 3. 
         '''
 
         return self.digitalInputs[device][pin]
 
-    def digitalWrite(self, device, pin, value):
+    def digitalWrite(self, deviceNetworkId, pin, value):
         '''
         desc: Sets voltage on specified pin of digital IO output pin to either High (24V) or Low (0V).
         params:
-            device:
-                desc: The device identifier to write to.
+            deviceNetworkId:
+                desc: The IO Modules device network ID. It can be found printed on the product sticker on the back of the digital IO module.
                 type: Integer
             pin:
                 desc: The pin number of the output device to write to.
@@ -1149,10 +1130,10 @@ class MachineMotion:
         exampleCodePath: digitalWrite.py
         Note: The max current that can be drawn from the output pins is <span style="color:red">x mA</span>
         '''
-        if (self.isIoExpanderOutputIdValid( device, pin ) == False):
-            print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(device) + " pin= " + str(pin) )
+        if (self.isIoExpanderOutputIdValid( deviceNetworkId, pin ) == False):
+            print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(deviceNetworkId) + " pin= " + str(pin) )
             return
-        self.myMqttClient.publish('devices/io-expander/' + str(device) + '/digital-output/' +  str(pin), '1' if value else '0')
+        self.myMqttClient.publish('devices/io-expander/' + str(deviceNetworkId) + '/digital-output/' +  str(pin), '1' if value else '0')
 
     def emitDwell(self, milli):
         '''
