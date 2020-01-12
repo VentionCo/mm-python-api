@@ -542,7 +542,7 @@ class MachineMotion:
 
     def emitHomeAll(self):
         '''
-        desc: Initiates the homing sequence of all axes. All axes will home sequentially (Axis 1, 2 then 3).
+        desc: Initiates the homing sequence of all axes. All axes will home sequentially (Axis 1, then Axis 2, then Axis 3).
         exampleCodePath: emitHomeAll.py
         '''
 
@@ -811,13 +811,13 @@ class MachineMotion:
 
     def configAxisDirection(self, axis, direction):
         '''
-        desc: Configures a single axis to operate in either clockwise (normal) or counterclockwise (reverse) mode. Refer to the Automation System Diagram
+        desc: Configures a single axis to operate in either clockwise (normal) or counterclockwise (reverse) mode. Refer to the Automation System Diagram for the correct axis setting.
         params:
             axis:
                 desc: The specified axis.
                 type: Number
             direction:
-                desc: A string of value either either 'Normal' or 'Reverse'. 'Normal' direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B. Ex - "Reverse"
+                desc: A string of value either either 'Normal' or 'Reverse'. 'Normal' direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B.
                 type: String
         note: For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a>
         exampleCodePath: configAxisDirection.py
@@ -913,6 +913,7 @@ class MachineMotion:
                 desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
                 defaultVaue: UNITS_SPEED.mm_per_sec
                 type: String
+        exampleCodePath: configHomingSpeed.py
         note: Once set, the homing speed will apply to all programs, including MachineLogic applications.
         '''
         try:
@@ -953,14 +954,15 @@ class MachineMotion:
         desc: Sets the minimum and maximum homing speeds for each axis. 
         params:
             axes:
-                desc: a list of the axis that require minimum and maximum homing speeds
+                desc: a list of the axes that require minimum and maximum homing speeds.
                 type: List
             minspeeds:
-                desc: the minimum speeds for each axis, in the same order as the axes parameter
+                desc: the minimum speeds for each axis.
                 type: List
             maxspeeds:
                 desc: the maximum speeds for each axis, in the same order as the axes parameter
                 type: List
+        exampleCodePath: configHomingSpeed.py
         note: This function can be used to set safe limits on homing speed. Because homing speed is configured only through software aPI, this safeguards against developers accidently modifying homing speed to unsafe levels.
         '''
         gCodeCommand = "V1 "
@@ -1146,7 +1148,8 @@ class MachineMotion:
                 type: Integer
         exampleCodePath: digitalWrite.py
         
-        Note: Output pins maximum sourcing current is 75 mA and the maximum sinking current is 100 mA. 
+        note: Output pins maximum sourcing current is 75 mA and the maximum sinking current is 100 mA. The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalWrite(deviceNetworkId, 2, 1)  will set output pin 3 to 24V. 
+      
         '''
         if (self.isIoExpanderOutputIdValid( deviceNetworkId, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(deviceNetworkId) + " pin= " + str(pin) )

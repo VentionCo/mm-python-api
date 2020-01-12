@@ -1,26 +1,31 @@
 import sys
-sys.path.insert(1,"C:\\Users\\Jack\\Documents\\Vention\\Repos\\2.2\\py22\\mm-python-api\\_MachineMotion.py")
-sys.path.insert(1,"C:\\Users\\Jack\\Documents\\Vention\\Repos\\2.2\\py22\\mm-python-api\\")
+sys.path.append("..")
 from _MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
 axes = [1,2,3]    
-axis =3                                #The axis that you'd like to move
-speeds = [25,25,25]                                 #The max speed you'd like to move at
-acceleration = 10                          #The constant acceleration and decceleration value for the move
+axis =3                                    #The axis that you'd like to move
+homingSpeeds = [50,50,50]                        #The homing speeds to set for each axis
 
-mm.emitSpeed(15)
-mm.emitAcceleration(10)
-mm.emitAbsoluteMove(3, 40)
-mm.emitCombinedAxesAbsoluteMove([1,2], [50,50])
-mm.configAxis(3, 8, 17)
+mm.emitSpeed(100)
+mm.emitAcceleration(50)
+mm.configAxis(axis, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
 
 print("Moving to position = 100")
 mm.emitAbsoluteMove(axis, 100)
 mm.waitForMotionCompletion()
-mm.configHomingSpeed(axes, speeds)
+
+#Sets minimum and maximum allowable homing speeds for each axis
+minHomingSpeeds = [20, 20, 20]
+maxHomingSpeeds = [400, 400, 400]
+mm.configMinMaxHomingSpeed(axes,minHomingSpeeds, maxHomingSpeeds, UNITS_SPEED.mm_per_sec)
+
+#Sets homing speeds for all three axes. The selected homing speed must be within the range set by configMinMaxHomingSpeeds
+mm.configHomingSpeed(axes, homingSpeeds)
 mm.waitForMotionCompletion()
+
+#Homes the axis at the newly configured homing speed.
 mm.emitHome(axis)
 mm.waitForMotionCompletion()
 
