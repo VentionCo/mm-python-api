@@ -1,5 +1,5 @@
 # File name:            _MachineMotion.py
-# note: The current speed and acceleration settings are applied to the combined motion of the axes.                           #
+#                            #
 # Author:               Francois Giguere                            #
 # Note:                 Information about all the g-Code            #
 #                       commands supported are available at         #
@@ -607,7 +607,7 @@ class MachineMotion:
                 defaultVaue: UNITS_ACCEL.mm_per_sec_sqr
                 type: String
         exampleCodePath:  emitAcceleration.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
 
         self._restrictInputValue("units", units, UNITS_ACCEL)
@@ -631,7 +631,7 @@ class MachineMotion:
                 desc: The desired end position of the axis movement.
                 type: Number
         exampleCodePath: emitAbsoluteMove.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
         global motion_completed
@@ -785,7 +785,6 @@ class MachineMotion:
                 desc: The new position value in mm.
                 type: Number
         exampleCodePath: setPosition.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
@@ -802,7 +801,7 @@ class MachineMotion:
                 type: string
         note: All movement commands sent to the controller are by default in mm.
         exampleCodePath: emitgCode.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
         global motion_completed
 
@@ -822,7 +821,7 @@ class MachineMotion:
                 type: String
         note: For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a>
         exampleCodePath: configAxisDirection.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
 
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
@@ -855,9 +854,9 @@ class MachineMotion:
 
     def waitForMotionCompletion(self):
         '''
-        desc: Pauses Execution until machine has finished its current movement.
+        desc: Pauses python program execution until machine has finished its current movement.
         exampleCodePath: waitForMotionCompletion.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
         global waiting_motion_status
 
@@ -883,7 +882,7 @@ class MachineMotion:
                 type: String
         Note: All strings expect the format "XXX.XXX.XXX.XXX". To connect the controller to the internet, the gateway IP should be the same IP as your LAN router.
         exampleCodePath: configMachineMotionIp.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
 
         if(mode == NETWORK_MODE.static):
@@ -994,14 +993,14 @@ class MachineMotion:
                 desc: The axis to configure.
                 type: Number
             uStep:
-                desc: The number of microsteps taken by the stepper motor.
+                desc: The microstep setting of the axis.
                 type: Number
             mechGain:
                 desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
                 type: Number
         note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch.
         exampleCodePath: configAxis.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
         self._restrictInputValue("axis", axis,  AXIS_NUMBER)
         self._restrictInputValue("uStep", uStep, MICRO_STEPS)
@@ -1025,14 +1024,13 @@ class MachineMotion:
         desc: Saves/persists data within the MachineMotion Controller in key - data pairs.
         params:
             key:
-                desc: A string the uniquely identifies the data to save for future retreival
+                desc: A string that uniquely identifies the data to save for future retreival.
                 type: String
             data:
                 desc: The data to save to the machine. The data must be convertible to JSON format.
                 type: String
         note: The Data continues to exist even when the controller is shut off. However, writing to a previously used key will override the previous value.
         exampleCodePath: getData_saveData.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
 
         # Create a new object and augment it with the key value.
@@ -1096,7 +1094,7 @@ class MachineMotion:
         note: For more information, please see the digital IO datasheet <a href="https://www.vention.io/technical-documents/digital-io-module-datasheet-70">here</a>
         returnValue: Dictionary with keys of format "Digital IO Network Id [id]" and values [id] where [id] is the network IDs of all connected digital IO modules.
         exampleCodePath: digitalRead.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         '''
         class NoIOModulesFound(Exception):
             pass
@@ -1127,7 +1125,7 @@ class MachineMotion:
                 type: Integer
         returnValue: Returns 1 if the input pin is logic HIGH (24V) and returns 0 if the input pin is logic LOW (0V).
         exampleCodePath: digitalRead.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         note: The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalRead(deviceNetworkId, 2)  will read the value on input pin 3. 
         '''
 
@@ -1147,7 +1145,7 @@ class MachineMotion:
                 desc: Writing '1' or HIGH will set digial output to 24V, writing 0 will set digital output to 0V.
                 type: Integer
         exampleCodePath: digitalWrite.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
+        
         Note: Output pins maximum sourcing current is 75 mA and the maximum sinking current is 100 mA. 
         '''
         if (self.isIoExpanderOutputIdValid( deviceNetworkId, pin ) == False):
@@ -1179,8 +1177,7 @@ class MachineMotion:
                 desc: Either 'real time' or 'stable'. In 'real time' mode, readEncoder will return the most recently received encoder information. In 'stable' mode, readEncoder will update its return value only after the encoder output has stabilized around a specific value, such as when the axis has stopped motion.
                 type: String
         exampleCodePath: readEncoder.py
-        note: The current speed and acceleration settings are applied to the combined motion of the axes.
-        note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays
+        note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays.
         '''
         self._restrictInputValue("readingType", readingType, ENCODER_TYPE)
 
