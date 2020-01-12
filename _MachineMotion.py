@@ -579,7 +579,7 @@ class MachineMotion:
                 type: Number
             units:
                 desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
-                defaultVaue: UNITS_SPEED.mm_per_sec
+                defaultValue: UNITS_SPEED.mm_per_sec
                 type: String
         exampleCodePath: emitSpeed.py
         '''
@@ -604,7 +604,7 @@ class MachineMotion:
                 type: Number
             units:
                 desc: Units for speed. Can be switched to UNITS_ACCEL.mm_per_min_sqr
-                defaultVaue: UNITS_ACCEL.mm_per_sec_sqr
+                defaultValue: UNITS_ACCEL.mm_per_sec_sqr
                 type: String
         exampleCodePath:  emitAcceleration.py
         
@@ -911,7 +911,7 @@ class MachineMotion:
                 type: List
             units: 
                 desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
-                defaultVaue: UNITS_SPEED.mm_per_sec
+                defaultValue: UNITS_SPEED.mm_per_sec
                 type: String
         exampleCodePath: configHomingSpeed.py
         note: Once set, the homing speed will apply to all programs, including MachineLogic applications.
