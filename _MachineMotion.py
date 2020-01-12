@@ -1179,6 +1179,7 @@ class MachineMotion:
             readingType:
                 desc: Either 'real time' or 'stable'. In 'real time' mode, readEncoder will return the most recently received encoder information. In 'stable' mode, readEncoder will update its return value only after the encoder output has stabilized around a specific value, such as when the axis has stopped motion.
                 type: String
+        returnValue: The current position of the encoder, in counts. The encoder has 3600 counts per revolution.
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays.
         '''
