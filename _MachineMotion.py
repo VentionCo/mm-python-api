@@ -21,6 +21,48 @@ machineMotionRef = None
 gCodeCallbackRef = None
 lastSendTimeStamp = None
 
+class SCHUNK_IO:
+    NC1                 = "NA"
+    NC2                 = "NA"
+    INPUT_PIN_SENSOR2   = 0
+    INPUT_PIN_SENSOR1   = 1
+    _24V                = "NA"
+    OUTPUT_PIN_CLOSE    = 0
+    OUTPUT_PIN_OPEN     = 1
+    _GND                = "NA"
+    
+    
+class SchunkGripper:
+    myModuleAddress = None
+    myController    = None
+    
+    io1_NC1                 = "NA"
+    io2_NC2                 = "NA"
+    io3_INPUT_PIN_SENSOR2   = 0
+    io4_INPUT_PIN_SENSOR1   = 1
+    io5_24V                = "NA"
+    io6_OUTPUT_PIN_CLOSE    = 0
+    io7_OUTPUT_PIN_OPEN     = 1
+    io8_GND                = "NA"
+    
+    def __init__(self, module_address, controller):
+        self.myModuleAddress = module_address
+        self.myController = controller
+        
+    def close(self):
+        self.myController.digitalWrite(self.myModuleAddress, self.io7_OUTPUT_PIN_OPEN, 0)
+        time.sleep(0.5)
+        self.myController.digitalWrite(self.myModuleAddress, self.io6_OUTPUT_PIN_CLOSE, 0)
+        time.sleep(1)
+        self.myController.digitalWrite(self.myModuleAddress, self.io6_OUTPUT_PIN_CLOSE, 1)
+        
+    def open(self):
+        self.myController.digitalWrite(self.myModuleAddress, self.io6_OUTPUT_PIN_CLOSE, 0)
+        time.sleep(0.5)
+        self.myController.digitalWrite(self.myModuleAddress, self.io7_OUTPUT_PIN_OPEN, 0)
+        time.sleep(1)
+        self.myController.digitalWrite(self.myModuleAddress, self.io7_OUTPUT_PIN_OPEN, 1)    
+
 class CONTROL_DEVICE_SIGNALS:
     SIGNAL0 = "SIGNAL0"
     SIGNAL1 = "SIGNAL1"
@@ -93,6 +135,7 @@ class AUX_PORTS:
 class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
+    
 
 def fastMotionStatusCallback(data, mm):
     global motion_completed
