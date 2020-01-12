@@ -1077,7 +1077,7 @@ class MachineMotion:
         '''
         desc: Returns a dictionary containing all detected IO Modules.
         note: For more information, please see the digital IO datasheet <a href="https://www.vention.io/technical-documents/digital-io-module-datasheet-70">here</a>
-        returnValue: Dictionary with keys of format: "Digital IO Network Id X" and values: X where X is the network IDs of all found digital IO modules.
+        returnValue: Dictionary with keys of format "Digital IO Network Id [id]" and values [id] where [id] is the network IDs of all found digital IO modules.
         exampleCodePath: digitalRead.py
         '''
         class NoIOModulesFound(Exception):
