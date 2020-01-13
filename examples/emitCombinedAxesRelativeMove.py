@@ -10,8 +10,12 @@ distances = [50, 100, 50]
 directions = ["positive","positive","positive"]
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 
-#load parameters for combined move
-mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
+# Define a callback to process controller gCode responses (if desired)
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
+
 mm.emitSpeed(speed)
 mm.emitAcceleration(acceleration)
 for axis in axesToMove:
@@ -30,4 +34,3 @@ mm.emitCombinedAxisRelativeMove(axesToMove, directions, distances)
 mm.waitForMotionCompletion()
 for index, axis in enumerate(axesToMove):
     print("Axis " + str(axis) + " moved " + str(distances[index]) + " in the " + directions[index] + " direction.")
-

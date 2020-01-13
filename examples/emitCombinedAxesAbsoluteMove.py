@@ -10,8 +10,12 @@ axesToMove = [1,2,3]
 positions = [50, 100,50]
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 
-#Load parameters for combined absolute move
-mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
+# Define a callback to process controller gCode responses (if desired)
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
+
 mm.emitSpeed(speed)
 mm.emitAcceleration(acceleration)
 for axis in axesToMove:
@@ -29,6 +33,3 @@ mm.emitCombinedAxesAbsoluteMove(axesToMove, positions)
 mm.waitForMotionCompletion()
 for index, axis in enumerate(axesToMove):
     print("Axis " + str(axis) + " moved to position " + str(positions[index]))
-
-
-

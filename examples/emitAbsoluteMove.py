@@ -2,7 +2,11 @@ import sys
 sys.path.append("..")
 from _MachineMotion import *
 
-mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
+# Define a callback to process controller gCode responses (if desired)
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
 
 axis = 1                                       #The axis that you'd like to move
 speed = 400                                    #The max speed you'd like to move at
@@ -24,6 +28,3 @@ mm.emitAbsoluteMove(axis, position)
 print("Axis " + str(axis) + " is moving towards position " + str(position) + "mm")
 mm.waitForMotionCompletion()
 print("Axis " + str(axis) + " is at position " + str(position) + "mm")
-
-
-

@@ -7,8 +7,12 @@ speed = 500
 acceleration = 500
 mechGain = MECH_GAIN.timing_belt_150mm_turn
 
-#Load parameters for emitting g-code
-mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
+# Define a callback to process controller gCode responses (if desired)
+def templateCallback(data):
+   print ( "Controller gCode responses " + data )
+
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
+
 mm.emitSpeed(speed)
 mm.emitAcceleration(acceleration)
 mm.emitHomeAll()
