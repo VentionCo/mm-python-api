@@ -1165,7 +1165,7 @@ class MachineMotion:
             return
         self.myMqttClient.publish('devices/io-expander/' + str(deviceNetworkId) + '/digital-output/' +  str(pin), '1' if value else '0')
 
-    def emitDwell(self, miliseconds):
+    def emitDwell(self, milliseconds):
         '''
         desc: Pauses motion for a specified time. This function is non-blocking; your program may accomplish other tasks while the machine is dwelling.
         params:
