@@ -511,6 +511,7 @@ class MachineMotion:
         '''
         desc: Returns the current position of each axis.
         returnValue: A dictionary containing the current position of each axis.
+        returnValueType: Dictionary
         note: This function returns the 'open loop' position of each axis. If your axis has an encoder, please use readEncoder.
         '''
         global waiting_current_position
@@ -1053,6 +1054,7 @@ class MachineMotion:
                 type: String
         exampleCodePath: getData_saveData.py
         returnValue: A dictionary containing the saved data.
+        returnValueType: Dictionary
         '''
 
         getDataAvailable = threading.Event()
@@ -1095,6 +1097,7 @@ class MachineMotion:
         desc: Returns a dictionary containing all detected IO Modules.
         note: For more information, please see the digital IO datasheet <a href="https://www.vention.io/technical-documents/digital-io-module-datasheet-70">here</a>
         returnValue: Dictionary with keys of format "Digital IO Network Id [id]" and values [id] where [id] is the network IDs of all connected digital IO modules.
+        returnValueType: Dictionary
         exampleCodePath: digitalRead.py
 
         '''
@@ -1126,6 +1129,7 @@ class MachineMotion:
                 desc: The index of the input pin.
                 type: Integer
         returnValue: Returns 1 if the input pin is logic HIGH (24V) and returns 0 if the input pin is logic LOW (0V).
+        returnValueType: Integer
         exampleCodePath: digitalRead.py
 
         note: The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalRead(deviceNetworkId, 2)  will read the value on input pin 3.
@@ -1189,6 +1193,7 @@ class MachineMotion:
                 desc: Either 'real time' or 'stable'. In 'real time' mode, readEncoder will return the most recently received encoder information. In 'stable' mode, readEncoder will update its return value only after the encoder output has stabilized around a specific value, such as when the axis has stopped motion.
                 type: String
         returnValue: The current position of the encoder, in counts. The encoder has 3600 counts per revolution.
+        returnValueType: Integer
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays.
         '''
