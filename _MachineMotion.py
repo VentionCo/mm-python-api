@@ -413,7 +413,7 @@ class MachineMotion:
     myIoExpanderAvailabilityState = [ False, False, False, False ]
     myEncoderRealtimePositions    = [ 0, 0, 0 ]
     myEncoderStablePositions    = [ 0, 0, 0 ]
-    digitalInputs = [[0 for numModules in range(6)] for pins in range(4)]
+    digitalInputs = {}
 
     myAxis1_steps_mm = None
     myAxis2_steps_mm = None
@@ -607,7 +607,7 @@ class MachineMotion:
                 defaultValue: UNITS_ACCEL.mm_per_sec_sqr
                 type: String
         exampleCodePath:  emitAcceleration.py
-        
+
         '''
 
         self._restrictInputValue("units", units, UNITS_ACCEL)
@@ -631,7 +631,7 @@ class MachineMotion:
                 desc: The desired end position of the axis movement.
                 type: Number
         exampleCodePath: emitAbsoluteMove.py
-        
+
         '''
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
         global motion_completed
@@ -801,7 +801,7 @@ class MachineMotion:
                 type: string
         note: All movement commands sent to the controller are by default in mm.
         exampleCodePath: emitgCode.py
-        
+
         '''
         global motion_completed
 
@@ -821,7 +821,7 @@ class MachineMotion:
                 type: String
         note: For more details on how to properly set the axis direction, please see <a href="https://vention-demo.herokuapp.com/technical-documents/machine-motion-user-manual-123#actuator-hardware-configuration"> here </a>
         exampleCodePath: configAxisDirection.py
-        
+
         '''
 
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
@@ -856,7 +856,7 @@ class MachineMotion:
         '''
         desc: Pauses python program execution until machine has finished its current movement.
         exampleCodePath: waitForMotionCompletion.py
-        
+
         '''
         global waiting_motion_status
 
@@ -882,7 +882,7 @@ class MachineMotion:
                 type: String
         Note: All strings expect the format "XXX.XXX.XXX.XXX". To connect the controller to the internet, the gateway IP should be the same IP as your LAN router.
         exampleCodePath: configMachineMotionIp.py
-        
+
         '''
 
         if(mode == NETWORK_MODE.static):
@@ -909,7 +909,7 @@ class MachineMotion:
             speeds:
                 desc: A list of homing speeds to set for each axis. ex - [50, 50, 100]
                 type: List
-            units: 
+            units:
                 desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
                 defaultValue: UNITS_SPEED.mm_per_sec
                 type: String
@@ -951,7 +951,7 @@ class MachineMotion:
 
     def configMinMaxHomingSpeed(self, axes, minspeeds, maxspeeds, units = UNITS_SPEED.mm_per_sec):
         '''
-        desc: Sets the minimum and maximum homing speeds for each axis. 
+        desc: Sets the minimum and maximum homing speeds for each axis.
         params:
             axes:
                 desc: a list of the axes that require minimum and maximum homing speeds.
@@ -1002,7 +1002,7 @@ class MachineMotion:
                 type: Number
         note: The uStep setting is hardcoded into the machinemotion controller through a DIP switch and is by default set to 8. The value here must match the value on the DIP Switch.
         exampleCodePath: configAxis.py
-        
+
         '''
         self._restrictInputValue("axis", axis,  AXIS_NUMBER)
         self._restrictInputValue("uStep", uStep, MICRO_STEPS)
@@ -1052,7 +1052,7 @@ class MachineMotion:
                 desc: A Unique identifier representing the data to be retreived
                 type: String
         exampleCodePath: getData_saveData.py
-        returnValue: A dictionary containing the saved data. 
+        returnValue: A dictionary containing the saved data.
         '''
 
         getDataAvailable = threading.Event()
@@ -1096,7 +1096,7 @@ class MachineMotion:
         note: For more information, please see the digital IO datasheet <a href="https://www.vention.io/technical-documents/digital-io-module-datasheet-70">here</a>
         returnValue: Dictionary with keys of format "Digital IO Network Id [id]" and values [id] where [id] is the network IDs of all connected digital IO modules.
         exampleCodePath: digitalRead.py
-        
+
         '''
         class NoIOModulesFound(Exception):
             pass
@@ -1117,20 +1117,29 @@ class MachineMotion:
 
     def digitalRead(self, deviceNetworkId, pin):
         '''
-        desc: Reads the state of a digital IO modules input pins. 
+        desc: Reads the state of a digital IO modules input pins.
         params:
             deviceNetworkId:
                 desc: The IO Modules device network ID. It can be found printed on the product sticker on the back of the digital IO module.
                 type: Integer
             pin:
-                desc: The index of the input pin. 
+                desc: The index of the input pin.
                 type: Integer
         returnValue: Returns 1 if the input pin is logic HIGH (24V) and returns 0 if the input pin is logic LOW (0V).
         exampleCodePath: digitalRead.py
-        
-        note: The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalRead(deviceNetworkId, 2)  will read the value on input pin 3. 
+
+        note: The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalRead(deviceNetworkId, 2)  will read the value on input pin 3.
         '''
 
+        if ( not self.isIoExpanderInputIdValid( deviceNetworkId, pin ) ):
+            logging.warning("DEBUG: unexpected digital-output parameters: device= " + str(device) + " pin= " + str(pin))
+            return
+        if (not hasattr(self, 'digitalInputs')):
+            self.digitalInputs = {}
+        if (not deviceNetworkId in self.digitalInputs):
+            self.digitalInputs[deviceNetworkId] = {}
+        if (not pin in self.digitalInputs[deviceNetworkId]):
+            self.digitalInputs[deviceNetworkId][pin] = 0
         return self.digitalInputs[deviceNetworkId][pin]
 
     def digitalWrite(self, deviceNetworkId, pin, value):
@@ -1147,9 +1156,9 @@ class MachineMotion:
                 desc: Writing '1' or HIGH will set digial output to 24V, writing 0 will set digital output to 0V.
                 type: Integer
         exampleCodePath: digitalWrite.py
-        
-        note: Output pins maximum sourcing current is 75 mA and the maximum sinking current is 100 mA. The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalWrite(deviceNetworkId, 2, 1)  will set output pin 3 to 24V. 
-      
+
+        note: Output pins maximum sourcing current is 75 mA and the maximum sinking current is 100 mA. The pin labels on the digital IO module (pin 1, pin 2, pin 3, pin 4) correspond in software to (0, 1, 2, 3). Therefore, digitalWrite(deviceNetworkId, 2, 1)  will set output pin 3 to 24V.
+
         '''
         if (self.isIoExpanderOutputIdValid( deviceNetworkId, pin ) == False):
             print ( "DEBUG: unexpected digitalOutput parameters: device= " + str(deviceNetworkId) + " pin= " + str(pin) )
@@ -1230,8 +1239,8 @@ class MachineMotion:
         device = int( topicParts[2] )
         if (deviceType == 'io-expander'):
             if (topicParts[3] == 'available'):
-                availability = msg.payload.decode('utf-8')
-                if ( availability == 'true' ):
+                availability = json.loads(msg.payload)
+                if ( availability == True ):
                     self.myIoExpanderAvailabilityState[device-1] = True
                     return
                 else:
