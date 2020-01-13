@@ -11,7 +11,7 @@ from MachineMotion import *
 def templateCallback(data):
     print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+machine_motion_example = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, templateCallback)
 
 #When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")

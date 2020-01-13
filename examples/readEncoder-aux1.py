@@ -11,7 +11,7 @@ from MachineMotion import *
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_mac_linux)
+machine_motion_example = MachineMotion(DEFAULT_IP_ADDRESS.usb_mac_linux, templateCallback)
 
 # -- Read the input on the IO Expander. --
 device = 0
