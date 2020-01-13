@@ -719,9 +719,7 @@ class MachineMotion:
             # Transmit move command
             self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
             while self.isReady() != "true": pass
-        finally:
-            self.myGCode.__emit__("G90")
-            while self.isReady() != "true": pass
+
 
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
         '''
@@ -771,9 +769,6 @@ class MachineMotion:
             self.myGCode.__emit__(command)
             while self.isReady() != "true": pass
 
-        finally:
-            self.myGCode.__emit__("G91")
-            while self.isReady() != "true": pass
 
     def setPosition(self, axis, position):
         '''
