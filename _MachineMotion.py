@@ -1128,7 +1128,7 @@ class MachineMotion:
             pin:
                 desc: The index of the input pin.
                 type: Integer
-        returnValue: Returns 1 if the input pin is logic HIGH (24V) and returns 0 if the input pin is logic LOW (0V).
+        returnValue: Returns 1 if the input pin is 24V and returns 0 if the input pin is 0V.
         returnValueType: Integer
         exampleCodePath: digitalRead.py
 
@@ -1148,7 +1148,7 @@ class MachineMotion:
 
     def digitalWrite(self, deviceNetworkId, pin, value):
         '''
-        desc: Sets voltage on specified pin of digital IO output pin to either logic HIGH (24V) or LOW (0V).
+        desc: Sets voltage on specified pin of digital IO output pin to either 24V or 0V.
         params:
             deviceNetworkId:
                 desc: The IO Modules device network ID. It can be found printed on the product sticker on the back of the digital IO module.
@@ -1157,7 +1157,7 @@ class MachineMotion:
                 desc: The output pin number to write to.
                 type: Integer
             value:
-                desc: Writing '1' or HIGH will set digial output to 24V, writing 0 will set digital output to 0V.
+                desc: Writing 1 will set digial output to 24V, writing 0 will set digital output to 0V.
                 type: Integer
         exampleCodePath: digitalWrite.py
 
