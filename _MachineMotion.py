@@ -834,11 +834,13 @@ class MachineMotion:
             elif (direction == AXIS_DIRECTION.reverse):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis1_steps_mm))
         elif(axis == 2):
+            self.myAxis2_direction = direction
             if(direction == AXIS_DIRECTION.normal):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
             elif (direction == AXIS_DIRECTION.reverse):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis2_steps_mm))
         elif(axis == 3):
+            self.myAxis3_direction = direction
             if(direction == AXIS_DIRECTION.normal):
                 self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
             elif (direction == AXIS_DIRECTION.reverse):
@@ -935,8 +937,6 @@ class MachineMotion:
                 speed_mm_per_min = speeds[idx] * 60
             elif units == UNITS_SPEED.mm_per_min:
                 speed_mm_per_min = speeds[idx]
-
-
 
             if speed_mm_per_min < HARDWARE_MIN_HOMING_FEEDRATE:
                 raise self.HomingSpeedOutOfBounds("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/sec).")
@@ -1199,7 +1199,6 @@ class MachineMotion:
             return
 
         if readingType == ENCODER_TYPE.real_time:
-            self.myEncoderStablePositions
             return self.myEncoderRealtimePositions[encoder]
         elif readingType == ENCODER_TYPE.stable:
             return self.myEncoderStablePositions[encoder]
