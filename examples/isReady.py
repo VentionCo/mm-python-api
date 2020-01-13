@@ -13,6 +13,12 @@ def templateCallback(data):
 
 machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
 
+#When starting a program, one must remove the software stop before moving
+print("--> Removing software stop")
+machine_motion_example.releaseEstop()
+print("--> Resetting system")
+machine_motion_example.resetSystem()
+
 # Homing axis one
 machine_motion_example.emitHome(1)
 # Wait for the message to be acknowledged by the motion controller

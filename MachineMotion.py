@@ -86,6 +86,22 @@ class MQTT :
         ESTOP_RELEASE_RESPONSE = ESTOP + "/release/response"
         ESTOP_SYSTEMRESET_REQUEST = ESTOP + "/systemreset/request"
         ESTOP_SYSTEMRESET_RESPONSE = ESTOP + "/systemreset/response"
+
+def HTTPSend(host, path, data=None) :
+    try :
+        # Review: use keep-alive
+        lConn = httplib.HTTPConnection(host)
+        if None == data:
+            lConn.request("GET", path)
+        else:
+            lConn.request("POST", path, data, {"Content-type": "application/octet-stream"});
+        lResponse = lConn.getresponse()
+        lResponse = lResponse.read()
+        lConn.close()
+        return lResponse
+    except Exception, _pExc :
+        logging.warning("Could not GET %s: %s" % (path, traceback.format_exc()))
+
 #
 # Class that handles all gCode related communications
 # @status
@@ -97,9 +113,8 @@ class GCode:
     # @param socket --- Description: The GCode class requires a socket object to communicate with the controller. The socket object is passed at contruction time.
     # @status
     #
-    def __init__(self, socket, ip):
+    def __init__(self, ip):
         # Passing in the socket instance at construction
-        self.mySocket = socket
         self.myIp = ip
         self.libPort = ":8000"
         self.ackReceived = False
@@ -130,35 +145,10 @@ class GCode:
     #
     # Function that packages the data in a JSON object and sends to the MachineMotion server over a socket connection.
     # PRIVATE
-    # @param axis --- Description: The API axis label.
-    # @status
     #
-    def __send__(self, cmd, data) :
+    def __send__(self, cmd, data=None) :
 
-        try :
-            lConn = httplib.HTTPConnection(self.myIp + self.libPort)
-            lPath = "/gcode?%s" % urllib.urlencode({"gcode": "%s" % data['value']})
-
-            lConn.request("GET", lPath)
-            lResponse = lConn.getresponse()
-            lResponse = lResponse.read()
-
-            lConn.close()
-
-            # Call user callback only if relevant
-            if self.__userCallback__ is None : pass
-            else :
-                self.__userCallback__(lResponse)
-
-            # Print response (TODO: proper logging)
-            # print(lResponse)
-
-            return lResponse
-
-        except Exception, _pExc :
-            logging.warning("Could not GET %s: %s" % (data, traceback.format_exc()))
-
-        return
+        return HTTPSend(self.myIp + self.libPort, cmd, data)
 
     #
     # Function to send a raw G-Code ASCII command
@@ -167,10 +157,12 @@ class GCode:
     #
     def __emit__(self, gCode) :
 
-        # Object to transmit data
-        gCodeCmd = {"command": "gCode", "value": gCode}
+        rep = self.__send__("/gcode?%s" % urllib.urlencode({"gcode": "%s" % gCode}))
 
-        rep = self.__send__('gCodeCmd', gCodeCmd)
+        # Call user callback only if relevant
+        if self.__userCallback__ is None : pass
+        else :
+            self.__userCallback__(rep)
 
         return rep
 
@@ -239,7 +231,6 @@ class MachineMotion :
         global machineMotionRef
         #global gCodeCallbackRef
 
-        self.mySocket = "notInitialized"
         self.myConfiguration = {"machineIp": "notInitialized", "machineGateway": "notInitialized", "machineNetmask": "notInitialized"}
         self.myGCode = "notInitialized"
 
@@ -834,15 +825,18 @@ class MachineMotion :
     # @note:           --- For the MachineMotion to access the Internet after an configIp() call, the MachineMotion device must be rebooted.
     # @status
     #
-    def configMachineMotionIp(self, mode, machineIp, machineNetmask, machineGateway) :
+    def configMachineMotionIp(self, mode = None, machineIp = None, machineNetmask = None, machineGateway = None) :
+
+        oldIP = self.myConfiguration["machineIp"]
 
         # Create a new object and augment it with the key value.
-        self.myConfiguration["mode"] = mode
-        self.myConfiguration["machineIp"] = machineIp
-        self.myConfiguration["machineNetmask"] = machineNetmask
-        self.myConfiguration["machineGateway"] = machineGateway
 
-        self.mySocket.emit('configIp', json.dumps(self.myConfiguration))
+        if mode is not None : self.myConfiguration["mode"] = mode
+        if machineIp is not None : self.myConfiguration["machineIp"] = machineIp
+        if machineNetmask is not None : self.myConfiguration["machineNetmask"] = machineNetmask
+        if machineGateway is not None : self.myConfiguration["machineGateway"] = machineGateway
+
+        HTTPSend(oldIP + ":8000", "/configIp", json.dumps(self.myConfiguration))
 
         time.sleep(1)
 
@@ -903,7 +897,7 @@ class MachineMotion :
         dataPack["data"] = data
 
         # Send the request to MachineMotion
-        self.mySocket.emit('saveData', json.dumps(dataPack))
+        HTTPSend(self.myConfiguration['machineIp'] + ":8000", "/saveData", json.dumps(dataPack))
         time.sleep(0.05)
 
         return
@@ -915,13 +909,7 @@ class MachineMotion :
     # @status
     #
     def getData(self, key, callback) :
-        #Send the request to MachineMotion
-        self.mySocket.emit('getData', key)
-
-        # On reception of the data invoke the callback function.
-        self.mySocket.on('getDataResponse', callback)
-
-        return
+        callback(HTTPSend(self.myConfiguration['machineIp'] + ":8000", "/getData", key))
 
     # ------------------------------------------------------------------------
     # Determines if the io-expander with the given id is available
@@ -1121,7 +1109,7 @@ class MachineMotion :
     def __establishConnection(self, isReconnection, callback):
 
         # Create the web socket
-        self.myGCode = GCode(self.mySocket, self.myConfiguration['machineIp'])
+        self.myGCode = GCode(self.myConfiguration['machineIp'])
 
         # Set the callback to the user specified function. This callback is used to process incoming messages from the machineMotion controller
         self.myGCode.__setUserCallback__(callback)
