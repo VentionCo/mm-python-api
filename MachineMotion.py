@@ -1331,6 +1331,13 @@ class MachineMotion :
 
         return
 
+    #This function is left in for legacy, however it is not documented because it is the same functionality as readEncoder
+    def readEncoderRealtimePosition(self, encoder):
+        if (self.isEncoderIdValid( encoder ) == False):
+            print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
+            return
+        return self.myEncoderRealtimePositions[encoder]
+
     # ------------------------------------------------------------------------
     # Reacts to an eStop event
     #

@@ -1,19 +1,13 @@
-#!/usr/bin/python
-
-# System imports
 import sys
-# Custom imports
 sys.path.append("..")
-
-from MachineMotion import *
+from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, templateCallback)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
 
-# Configuring the travel speed to 1000 mm / second^2
-machine_motion_example.emitAcceleration(1000)
-
-print ( "--> Machine moves are now set to accelerate @ 1000 mm / second^2" )
+acceleration = 500      # The acceleration [mm/s^2] that all subsequent moves will move at
+mm.emitAcceleration(acceleration)
+print("Global acceleration set to " + str(acceleration))

@@ -1,37 +1,33 @@
-#!/usr/bin/python
-
-# System imports
 import sys
-# Custom imports
 sys.path.append("..")
-
-from MachineMotion import *
+from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, templateCallback)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
 
-#When starting a program, one must remove the software stop before moving
-print("--> Removing software stop")
-machine_motion_example.releaseEstop()
-print("--> Resetting system")
-machine_motion_example.resetSystem()
+#Define Relative Move Parameters
+axis = 1
+speed = 400
+acceleration = 500
+distance = 100
+direction = "positive"
+mechGain = MECH_GAIN.rack_pinion_mm_turn
 
-# Configuring the travel speed to 10 000 mm / min
-machine_motion_example.emitSpeed(10000)
+#Load Relative Move Parameters
+mm.emitSpeed(speed)
+mm.emitAcceleration(acceleration)
+mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 
-# Configuring the travel speed to 1000 mm / second^2
-machine_motion_example.emitAcceleration(1000)
+#Home Axis Before Move
+print("Axis " + str(axis) + " moving home.")
+mm.emitHome(axis)
+mm.waitForMotionCompletion()
+print("Axis " + str(axis) + " homed")
 
-# Homing axis one
-machine_motion_example.emitHome(1)
-
-# Move the axis one to position 100 mm
-machine_motion_example.emitAbsoluteMove(1, 100)
-
-# Move the axis one by a negative increment of 100 mm
-machine_motion_example.emitRelativeMove(1, "negative", 100)
-
-print ( "--> Example completed." )
+#Begin Relative Move
+mm.emitRelativeMove(axis, direction, distance)
+mm.waitForMotionCompletion()
+print("Axis " + str(axis) + " moved " + str(distance) + "mm in the " + direction + " direction")

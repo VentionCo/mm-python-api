@@ -1,28 +1,17 @@
-#!/usr/bin/python
-
-# System imports
 import sys
-# Custom imports
 sys.path.append("..")
-
-from MachineMotion import *
+from _MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, templateCallback)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
 
-#When starting a program, one must remove the software stop before moving
-print("--> Removing software stop")
-machine_motion_example.releaseEstop()
-print("--> Resetting system")
-machine_motion_example.resetSystem()
+mm.emitHome(1)
 
-# Homing axis one
-machine_motion_example.emitHome(1)
-# Wait for the message to be acknowledged by the motion controller
-while machine_motion_example.isReady() != True: pass
-machine_motion_example.waitForMotionCompletion()
-
-print ( "--> This line executes after the motion controller has acknowledged the reception of the command." )
+# Move the axis one to position 100 mm
+mm.emitAbsoluteMove(1, 100)
+print("This message gets printed immediately")
+mm.waitForMotionCompletion()
+print("This message gets printed once machine is finished moving")

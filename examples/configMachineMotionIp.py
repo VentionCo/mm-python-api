@@ -1,18 +1,21 @@
-#!/usr/bin/python
-
-# System imports
 import sys
-# Custom imports
 sys.path.append("..")
+from _MachineMotion import *
 
-from MachineMotion import *
+#Initialize MachineMotion with default IP address
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
+print("Application Message: MachineMotion Controller Connected")
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+#Configure machine motion with a static IP address
+mode = NETWORK_MODE.static
+machineIp = "192.168.0.2"
+machineNetmask="255.255.255.0"
+machineGateway = "192.168.0.1"
+mm.configMachineMotionIp(mode, machineIp, machineNetmask, machineGateway)
+print("MachineMotion configured in static mode with an ip of " + str(machineIp) +".")
 
-machine_motion_example = MachineMotion("192.168.7.2", templateCallback)
 
-machine_motion_example = machine_motion_example.configMachineMotionIp(NETWORK_MODE.static, "192.168.0.2", "255.255.255.0", "192.168.0.1")
+#Configure MachineMotion IP to use Dynamic Host Configuration Protocol (DHCP)
+mm.configMachineMotionIp(NETWORK_MODE.dhcp)
+print("MachineMotion configured in DHCP mode.")
 
-print ( "--> Controller connected & ethernet interface configured (static)" )
