@@ -10,7 +10,7 @@ import time
 from MachineMotion import *
 
 # Create MachineMotion instance
-mm = MachineMotion(None, "192.168.7.2")
+mm = MachineMotion("192.168.7.2", None)
 
 mm.triggerEstop()
 print("--> eStop triggered")

@@ -11,7 +11,7 @@ from MachineMotion import *
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+machine_motion_example = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, templateCallback)
 
 # Configuring the travel speed to 10 000 mm / min
 machine_motion_example.emitSpeed(10000)
