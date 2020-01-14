@@ -281,6 +281,7 @@ class MachineMotion :
         self.steps_mm = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
         self.u_step = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
         self.mech_gain = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
+        self.direction = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
 
         if(gCodeCallback):
             self.__establishConnection(False, gCodeCallback)
@@ -915,24 +916,12 @@ class MachineMotion :
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
         self._restrictInputValue("direction", direction, DIRECTION)
 
-        if(axis == 1):
-            self.myAxis1_direction = direction
-            if(direction == DIRECTION.NORMAL):
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
-            elif (direction == DIRECTION.REVERSE):
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis1_steps_mm))
-        elif(axis == 2):
-            self.myAxis2_direction = direction
-            if(direction == DIRECTION.NORMAL):
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
-            elif (direction == DIRECTION.REVERSE):
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis2_steps_mm))
-        elif(axis == 3):
-            self.myAxis3_direction = direction
-            if(direction == DIRECTION.NORMAL):
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
-            elif (direction == DIRECTION.REVERSE):
-                reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis3_steps_mm))
+        self.direction[axis] = direction
+        
+        if(direction == DIRECTION.NORMAL):
+            reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.steps_mm[axis]))
+        elif (direction == DIRECTION.REVERSE):
+            reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-"+ str(self.steps_mm[axis]))
 
         if ( "echo" in reply and "ok" in reply ) : pass
         else : raise Exception('Error in gCode execution')
