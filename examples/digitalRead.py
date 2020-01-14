@@ -3,7 +3,7 @@ import sys
 # Custom imports
 sys.path.append("..")
 
-from _MachineMotion import *
+from MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 

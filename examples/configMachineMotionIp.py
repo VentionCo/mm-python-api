@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from _MachineMotion import *
+from MachineMotion import *
 
 #Initialize MachineMotion with default IP address
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)

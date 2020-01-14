@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from _MachineMotion import *
+from MachineMotion import *
 
 #declare parameters for combine move
 speed = 500
