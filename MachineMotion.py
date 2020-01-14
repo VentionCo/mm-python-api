@@ -17,11 +17,6 @@ import traceback
 import httplib
 import urllib
 
-# Misc. Variables
-
-machineMotionRef = None
-gCodeCallbackRef = None
-
 class CONTROL_DEVICE_SIGNALS:
     SIGNAL0 = "SIGNAL0"
     SIGNAL1 = "SIGNAL1"
@@ -255,17 +250,15 @@ class MachineMotion :
         pass
 
     # Class constructor
-    def __init__(self, machineIp, gCodeCallback=None):
-        global machineMotionRef
-        #global gCodeCallbackRef
+    def __init__(self, machineIp, gCodeCallback=None) :
 
         self.myConfiguration = {"machineIp": "notInitialized", "machineGateway": "notInitialized", "machineNetmask": "notInitialized"}
         self.myGCode = "notInitialized"
 
         self.myIoExpanderAvailabilityState = [ False, False, False, False ]
         self.myEncoderRealtimePositions    = [ 0, 0, 0 ]
-	myEncoderStablePositions    = [ 0, 0, 0 ]
-    	digitalInputs = {}
+        self.myEncoderStablePositions    = [ 0, 0, 0 ]
+    	self.digitalInputs = {}
 
         self.myConfiguration['machineIp'] = machineIp
 
@@ -278,20 +271,21 @@ class MachineMotion :
         self.myMqttClient.connect(machineIp)
         self.myMqttClient.loop_start()
 
-        machineMotionRef = self
-        if(gCodeCallback):
-            gCodeCallbackRef = gCodeCallback
-        else:
-            def emptyCallBack(data):
-                pass
-            gCodeCallbackRef = emptyCallBack
+        # Default callback
+        def emptyCallBack(data) : pass
+
+        #Set callback to default until user initialize it
+        self.eStopCallback = emptyCallBack
 
         # Initializing axis parameters
         self.steps_mm = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
         self.u_step = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
         self.mech_gain = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
 
-        self.__establishConnection(False, gCodeCallback)
+        if(gCodeCallback):
+            self.__establishConnection(False, gCodeCallback)
+        else:
+            self.__establishConnection(False, emptyCallBack)
 
         return
 
