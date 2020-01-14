@@ -123,7 +123,7 @@ def HTTPSend(host, path, data=None) :
         lResponse = lResponse.read()
         lConn.close()
         return lResponse
-    except Exception, _pExc :
+    except (Exception, _pExc) :
         logging.warning("Could not GET %s: %s" % (path, traceback.format_exc()))
 
 #
