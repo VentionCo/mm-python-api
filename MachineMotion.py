@@ -835,7 +835,7 @@ class MachineMotion :
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
 
-        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
+        if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
             raise TypeError("Axes, Postions and Distances must be lists")
 
         # Set to relative motion mode
@@ -1063,7 +1063,7 @@ class MachineMotion :
 
             gCodeCommand = gCodeCommand + " " + self.myGCode.__getTrueAxis__(axis) + str(speed_mm_per_min)
 
-        self.myGCode.__emit__(gCodeCommand)
+        reply = self.myGCode.__emit__(gCodeCommand)
 
         if ( "echo" in reply and "ok" in reply ) : pass
         else : raise Exception('Error in gCode execution')
@@ -1104,7 +1104,7 @@ class MachineMotion :
             gCodeCommand = gCodeCommand + " " + self.myGCode.__getTrueAxis__(axis) + str(min_speed_mm_per_min) + ":" + str(max_speed_mm_per_min)
 
 
-        self.myGCode.__emit__(gCodeCommand)
+        reply = self.myGCode.__emit__(gCodeCommand)
 
         if ( "echo" in reply and "ok" in reply ) : pass
         else : raise Exception('Error in gCode execution')
