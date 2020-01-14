@@ -513,10 +513,13 @@ class MachineMotion :
 
         return positions
 
-    #
-    # Function to get the state of home and end sensors
-    # @return endstopStates:{x_min, x_max, y_min, y_max, z_min, z_max} TRIGGERED or not
+
     def getEndStopState(self) :
+        '''
+        desc: Returns the current state of all home and end sensors. <span style="color:red">What do x_min and x_max refer to? Can we replace this language with home and end?</span>
+        returnValue: The states of all end stop sensors {x_min, x_max, y_min, y_max, z_min, z_max} TRIGGERED or not
+        returnValueType: Dictionary
+        '''
 
         states = {
             'x_min' : None,
@@ -945,11 +948,12 @@ class MachineMotion :
         return True
         #return self.myGCode.__isReady__()
 
-    #
-    # Function that indicates if the the last move has completed
-    # @status
-    #
     def isMotionCompleted(self):
+        '''
+        desc: Indicates if the last move command has completed.
+        returnValue: Returns false if the machine is currently executing a g-code command. <span style="color:red">Is this true? Or is it only motion commands? </span>
+        returnValueType: Boolean
+        '''
 
         #Sending gCode V0 command to
         reply = self.myGCode.__emit__("V0")
@@ -1328,16 +1332,9 @@ class MachineMotion :
 
         return
 
-    #This function is left in for legacy, however it is not documented because it is the same functionality as readEncoder
-    def readEncoderRealtimePosition(self, encoder):
-        if (not self.isEncoderIdValid(encoder)):
-            print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
-            return
-        return self.myEncoderRealtimePositions[encoder]
-
     # ------------------------------------------------------------------------
-    # Reacts to an eStop event
-    #
+    # Reacts to an eStop event 
+    # 
     # @param {bool} status - true or false
     # @return : call to callback function
 
@@ -1345,13 +1342,10 @@ class MachineMotion :
         self.eStopCallback(status)
         return
 
-    # ------------------------------------------------------------------------
-    # Triggers the software eStop
-    #
-    # @param : none
-    # @return : none
-
     def triggerEstop (self) :
+        '''
+        desc: Triggers the MachineMotion software emergency stop, cutting power to all drives and enabling brakes (if any). The software E stop must be released (using releaseEstop()) in order to re-enable the machine.
+        '''
         # Publish trigger request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, "message is not important")
         # Wait for response
@@ -1359,13 +1353,11 @@ class MachineMotion :
 
         return
 
-    # ------------------------------------------------------------------------
-    # Releases the software eStop
-    #
-    # @param : none
-    # @return : none
-
     def releaseEstop (self) :
+        '''
+        desc: Releases the software E-stop and provides power back to the drives.
+        '''
+
         # Publish release request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_RELEASE_REQUEST, "message is not important")
         # Wait for response
@@ -1381,6 +1373,7 @@ class MachineMotion :
 
     def resetSystem (self) :
 
+
         # Publish reset system request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_SYSTEMRESET_REQUEST, "message is not important")
         # Wait for response
@@ -1388,13 +1381,15 @@ class MachineMotion :
 
         return
 
-    # ------------------------------------------------------------------------
-    # Binds eStop event to a callback function
-    #
-    # @param : callback function
-    # @return : nothing
 
     def bindeStopEvent (self, callback_function) :
+        '''
+        desc: Configures a user defined function to execute immediately after an E-stop event.
+        params:
+            callback_function:
+                type: function
+                desc: The function to be executed after an e-stop is triggered.
+        '''
         self.eStopCallback = callback_function
         return
 
