@@ -601,7 +601,7 @@ class MachineMotion :
         else : raise Exception('Error in gCode execution')
 
         return states
-    
+
     def emitStop(self):
         '''
         desc: Immediately stops all motion of all axes.
@@ -794,7 +794,7 @@ class MachineMotion :
         '''
 
         self._restrictInputValue("axis",axis, AXIS_NUMBER)
-        self._restrictInputValue("direction", direction, AXIS_DIRECTION)
+        self._restrictInputValue("direction", direction, DIRECTION)
 
         # Set to relative motion mode
         reply = self.myGCode.__emit__("G91")
@@ -913,25 +913,25 @@ class MachineMotion :
         '''
 
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
-        self._restrictInputValue("direction", direction, AXIS_DIRECTION)
+        self._restrictInputValue("direction", direction, DIRECTION)
 
         if(axis == 1):
             self.myAxis1_direction = direction
-            if(direction == AXIS_DIRECTION.NORMAL):
+            if(direction == DIRECTION.NORMAL):
                 reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis1_steps_mm))
-            elif (direction == AXIS_DIRECTION.REVERSE):
+            elif (direction == DIRECTION.REVERSE):
                 reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis1_steps_mm))
         elif(axis == 2):
             self.myAxis2_direction = direction
-            if(direction == AXIS_DIRECTION.NORMAL):
+            if(direction == DIRECTION.NORMAL):
                 reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis2_steps_mm))
-            elif (direction == AXIS_DIRECTION.REVERSE):
+            elif (direction == DIRECTION.REVERSE):
                 reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis2_steps_mm))
         elif(axis == 3):
             self.myAxis3_direction = direction
-            if(direction == AXIS_DIRECTION.NORMAL):
+            if(direction == DIRECTION.NORMAL):
                 reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.myAxis3_steps_mm))
-            elif (direction == AXIS_DIRECTION.REVERSE):
+            elif (direction == DIRECTION.REVERSE):
                 reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + "-" + str(self.myAxis3_steps_mm))
 
         if ( "echo" in reply and "ok" in reply ) : pass
@@ -1332,8 +1332,8 @@ class MachineMotion :
         return
 
     # ------------------------------------------------------------------------
-    # Reacts to an eStop event 
-    # 
+    # Reacts to an eStop event
+    #
     # @param {bool} status - true or false
     # @return : call to callback function
 
