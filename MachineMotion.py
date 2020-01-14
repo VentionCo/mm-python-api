@@ -737,32 +737,6 @@ class MachineMotion :
 
         return
 
-    #
-    # Functions to send an absolute move command to the MachineMotion controller in async mode
-    # @param axis --- Description: axis is the axis on which the command will be applied. --- Type: string or number.
-    # @param position --- Description: position is the position from its home location where the axis will go. --- Type: string or number.
-    # @status
-    #
-    def emitAsyncAbsoluteMove_part1(self) :
-
-        # Set to absolute motion mode
-        reply = self.myGCode.__emit__("G90")
-
-        if ( "echo" in reply and "ok" in reply ) : pass
-        else : raise Exception('Error in gCode execution')
-
-        return
-
-    def emitAsyncAbsoluteMove_part2(self, axis, position) :
-
-        # Transmit move command
-        reply = self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
-
-        if ( "echo" in reply and "ok" in reply ) : pass
-        else : raise Exception('Error in gCode execution')
-
-        return
-
     def emitCombinedAxesAbsoluteMove(self, axes, positions):
         '''
         desc: Moves multiple specified axes to their desired end locations synchronously.
