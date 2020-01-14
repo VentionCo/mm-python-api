@@ -513,8 +513,7 @@ class MachineMotion :
 
         return positions
 
-
-    def getEndStopState(self) :
+    def getEndStopState(self):
         '''
         desc: Returns the current state of all home and end sensors. <span style="color:red">What do x_min and x_max refer to? Can we replace this language with home and end?</span>
         returnValue: The states of all end stop sensors {x_min, x_max, y_min, y_max, z_min, z_max} TRIGGERED or not
@@ -602,7 +601,7 @@ class MachineMotion :
         else : raise Exception('Error in gCode execution')
 
         return states
-
+    
     def emitStop(self):
         '''
         desc: Immediately stops all motion of all axes.
