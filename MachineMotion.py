@@ -261,6 +261,7 @@ class MachineMotion :
     	self.digitalInputs = {}
 
         self.myConfiguration['machineIp'] = machineIp
+        self.IP = machineIp
 
         # MQTT
         self.myMqttClient = None
@@ -969,7 +970,7 @@ class MachineMotion :
             #Recursively calls the function until motion is completed
             if ("COMPLETED" in reply) : return
             else :
-                print "Motion not completed : " + str(DEFAULT_IP)
+                print "Motion not completed : " + str(self.IP)
                 time.sleep(0.5)
                 return self.waitForMotionCompletion()
 
@@ -1011,7 +1012,7 @@ class MachineMotion :
         if machineNetmask is not None : self.myConfiguration["machineNetmask"] = machineNetmask
         if machineGateway is not None : self.myConfiguration["machineGateway"] = machineGateway
 
-        HTTPSend(DEFAULT_IP + ":8000", "/configIp", json.dumps(self.myConfiguration))
+        HTTPSend(self.IP + ":8000", "/configIp", json.dumps(self.myConfiguration))
 
         time.sleep(1)
 
@@ -1162,7 +1163,7 @@ class MachineMotion :
         dataPack["data"] = data
 
         # Send the request to MachineMotion
-        HTTPSend(DEFAULT_IP + ":8000", "/saveData", json.dumps(dataPack))
+        HTTPSend(self.IP + ":8000", "/saveData", json.dumps(dataPack))
         time.sleep(0.05)
 
         return
@@ -1181,7 +1182,7 @@ class MachineMotion :
         returnValue: A dictionary containing the saved data.
         returnValueType: Dictionary
         '''
-        callback(HTTPSend(DEFAULT_IP + ":8000", "/getData", key))
+        callback(HTTPSend(self.IP + ":8000", "/getData", key))
 
         return
 
@@ -1342,7 +1343,7 @@ class MachineMotion :
         # Publish trigger request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, "message is not important")
         # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_TRIGGER_RESPONSE, retained = False, hostname = DEFAULT_IP)
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_TRIGGER_RESPONSE, retained = False, hostname = self.IP)
 
         return
 
@@ -1354,7 +1355,7 @@ class MachineMotion :
         # Publish release request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_RELEASE_REQUEST, "message is not important")
         # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_RELEASE_RESPONSE, retained = False, hostname = DEFAULT_IP)
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_RELEASE_RESPONSE, retained = False, hostname = self.IP)
 
         return
 
@@ -1370,7 +1371,7 @@ class MachineMotion :
         # Publish reset system request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_SYSTEMRESET_REQUEST, "message is not important")
         # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_SYSTEMRESET_RESPONSE, retained = False, hostname = DEFAULT_IP)
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_SYSTEMRESET_RESPONSE, retained = False, hostname = self.IP)
 
         return
 
@@ -1452,7 +1453,7 @@ class MachineMotion :
     def __establishConnection(self, isReconnection, callback):
 
         # Create the web socket
-        self.myGCode = GCode(DEFAULT_IP)
+        self.myGCode = GCode(self.IP)
 
         # Set the callback to the user specified function. This callback is used to process incoming messages from the machineMotion controller
         self.myGCode.__setUserCallback__(callback)
