@@ -61,6 +61,8 @@ class UNITS_ACCEL:
     mm_per_min_sqr = "mm per minute"
     mm_per_sec_sqr =  "mm per second"
 
+DEFAULT_IP = "192.168.7.2"
+
 class DEFAULT_IP_ADDRESS:
     usb_windows     = "192.168.7.2"
     usb_mac_linux   = "192.168.7.2"
@@ -83,7 +85,9 @@ class MECH_GAIN:
     ballscrew_10mm_turn             = 10
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
-    conveyor_mm_turn                = 157
+    #indexer_deg_turn                = 36
+    roller_conveyor_mm_turn         = 157
+    belt_conveyor_mm_turn           = 69.12
     rack_pinion_mm_turn             = 157.08
 
 class STEPPER_MOTOR:
