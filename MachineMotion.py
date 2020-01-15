@@ -1,4 +1,4 @@
-# File name:            _MachineMotion.py                     #
+# File name:            MachineMotion.py                     #
 # Note:                 Information about all the g-Code            #
 #                       commands supported are available at         #
 #                       the following location of the SDK:          #
@@ -261,6 +261,7 @@ class MachineMotion :
     	self.digitalInputs = {}
 
         self.myConfiguration['machineIp'] = machineIp
+        self.IP = machineIp
 
         # MQTT
         self.myMqttClient = None
@@ -834,7 +835,7 @@ class MachineMotion :
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
 
-        if (not isinstance(axes, list) or not isinstance(directions, list) or isinstance(distances, list)):
+        if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
             raise TypeError("Axes, Postions and Distances must be lists")
 
         # Set to relative motion mode
@@ -917,7 +918,7 @@ class MachineMotion :
         self._restrictInputValue("direction", direction, DIRECTION)
 
         self.direction[axis] = direction
-        
+
         if(direction == DIRECTION.NORMAL):
             reply = self.myGCode.__emit__("M92 " + self.myGCode.__getTrueAxis__(axis) + str(self.steps_mm[axis]))
         elif (direction == DIRECTION.REVERSE):
@@ -969,7 +970,7 @@ class MachineMotion :
             #Recursively calls the function until motion is completed
             if ("COMPLETED" in reply) : return
             else :
-                print "Motion not completed : " + str(self.myConfiguration['machineIp'])
+                print "Motion not completed : " + str(self.IP)
                 time.sleep(0.5)
                 return self.waitForMotionCompletion()
 
@@ -1004,8 +1005,6 @@ class MachineMotion :
 
                return False
 
-        oldIP = self.myConfiguration["machineIp"]
-
         # Create a new object and augment it with the key value.
 
         if mode is not None : self.myConfiguration["mode"] = mode
@@ -1013,7 +1012,7 @@ class MachineMotion :
         if machineNetmask is not None : self.myConfiguration["machineNetmask"] = machineNetmask
         if machineGateway is not None : self.myConfiguration["machineGateway"] = machineGateway
 
-        HTTPSend(oldIP + ":8000", "/configIp", json.dumps(self.myConfiguration))
+        HTTPSend(self.IP + ":8000", "/configIp", json.dumps(self.myConfiguration))
 
         time.sleep(1)
 
@@ -1064,7 +1063,7 @@ class MachineMotion :
 
             gCodeCommand = gCodeCommand + " " + self.myGCode.__getTrueAxis__(axis) + str(speed_mm_per_min)
 
-        self.myGCode.__emit__(gCodeCommand)
+        reply = self.myGCode.__emit__(gCodeCommand)
 
         if ( "echo" in reply and "ok" in reply ) : pass
         else : raise Exception('Error in gCode execution')
@@ -1105,7 +1104,7 @@ class MachineMotion :
             gCodeCommand = gCodeCommand + " " + self.myGCode.__getTrueAxis__(axis) + str(min_speed_mm_per_min) + ":" + str(max_speed_mm_per_min)
 
 
-        self.myGCode.__emit__(gCodeCommand)
+        reply = self.myGCode.__emit__(gCodeCommand)
 
         if ( "echo" in reply and "ok" in reply ) : pass
         else : raise Exception('Error in gCode execution')
@@ -1164,7 +1163,7 @@ class MachineMotion :
         dataPack["data"] = data
 
         # Send the request to MachineMotion
-        HTTPSend(self.myConfiguration['machineIp'] + ":8000", "/saveData", json.dumps(dataPack))
+        HTTPSend(self.IP + ":8000", "/saveData", json.dumps(dataPack))
         time.sleep(0.05)
 
         return
@@ -1183,7 +1182,7 @@ class MachineMotion :
         returnValue: A dictionary containing the saved data.
         returnValueType: Dictionary
         '''
-        callback(HTTPSend(self.myConfiguration['machineIp'] + ":8000", "/getData", key))
+        callback(HTTPSend(self.IP + ":8000", "/getData", key))
 
         return
 
@@ -1344,7 +1343,7 @@ class MachineMotion :
         # Publish trigger request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, "message is not important")
         # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_TRIGGER_RESPONSE, retained = False, hostname = self.myConfiguration['machineIp'])
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_TRIGGER_RESPONSE, retained = False, hostname = self.IP)
 
         return
 
@@ -1356,7 +1355,7 @@ class MachineMotion :
         # Publish release request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_RELEASE_REQUEST, "message is not important")
         # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_RELEASE_RESPONSE, retained = False, hostname = self.myConfiguration['machineIp'])
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_RELEASE_RESPONSE, retained = False, hostname = self.IP)
 
         return
 
@@ -1372,7 +1371,7 @@ class MachineMotion :
         # Publish reset system request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_SYSTEMRESET_REQUEST, "message is not important")
         # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_SYSTEMRESET_RESPONSE, retained = False, hostname = self.myConfiguration['machineIp'])
+        MQTTsubscribe.simple(MQTT.PATH.ESTOP_SYSTEMRESET_RESPONSE, retained = False, hostname = self.IP)
 
         return
 
@@ -1454,7 +1453,7 @@ class MachineMotion :
     def __establishConnection(self, isReconnection, callback):
 
         # Create the web socket
-        self.myGCode = GCode(self.myConfiguration['machineIp'])
+        self.myGCode = GCode(self.IP)
 
         # Set the callback to the user specified function. This callback is used to process incoming messages from the machineMotion controller
         self.myGCode.__setUserCallback__(callback)

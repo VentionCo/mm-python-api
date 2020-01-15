@@ -1,6 +1,6 @@
 import sys
 sys.path.append("..")
-from _MachineMotion import *
+from MachineMotion import *
 
 #Declare parameters for g-Code command
 speed = 1000
