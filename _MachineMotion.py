@@ -708,17 +708,18 @@ class MachineMotion:
 
         motion_completed = "false"
 
-        # Set to relative motion mode temporarily
-        try:
-            self.myGCode.__emit__("G91")
-            while self.isReady() != "true": pass
+        # Set to relative motion mode 
+        self.myGCode.__emit__("G91")
+        while self.isReady() != "true": pass
 
-            if direction == "positive":distance = "" + str(distance)
-            elif direction  == "negative": distance = "-" + str(distance)
+        if direction == "positive":distance = "" + str(distance)
+        elif direction  == "negative": distance = "-" + str(distance)
 
-            # Transmit move command
-            self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
-            while self.isReady() != "true": pass
+        # Transmit move command
+        self.myGCode.__emit__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+        while self.isReady() != "true": pass
+
+        return
 
 
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
@@ -754,20 +755,20 @@ class MachineMotion:
 
         motion_completed = "false"
 
-        # Temporarily set to relative motion mode
+        # Set to relative motion mode
         self.myGCode.__emit__("G91")
         while self.isReady() != "true": pass
 
-        try:
+        # Transmit move command
+        command = "G0 "
+        for axis, direction, distance in zip(axes, directions, distances):
+            if direction == AXIS_DIRECTION.positive: distance = "" + str(distance)
+            elif direction  == AXIS_DIRECTION.negative: distance = "-" + str(distance)
+            command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
+        self.myGCode.__emit__(command)
+        while self.isReady() != "true": pass
 
-            # Transmit move command
-            command = "G0 "
-            for axis, direction, distance in zip(axes, directions, distances):
-                if direction == AXIS_DIRECTION.positive: distance = "" + str(distance)
-                elif direction  == AXIS_DIRECTION.negative: distance = "-" + str(distance)
-                command += self.myGCode.__getTrueAxis__(axis) + str(distance) + " "
-            self.myGCode.__emit__(command)
-            while self.isReady() != "true": pass
+        return
 
 
     def setPosition(self, axis, position):
