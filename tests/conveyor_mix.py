@@ -13,13 +13,14 @@ m1 = MachineMotion("192.168.7.2", None)
 while (True) :
     m1.emitSpeed(2000)
 
-    cspeed = 20000
-    cacceleration = 20
-    cduration = 1.0
+    cspeed = 10000
+    cacceleration = 20000
+    cduration = 3.0
+    stoptime = 2.0
 
     print("Conveyor +")
-    m1.emitgCode("V4 S0 A30000 X")
-    time.sleep(0.2)
+    m1.emitgCode("V4 S0 A1000000 X")
+    time.sleep(stoptime)
     m1.emitgCode("V5 X2")
     m1.emitgCode("V4 S%d A%d X" % (cspeed, cacceleration))
     time.sleep(cduration)
@@ -31,8 +32,8 @@ while (True) :
     time.sleep(0.1)
 
     print("Conveyor -")
-    m1.emitgCode("V4 S0 A30000 X")
-    time.sleep(0.2)
+    m1.emitgCode("V4 S0 A1000000 X")
+    time.sleep(stoptime)
     m1.emitgCode("V5 X2")
     m1.emitgCode("V4 S-%d A%s X" % (cspeed, cacceleration))
     time.sleep(cduration)
