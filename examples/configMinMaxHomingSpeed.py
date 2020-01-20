@@ -4,6 +4,12 @@ from MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
+#When starting a program, one must remove the software stop before moving
+print("--> Removing software stop")
+mm.releaseEstop()
+print("--> Resetting system")
+mm.resetSystem()
+
 axis = 1                                    #The axis that you'd like to move
 speed = 500                                 #The max speed you'd like to move at
 acceleration = 500                          #The constant acceleration and decceleration value for the move

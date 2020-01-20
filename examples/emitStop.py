@@ -10,6 +10,12 @@ def templateCallback(data):
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
 
+#When starting a program, one must remove the software stop before moving
+print("--> Removing software stop")
+mm.releaseEstop()
+print("--> Resetting system")
+mm.resetSystem()
+
 #Define Relative Move Parameters
 axis = 1
 speed = 400

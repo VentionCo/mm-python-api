@@ -4,7 +4,13 @@ from MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
-axes = [1,2,3]    
+#When starting a program, one must remove the software stop before moving
+print("--> Removing software stop")
+mm.releaseEstop()
+print("--> Resetting system")
+mm.resetSystem()
+
+axes = [1,2,3]
 axis =3                                    #The axis that you'd like to move
 homingSpeeds = [50,50,50]                        #The homing speeds to set for each axis
 
@@ -28,5 +34,3 @@ mm.waitForMotionCompletion()
 #Homes the axis at the newly configured homing speed.
 mm.emitHome(axis)
 mm.waitForMotionCompletion()
-
-
