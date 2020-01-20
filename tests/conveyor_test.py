@@ -9,7 +9,7 @@ sys.path.append("..")
 from MachineMotion import MachineMotion
 
 
-m1 = MachineMotion(None, "192.168.7.2")
+m1 = MachineMotion("192.168.7.2", None)
 m1.emitgCode("V5 X2")
 
 while (1) :

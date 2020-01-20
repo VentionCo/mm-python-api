@@ -11,7 +11,7 @@ from MachineMotion import *
 # Define a callback to process controller gCode responses (if desired)
 def debug(data): pass
 
-mm = MachineMotion(debug, "localhost")
+mm = MachineMotion("localhost", debug)
 avg_perf_M119 = {"count": 0, "total": 0}
 avg_perf_M115 = {"count": 0, "total": 0}
 avg_perf_M114 = {"count": 0, "total": 0}

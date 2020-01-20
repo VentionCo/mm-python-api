@@ -10,7 +10,7 @@ from MachineMotion import *
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-mm = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, templateCallback)
 
 mm.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
 mm.configAxis(2, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)

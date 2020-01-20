@@ -13,7 +13,7 @@ from random import *
 def templateCallback(data):
  print ( "Controller gCode responses " + data )
 
-mm = MachineMotion(templateCallback, "192.168.7.2")
+mm = MachineMotion("192.168.7.2", templateCallback)
 time.sleep(1)
 
 # Input device
