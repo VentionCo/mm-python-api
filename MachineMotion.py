@@ -310,6 +310,85 @@ class MachineMotion :
 
         return
 
+    def startContinuousMove(axis, speed, accel = None) :
+
+    '''
+    desc: Starts an axis using speed mode.
+    params:
+        axis:
+            desc: Axis to move
+            type: Number
+        speed:
+            desc: Speed to move the axis at in mm / sec
+            type: Number
+        accel:
+            desc: Acceleration used to reach the desired speed in mm^2 / sec
+            type: Number
+
+    exampleCodePath:
+    '''
+        # set motor to speed mode
+        reply = self.myGCode.__emit__("V5 " + self.getAxisName(motor) + "2")
+
+        if ( "echo" in reply and "ok" in reply ) : pass
+        else :
+            raise Exception('Error in gCode execution')
+            return False
+
+        if accel is not None :
+            # Send speed command with accel
+            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " A" + str(accel / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+
+            if ( "echo" in reply and "ok" in reply ) : pass
+            else :
+                raise Exception('Error in gCode execution')
+                return False
+
+        else :
+            # Send speed command
+            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+
+            if ( "echo" in reply and "ok" in reply ) : pass
+            else :
+                raise Exception('Error in gCode execution')
+                return False
+
+        return
+
+    def stopContinuousMove(axis, accel = None) :
+        '''
+        desc: Starts an axis using speed mode.
+        params:
+            axis:
+                desc: Axis to move
+                type: Number
+            accel:
+                desc: Acceleration used to reach speed = 0 in mm^2 / sec
+                type: Number
+
+        exampleCodePath:
+        '''
+
+        if accel is not None :
+            # Send speed command with accel
+            reply = self.myGCode.__emit__("V4 S0" + " A" + str(accel / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+
+            if ( "echo" in reply and "ok" in reply ) : pass
+            else :
+                raise Exception('Error in gCode execution')
+                return False
+
+        else :
+            # Send speed command
+            reply = self.myGCode.__emit__("V4 S0 " + self.getAxisName(motor))
+
+            if ( "echo" in reply and "ok" in reply ) : pass
+            else :
+                raise Exception('Error in gCode execution')
+                return False
+
+        return
+
     # ------------------------------------------------------------------------
     # Moves a motor with a certain set of parameters
     #
