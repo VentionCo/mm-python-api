@@ -17,7 +17,7 @@ while (True) :
     cacceleration = 20000
     cduration = 3.0
     stoptime = 2.0
-    axis = "Y"
+    axis = "X"
 
     print("Conveyor +")
     m1.emitgCode("V4 S0 A1000000 " + axis)
@@ -25,6 +25,7 @@ while (True) :
     m1.emitgCode("V5 " + axis + "2")
     m1.emitgCode(("V4 S%d A%d " + axis) % (cspeed, cacceleration))
     time.sleep(cduration)
+    m1.emitgCode("V4 S0 A1000000 " + axis)
     print("Position -")
     m1.emitgCode("V5 " + axis + "1")
     m1.emitgCode("G91")
@@ -38,6 +39,7 @@ while (True) :
     m1.emitgCode("V5 " + axis + "2")
     m1.emitgCode(("V4 S-%d A%s " + axis) % (cspeed, cacceleration))
     time.sleep(cduration)
+    m1.emitgCode("V4 S0 A1000000 " + axis)
     print("Position +")
     m1.emitgCode("V5 " + axis + "1")
     m1.emitgCode("G91")
