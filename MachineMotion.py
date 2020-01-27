@@ -258,7 +258,7 @@ class MachineMotion :
         self.myIoExpanderAvailabilityState = [ False, False, False, False ]
         self.myEncoderRealtimePositions    = [ 0, 0, 0 ]
         self.myEncoderStablePositions    = [ 0, 0, 0 ]
-    	self.digitalInputs = {}
+        self.digitalInputs = {}
 
         self.myConfiguration['machineIp'] = machineIp
         self.IP = machineIp
@@ -312,21 +312,21 @@ class MachineMotion :
 
     def startContinuousMove(axis, speed, accel = None) :
 
-    '''
-    desc: Starts an axis using speed mode.
-    params:
-        axis:
-            desc: Axis to move
-            type: Number
-        speed:
-            desc: Speed to move the axis at in mm / sec
-            type: Number
-        accel:
-            desc: Acceleration used to reach the desired speed in mm^2 / sec
-            type: Number
+        '''
+        desc: Starts an axis using speed mode.
+        params:
+            axis:
+                desc: Axis to move
+                type: Number
+            speed:
+                desc: Speed to move the axis at in mm / sec
+                type: Number
+            accel:
+                desc: Acceleration used to reach the desired speed in mm^2 / sec
+                type: Number
 
-    exampleCodePath:
-    '''
+        exampleCodePath:
+        '''
         # set motor to speed mode
         reply = self.myGCode.__emit__("V5 " + self.getAxisName(motor) + "2")
 
