@@ -10,6 +10,9 @@ from MachineMotion import MachineMotion
 
 m1 = MachineMotion("192.168.7.2", None)
 
+m1.releaseEstop()
+m1.resetSystem()
+
 while (True) :
     m1.emitSpeed(2000)
 
