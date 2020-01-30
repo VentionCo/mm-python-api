@@ -47,10 +47,10 @@ print("1: All inputs initialized to 0")
 # Status Check
 # Read input from device 2
 print("Status Check:")
-print("pin 0: " + str(mm.digitalRead(2, 0)))
-print("pin 1: " + str(mm.digitalRead(2, 1)))
-print("pin 2: " + str(mm.digitalRead(2, 2)))
-print("pin 3: " + str(mm.digitalRead(2, 3)))
+print("pin 0: " + str(mm.digitalRead(output_device, 0)))
+print("pin 1: " + str(mm.digitalRead(output_device, 1)))
+print("pin 2: " + str(mm.digitalRead(output_device, 2)))
+print("pin 3: " + str(mm.digitalRead(output_device, 3)))
 print("---------------------")
 print("2: Status Check Done")
 
@@ -68,14 +68,14 @@ while(count < 100):
   count+=1
   # Write true to a random pin on device 1
   random_pin = randint(0,3)
-  mm.digitalWrite(1, random_pin, 1)
+  mm.digitalWrite(input_device, random_pin, 1)
 
   # check signal on device 2
   if turn_off_immediately:
     attempts = 0
     success = False
     while attempts < 100 and not success:
-      signalRead = mm.digitalRead(2, random_pin)
+      signalRead = mm.digitalRead(output_device, random_pin)
       if (signalRead != 1):
         attempts += 1
         time.sleep(0.02)
@@ -83,13 +83,13 @@ while(count < 100):
         success = True
   else:
     time.sleep(0.5)
-    signalRead = mm.digitalRead(2, random_pin)
+    signalRead = mm.digitalRead(output_device, random_pin)
   if (signalRead != 1):
     checkFail_count+=float(1)
   print("Device 1, pin_" + str(random_pin) + ": 1 & Device 2, pin_" + str(random_pin) + ": " + str(1 == signalRead) + " count: " + str(count) + " failures: " + str(checkFail_count))
 
   # set state back to 0
-  mm.digitalWrite(1, random_pin, 0)
+  mm.digitalWrite(input_device, random_pin, 0)
   time.sleep(0.5)
 
 fail_percentage = (checkFail_count/count) * 100
