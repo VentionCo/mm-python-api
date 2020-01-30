@@ -31,6 +31,8 @@ output_state = 0
 count = 0
 checkFail_count = 0
 
+turn_off_immediately = False # Set to True to run as fast as possible, i.e. turn signals off as soon as they're confirmed to have been on
+
 # Error flag
 # TODO: improve? remove if possible
 error = False
@@ -67,14 +69,24 @@ while(count < 100):
   # Write true to a random pin on device 1
   random_pin = randint(0,3)
   mm.digitalWrite(1, random_pin, 1)
-  time.sleep(0.5)
 
   # check signal on device 2
-  signalRead = mm.digitalRead(2, random_pin)
-  print("Device 1, pin_" + str(random_pin) + ": 1 & Device 2, pin_" + str(random_pin) + ": " + str(signalRead) + "  count: " + str(count))
+  if turn_off_immediately:
+    attempts = 0
+    success = False
+    while attempts < 100 and not success:
+      signalRead = mm.digitalRead(2, random_pin)
+      if (signalRead != 1):
+        attempts += 1
+        time.sleep(0.02)
+      else:
+        success = True
+  else:
+    time.sleep(0.5)
+    signalRead = mm.digitalRead(2, random_pin)
   if (signalRead != 1):
     checkFail_count+=float(1)
-    time.sleep(10)
+  print("Device 1, pin_" + str(random_pin) + ": 1 & Device 2, pin_" + str(random_pin) + ": " + str(1 == signalRead) + " count: " + str(count) + " failures: " + str(checkFail_count))
 
   # set state back to 0
   mm.digitalWrite(1, random_pin, 0)
