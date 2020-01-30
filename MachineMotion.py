@@ -125,6 +125,7 @@ def HTTPSend(host, path, data=None) :
         return lResponse
     except Exception :
         logging.warning("Could not GET %s: %s" % (path, traceback.format_exc()))
+    return ""
 
 #
 # Class that handles all gCode related communications
