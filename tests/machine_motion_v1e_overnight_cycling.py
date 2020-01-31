@@ -28,16 +28,35 @@ mm.waitForMotionCompletion()
 
 i = 0
 
-for i in range (0, 100000):
-    
-    
+dIO = [0, 0, 0, 0]
+
+while True :
+
+    print(mm.readEncoder(1))
+    print(mm.readEncoder(2))
+
+    mm.digitalWrite(1, 1, dIO[0])
+    mm.digitalWrite(1, 2, dIO[1])
+    mm.digitalWrite(1, 3, dIO[2])
+    mm.digitalWrite(1, 4, dIO[3])
+
+    if mm.digitalRead(1,1) != dIO[0] : raise Exception()
+    if mm.digitalRead(1,2) != dIO[1] : raise Exception()
+    if mm.digitalRead(1,3) != dIO[2] : raise Exception()
+    if mm.digitalRead(1,4) != dIO[3] : raise Exception()
+
+    dIO[i] = int(not dIO[i])
+
+    if i < 3 : i = i + 1
+    else : i = 0
+
     mm.emitSpeed(100000)
     mm.emitAcceleration(10000)
 
     x = 0
     for x in range (0, 3):
         mm.emitgCode("G0 X500 Y500 Z500")
-        mm.emitgCode("G0 X10 Y10 Z10")    
+        mm.emitgCode("G0 X10 Y10 Z10")
     mm.waitForMotionCompletion()
 
     mm.emitSpeed(100000)
@@ -47,10 +66,10 @@ for i in range (0, 100000):
     mm.emitAbsoluteMove(3, 500)
     mm.emitAbsoluteMove(1, 10)
     mm.emitAbsoluteMove(2, 10)
-    mm.emitAbsoluteMove(3, 10)    
-    
+    mm.emitAbsoluteMove(3, 10)
+
     mm.waitForMotionCompletion()
-    
+
     mm.emitHomeAll()
     mm.waitForMotionCompletion()
 
