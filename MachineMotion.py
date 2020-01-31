@@ -112,19 +112,29 @@ class MQTT :
         ESTOP_SYSTEMRESET_RESPONSE = ESTOP + "/systemreset/response"
 
 def HTTPSend(host, path, data=None) :
-    try :
-        # Review: use keep-alive
-        lConn = httplib.HTTPConnection(host)
-        if None == data:
-            lConn.request("GET", path)
-        else:
-            lConn.request("POST", path, data, {"Content-type": "application/octet-stream"});
-        lResponse = lConn.getresponse()
-        lResponse = lResponse.read()
-        lConn.close()
-        return lResponse
-    except Exception :
-        logging.warning("Could not GET %s: %s" % (path, traceback.format_exc()))
+    # Note:
+    #   The intent of retrying upon failure here is primarily to reconnect to a dead or unreachable server.
+    #   The assumption is that an exception at this level reflects a server failure not to be expected by the client.
+    #   This behavior could be made optional.
+    while True :
+        lConn = None
+        try :
+            # Review: use keep-alive
+            lConn = httplib.HTTPConnection(host)
+            if None == data:
+                lConn.request("GET", path)
+            else:
+                lConn.request("POST", path, data, {"Content-type": "application/octet-stream"});
+            lResponse = lConn.getresponse()
+            lResponse = lResponse.read()
+            lConn.close()
+            return lResponse
+        except Exception :
+            logging.warning("Could not GET %s: %s" % (path, traceback.format_exc()))
+            if lConn :
+                lConn.close()
+                lConn = None
+            time.sleep(1)
     return ""
 
 #
