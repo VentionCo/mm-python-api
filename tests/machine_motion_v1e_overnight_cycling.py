@@ -35,20 +35,10 @@ while True :
     print(mm.readEncoder(1))
     print(mm.readEncoder(2))
 
-    mm.digitalWrite(1, 1, dIO[0])
-    mm.digitalWrite(1, 2, dIO[1])
-    mm.digitalWrite(1, 3, dIO[2])
-    mm.digitalWrite(1, 4, dIO[3])
-
-    if mm.digitalRead(1,1) != dIO[0] : raise Exception()
-    if mm.digitalRead(1,2) != dIO[1] : raise Exception()
-    if mm.digitalRead(1,3) != dIO[2] : raise Exception()
-    if mm.digitalRead(1,4) != dIO[3] : raise Exception()
-
-    dIO[i] = int(not dIO[i])
-
-    if i < 3 : i = i + 1
-    else : i = 0
+    mm.digitalWrite(1, 0, dIO[0])
+    mm.digitalWrite(1, 1, dIO[1])
+    mm.digitalWrite(1, 2, dIO[2])
+    mm.digitalWrite(1, 3, dIO[3])
 
     mm.emitSpeed(100000)
     mm.emitAcceleration(10000)
@@ -72,5 +62,15 @@ while True :
 
     mm.emitHomeAll()
     mm.waitForMotionCompletion()
+    
+    if mm.digitalRead(1,0) != dIO[0] : raise Exception()
+    if mm.digitalRead(1,1) != dIO[1] : raise Exception()
+    if mm.digitalRead(1,2) != dIO[2] : raise Exception()
+    if mm.digitalRead(1,3) != dIO[3] : raise Exception()
+
+    dIO[i] = int(not dIO[i])
+
+    if i < 3 : i = i + 1
+    else : i = 0
 
 print ( "--> Example completed." )
