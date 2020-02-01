@@ -1381,7 +1381,7 @@ class MachineMotion :
 
         return
 
-    def readEncoder(self, encoder, readingType="realTime") :
+    def readEncoder(self, encoder, readingType=ENCODER_TYPE.real_time) :
         '''
         desc: Returns the last received encoder position in counts.
         params:
