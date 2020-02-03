@@ -14,8 +14,13 @@ import paho.mqtt.subscribe as MQTTsubscribe
 import logging
 import traceback
 
-import httplib
 import urllib
+# Import if python 2
+if sys.version_info[0] < 3 :
+    import httplib
+# Import if python 3
+else :
+    import http.client
 
 class CONTROL_DEVICE_SIGNALS:
     SIGNAL0 = "SIGNAL0"
@@ -120,7 +125,14 @@ def HTTPSend(host, path, data=None) :
         lConn = None
         try :
             # Review: use keep-alive
-            lConn = httplib.HTTPConnection(host)
+
+            # If python 2
+            if sys.version_info[0] < 3 :
+                lConn = httplib.HTTPConnection(host)
+            # Else python 3
+            else :
+                lConn = http.client.HTTPConnection(host)
+
             if None == data:
                 lConn.request("GET", path)
             else:
@@ -128,7 +140,7 @@ def HTTPSend(host, path, data=None) :
             lResponse = lConn.getresponse()
             lResponse = lResponse.read()
             lConn.close()
-            return lResponse
+            return str(lResponse)
         except Exception :
             logging.warning("Could not GET %s: %s" % (path, traceback.format_exc()))
             if lConn :
@@ -192,7 +204,12 @@ class GCode:
     #
     def __emit__(self, gCode) :
 
-        rep = self.__send__("/gcode?%s" % urllib.urlencode({"gcode": "%s" % gCode}))
+        # If python 2
+        if sys.version_info[0] < 3 :
+            rep = self.__send__("/gcode?%s" % urllib.urlencode({"gcode": "%s" % gCode}))
+        # Else python 3
+        else :
+            rep = self.__send__("/gcode?%s" % urllib.parse.urlencode({"gcode": "%s" % gCode}))
 
         # Call user callback only if relevant
         if self.__userCallback__ is None : pass
@@ -1060,7 +1077,7 @@ class MachineMotion :
             #Recursively calls the function until motion is completed
             if ("COMPLETED" in reply) : return
             else :
-                print "Motion not completed : " + str(self.IP)
+                print( "Motion not completed : " + str(self.IP))
                 time.sleep(0.5)
                 return self.waitForMotionCompletion()
 
