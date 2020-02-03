@@ -140,7 +140,7 @@ def HTTPSend(host, path, data=None) :
             lResponse = lConn.getresponse()
             lResponse = lResponse.read()
             lConn.close()
-            return str(lResponse)
+            return str(lResponse) # Casting as a string is necessary for python3
         except Exception :
             logging.warning("Could not GET %s: %s" % (path, traceback.format_exc()))
             if lConn :
