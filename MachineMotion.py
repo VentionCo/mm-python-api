@@ -338,7 +338,7 @@ class MachineMotion :
 
         return
 
-    def startContinuousMove(self, motor, speed, accel = None) :
+    def startContinuousMove(self, axis, speed, accel = None) :
 
         '''
         desc: Starts an axis using speed mode.
@@ -356,7 +356,7 @@ class MachineMotion :
         exampleCodePath: emitConveyorMove.py
         '''
         # set motor to speed mode
-        reply = self.myGCode.__emit__("V5 " + self.getAxisName(motor) + "2")
+        reply = self.myGCode.__emit__("V5 " + self.getAxisName(axis) + "2")
 
         if ( "echo" in reply and "ok" in reply ) : pass
         else :
@@ -365,7 +365,7 @@ class MachineMotion :
 
         if accel is not None :
             # Send speed command with accel
-            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " A" + str(accel / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " A" + str(accel / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
 
             if ( "echo" in reply and "ok" in reply ) : pass
             else :
@@ -374,7 +374,7 @@ class MachineMotion :
 
         else :
             # Send speed command
-            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
 
             if ( "echo" in reply and "ok" in reply ) : pass
             else :
@@ -383,7 +383,7 @@ class MachineMotion :
 
         return
 
-    def stopContinuousMove(self, motor, accel = None) :
+    def stopContinuousMove(self, axis, accel = None) :
         '''
         desc: Starts an axis using speed mode.
         params:
@@ -399,7 +399,7 @@ class MachineMotion :
 
         if accel is not None :
             # Send speed command with accel
-            reply = self.myGCode.__emit__("V4 S0" + " A" + str(accel / self.mech_gain[motor] * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+            reply = self.myGCode.__emit__("V4 S0" + " A" + str(accel / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
 
             if ( "echo" in reply and "ok" in reply ) : pass
             else :
@@ -408,7 +408,7 @@ class MachineMotion :
 
         else :
             # Send speed command
-            reply = self.myGCode.__emit__("V4 S0 " + self.getAxisName(motor))
+            reply = self.myGCode.__emit__("V4 S0 " + self.getAxisName(axis))
 
             if ( "echo" in reply and "ok" in reply ) : pass
             else :
