@@ -338,7 +338,7 @@ class MachineMotion :
 
         return
 
-    def startContinuousMove(axis, speed, accel = None) :
+    def startContinuousMove(self, motor, speed, accel = None) :
 
         '''
         desc: Starts an axis using speed mode.
@@ -353,7 +353,7 @@ class MachineMotion :
                 desc: Acceleration used to reach the desired speed in mm^2 / sec
                 type: Number
 
-        exampleCodePath:
+        exampleCodePath: emitConveyorMove.py
         '''
         # set motor to speed mode
         reply = self.myGCode.__emit__("V5 " + self.getAxisName(motor) + "2")
@@ -383,7 +383,7 @@ class MachineMotion :
 
         return
 
-    def stopContinuousMove(axis, accel = None) :
+    def stopContinuousMove(self, motor, accel = None) :
         '''
         desc: Starts an axis using speed mode.
         params:
@@ -394,7 +394,7 @@ class MachineMotion :
                 desc: Acceleration used to reach speed = 0 in mm^2 / sec
                 type: Number
 
-        exampleCodePath:
+        exampleCodePath: emitConveyorMove.py
         '''
 
         if accel is not None :
