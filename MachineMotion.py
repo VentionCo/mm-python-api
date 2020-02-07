@@ -1002,7 +1002,7 @@ class MachineMotion :
         reply = self.myGCode.__emit__(gCode)
 
         if ( "echo" in reply and "ok" in reply ) : pass
-        else : raise Exception('Error in gCode execution')
+        else : raise Exception('Error in gCode execution (reply: %s)' % reply)
 
         return
 
