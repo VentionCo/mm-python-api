@@ -338,7 +338,7 @@ class MachineMotion :
 
         return
 
-    def startContinuousMove(self, axis, speed, accel = None) :
+    def setContinuousMove(self, axis, speed, accel = None) :
 
         '''
         desc: Starts an axis using speed mode.
