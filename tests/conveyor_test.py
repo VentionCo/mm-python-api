@@ -28,12 +28,12 @@ m1.emitgCode("V5 Z2")
 #
 #    time.sleep(4.0)
 
-def motor_z ():
+def motor_x ():
     previous_speed = 0.0
     while (1) :
         speed = int(10000.0 * (2 * random.random()-1.0))
         accel = int(2500.0 * random.random() + 1000.0)
-        m1.emitgCode("V4 S" + str(speed) + " A" + str(accel) + " Z")
+        m1.emitgCode("V4 S" + str(speed) + " A" + str(accel) + " X")
 
         time.sleep(abs((speed-previous_speed)) / accel + 1.0)
         previous_speed = speed
@@ -48,6 +48,19 @@ def motor_y ():
         time.sleep(abs((speed-previous_speed)) / accel + 1.0)
         previous_speed = speed
 
+def motor_z ():
+    previous_speed = 0.0
+    while (1) :
+        speed = int(10000.0 * (2 * random.random()-1.0))
+        accel = int(2500.0 * random.random() + 1000.0)
+        m1.emitgCode("V4 S" + str(speed) + " A" + str(accel) + " Z")
+
+        time.sleep(abs((speed-previous_speed)) / accel + 1.0)
+        previous_speed = speed
+
+tx = threading.Thread(target=motor_x)
+tx.daemon = True
+tx.start()
 
 ty = threading.Thread(target=motor_y)
 ty.daemon = True
