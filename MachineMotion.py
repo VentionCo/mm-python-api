@@ -625,7 +625,7 @@ class MachineMotion :
 
     def getEndStopState(self):
         '''
-        desc: Returns the current state of all home and end sensors. <span style="color:red">What do x_min and x_max refer to? Can we replace this language with home and end?</span>
+        desc: Returns the current state of all home and end sensors.
         returnValue: The states of all end stop sensors {x_min, x_max, y_min, y_max, z_min, z_max} TRIGGERED or not
         returnValueType: Dictionary
         exampleCodePath: getEndStopState.py
@@ -1049,7 +1049,7 @@ class MachineMotion :
     def isMotionCompleted(self):
         '''
         desc: Indicates if the last move command has completed.
-        returnValue: Returns false if the machine is currently executing a g-code command. <span style="color:red">Is this true? Or is it only motion commands? </span>
+        returnValue: Returns false if the machine is currently executing a movement command.
         returnValueType: Boolean
         '''
 
@@ -1468,14 +1468,11 @@ class MachineMotion :
 
         return
 
-    # ------------------------------------------------------------------------
-    # Resets the system
-    #
-    # @param : none
-    # @return : none
-
     def resetSystem (self) :
 
+        '''
+        desc: Resets the system after an eStop event
+        '''
 
         # Publish reset system request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_SYSTEMRESET_REQUEST, "message is not important")
