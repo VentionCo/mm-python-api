@@ -602,6 +602,7 @@ class MachineMotion :
         returnValue: A dictionary containing the current position of each axis.
         returnValueType: Dictionary
         note: This function returns the 'open loop' position of each axis. If your axis has an encoder, please use readEncoder.
+        exampleCodePath: getCurrentPositions.py
         '''
 
         positions = {
@@ -627,6 +628,7 @@ class MachineMotion :
         desc: Returns the current state of all home and end sensors. <span style="color:red">What do x_min and x_max refer to? Can we replace this language with home and end?</span>
         returnValue: The states of all end stop sensors {x_min, x_max, y_min, y_max, z_min, z_max} TRIGGERED or not
         returnValueType: Dictionary
+        exampleCodePath: getEndStopState.py
         '''
 
         states = {
