@@ -301,7 +301,9 @@ class MachineMotion :
         self.myMqttClient.loop_start()
 
         # Default callback
-        def emptyCallBack(data) : pass
+        def emptyCallBack(data) : 
+            print("Default eStop Callback")
+            pass
 
         #Set callback to default until user initialize it
         self.eStopCallback = emptyCallBack
