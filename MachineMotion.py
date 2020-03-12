@@ -116,6 +116,8 @@ class MQTT :
         ESTOP_SYSTEMRESET_REQUEST = ESTOP + "/systemreset/request"
         ESTOP_SYSTEMRESET_RESPONSE = ESTOP + "/systemreset/response"
 
+    TIMEOUT = 10.0 # Number of seconds while we wait for MQTT response
+
 def HTTPSend(host, path, data=None) :
     # Note:
     #   The intent of retrying upon failure here is primarily to reconnect to a dead or unreachable server.
@@ -1449,24 +1451,61 @@ class MachineMotion :
         '''
         desc: Triggers the MachineMotion software emergency stop, cutting power to all drives and enabling brakes (if any). The software E stop must be released (using releaseEstop()) in order to re-enable the machine.
         '''
+        # Creating return value for the function. If nothing good happens, it will return False
+        return_value = False
+
+        def mqttResponse() :
+            # Wait for response
+            return_value = json.loads(MQTTsubscribe.simple(MQTT.PATH.ESTOP_TRIGGER_RESPONSE, retained = False, hostname = self.IP).payload)
+
+            return
+
+        mqttResponseThread = threading.Thread(target = mqttResponse)
+        mqttResponseThread.daemon = True
+        mqttResponseThread.start()
+
         # Publish trigger request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, "message is not important")
-        # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_TRIGGER_RESPONSE, retained = False, hostname = self.IP)
 
-        return
+        mqttResponseThread.join(MQTT.TIMEOUT)
+
+        if mqttResponseThread.isAlive() :
+            raise Exception('MQTT response timeout!')
+            return False
+        else :
+            return return_value
+
+        return return_value
 
     def releaseEstop (self) :
         '''
         desc: Releases the software E-stop and provides power back to the drives.
         '''
+        # Creating return value for the function. If nothing good happens, it will return False
+        return_value = False
+
+        def mqttResponse() :
+            # Wait for response
+            return_value = json.loads(MQTTsubscribe.simple(MQTT.PATH.ESTOP_RELEASE_RESPONSE, retained = False, hostname = self.IP).payload)
+
+            return
+
+        mqttResponseThread = threading.Thread(target = mqttResponse)
+        mqttResponseThread.daemon = True
+        mqttResponseThread.start()
 
         # Publish release request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_RELEASE_REQUEST, "message is not important")
-        # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_RELEASE_RESPONSE, retained = False, hostname = self.IP)
 
-        return
+        mqttResponseThread.join(MQTT.TIMEOUT)
+
+        if mqttResponseThread.isAlive() :
+            raise Exception('MQTT response timeout!')
+            return False
+        else :
+            return return_value
+
+        return return_value
 
     def resetSystem (self) :
 
@@ -1474,12 +1513,31 @@ class MachineMotion :
         desc: Resets the system after an eStop event
         '''
 
+        # Creating return value for the function. If nothing good happens, it will return False
+        return_value = False
+
+        def mqttResponse() :
+            # Wait for response
+            return_value = json.loads(MQTTsubscribe.simple(MQTT.PATH.ESTOP_SYSTEMRESET_RESPONSE, retained = False, hostname = self.IP).payload)
+
+            return
+
+        mqttResponseThread = threading.Thread(target = mqttResponse)
+        mqttResponseThread.daemon = True
+        mqttResponseThread.start()
+
         # Publish reset system request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_SYSTEMRESET_REQUEST, "message is not important")
-        # Wait for response
-        MQTTsubscribe.simple(MQTT.PATH.ESTOP_SYSTEMRESET_RESPONSE, retained = False, hostname = self.IP)
 
-        return
+        mqttResponseThread.join(MQTT.TIMEOUT)
+
+        if mqttResponseThread.isAlive() :
+            raise Exception('MQTT response timeout!')
+            return False
+        else :
+            return return_value
+
+        return return_value
 
 
     def bindeStopEvent (self, callback_function) :
