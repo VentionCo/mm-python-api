@@ -1464,6 +1464,9 @@ class MachineMotion :
         mqttResponseThread.daemon = True
         mqttResponseThread.start()
 
+        # Adding a delay to make sure MQTT simple function is launched before publish is made. Quick fix from bug on App. Launcher.
+        time.sleep(0.2)
+
         # Publish trigger request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, "message is not important")
 
@@ -1493,6 +1496,9 @@ class MachineMotion :
         mqttResponseThread = threading.Thread(target = mqttResponse)
         mqttResponseThread.daemon = True
         mqttResponseThread.start()
+
+        # Adding a delay to make sure MQTT simple function is launched before publish is made. Quick fix from bug on App. Launcher.
+        time.sleep(0.2)
 
         # Publish release request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_RELEASE_REQUEST, "message is not important")
@@ -1525,6 +1531,9 @@ class MachineMotion :
         mqttResponseThread = threading.Thread(target = mqttResponse)
         mqttResponseThread.daemon = True
         mqttResponseThread.start()
+
+        # Adding a delay to make sure MQTT simple function is launched before publish is made. Quick fix from bug on App. Launcher.
+        time.sleep(0.2)
 
         # Publish reset system request on MQTT
         self.myMqttClient.publish(MQTT.PATH.ESTOP_SYSTEMRESET_REQUEST, "message is not important")
