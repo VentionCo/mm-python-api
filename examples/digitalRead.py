@@ -1,5 +1,6 @@
 # System imports
 import sys
+import time
 # Custom imports
 sys.path.append("..")
 
@@ -7,6 +8,7 @@ from MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
+time.sleep(0.5)
 
 #Reads and Prints all input values on all connected digital IO Modules
 detectedIOModules = mm.detectIOModules()
