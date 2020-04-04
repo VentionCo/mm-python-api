@@ -11,7 +11,7 @@ print("--> Resetting system")
 mm.resetSystem()
 
 axes = [1,2,3]
-axis =3                                    #The axis that you'd like to move
+axis = 3                                    #The axis that you'd like to move
 homingSpeeds = [50,50,50]                        #The homing speeds to set for each axis
 
 mm.emitSpeed(100)
@@ -24,13 +24,11 @@ mm.waitForMotionCompletion()
 
 #Sets minimum and maximum allowable homing speeds for each axis
 minHomingSpeeds = [20, 20, 20]
-maxHomingSpeeds = [400, 400, 400]
+maxHomingSpeeds = [250, 250, 250]
 mm.configMinMaxHomingSpeed(axes,minHomingSpeeds, maxHomingSpeeds, UNITS_SPEED.mm_per_sec)
 
 #Sets homing speeds for all three axes. The selected homing speed must be within the range set by configMinMaxHomingSpeeds
 mm.configHomingSpeed(axes, homingSpeeds)
-mm.waitForMotionCompletion()
 
 #Homes the axis at the newly configured homing speed.
 mm.emitHome(axis)
-mm.waitForMotionCompletion()
