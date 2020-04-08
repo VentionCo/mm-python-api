@@ -1320,7 +1320,8 @@ class MachineMotion :
         foundIOModules = {}
         numIOModules = 0
 
-        for ioDeviceID in range(0,3):
+        # IO module possible addresses are 1, 2, 3
+        for ioDeviceID in range(1,4):
             if self.isIoExpanderAvailable(ioDeviceID):
                 foundIOModules["Digital IO Network Id " + str(ioDeviceID)] = ioDeviceID
                 numIOModules = numIOModules + 1
