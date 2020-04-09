@@ -85,7 +85,7 @@ class MECH_GAIN:
     ballscrew_10mm_turn             = 10
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
-    #indexer_deg_turn                = 36
+    indexer_v2_deg_turn             = 36
     roller_conveyor_mm_turn         = 157
     belt_conveyor_mm_turn           = 69.12
     rack_pinion_mm_turn             = 157.08
