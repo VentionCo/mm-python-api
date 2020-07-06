@@ -82,12 +82,13 @@ class MICRO_STEPS:
 class MECH_GAIN:
     timing_belt_150mm_turn          = 150
     legacy_timing_belt_200_mm_turn  = 200
+    enclosed_timing_belt_mm_turn    = 208
     ballscrew_10mm_turn             = 10
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
-    #indexer_deg_turn                = 36
+    indexer_v2_deg_turn             = 36
     roller_conveyor_mm_turn         = 157
-    belt_conveyor_mm_turn           = 69.12
+    belt_conveyor_mm_turn           = 73.563
     rack_pinion_mm_turn             = 157.08
 
 class STEPPER_MOTOR:
@@ -340,7 +341,7 @@ class MachineMotion :
 
         return
 
-    def setContinuousMove(self, axis, speed, accel = None) :
+    def setContinuousMove(self, axis, speed, accel = 100) :
 
         '''
         desc: Starts an axis using speed mode.
@@ -352,11 +353,17 @@ class MachineMotion :
                 desc: Speed to move the axis at in mm / sec
                 type: Number
             accel:
-                desc: Acceleration used to reach the desired speed in mm^2 / sec
+                desc: Acceleration used to reach the desired speed, in mm / sec^2
                 type: Number
 
         exampleCodePath: emitConveyorMove.py
         '''
+
+        # Verify argument type to avoid sending garbage in the GCODE
+        self._restrictInputValue("axis", axis, AXIS_NUMBER)
+        if not isinstance(speed, (int, long, float)) : raise Exception('Error in speed variable type')
+        if not isinstance(accel, (int, long, float)) : raise Exception('Error in accel variable type')
+
         # set motor to speed mode
         reply = self.myGCode.__emit__("V5 " + self.getAxisName(axis) + "2")
 
@@ -365,57 +372,41 @@ class MachineMotion :
             raise Exception('Error in gCode execution')
             return False
 
-        if accel is not None :
-            # Send speed command with accel
-            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " A" + str(accel / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
+        # Send speed command with accel
+        reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " A" + str(accel / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
 
-            if ( "echo" in reply and "ok" in reply ) : pass
-            else :
-                raise Exception('Error in gCode execution')
-                return False
-
+        if ( "echo" in reply and "ok" in reply ) : pass
         else :
-            # Send speed command
-            reply = self.myGCode.__emit__("V4 S" + str(speed / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
-
-            if ( "echo" in reply and "ok" in reply ) : pass
-            else :
-                raise Exception('Error in gCode execution')
-                return False
+            raise Exception('Error in gCode execution')
+            return False
 
         return
 
-    def stopContinuousMove(self, axis, accel = None) :
+    def stopContinuousMove(self, axis, accel = 100) :
         '''
-        desc: Starts an axis using speed mode.
+        desc: Stops an axis using speed mode.
         params:
             axis:
                 desc: Axis to move
                 type: Number
             accel:
-                desc: Acceleration used to reach speed = 0 in mm^2 / sec
+                desc: Acceleration used to reach a null speed, in mm / sec^2
                 type: Number
 
         exampleCodePath: emitConveyorMove.py
         '''
 
-        if accel is not None :
-            # Send speed command with accel
-            reply = self.myGCode.__emit__("V4 S0" + " A" + str(accel / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
+        # Verify argument type to avoid sending garbage in the GCODE
+        self._restrictInputValue("axis", axis, AXIS_NUMBER)
+        if not isinstance(accel, (int, long, float)) : raise Exception('Error in accel variable type')
 
-            if ( "echo" in reply and "ok" in reply ) : pass
-            else :
-                raise Exception('Error in gCode execution')
-                return False
+        # Send speed command with accel
+        reply = self.myGCode.__emit__("V4 S0" + " A" + str(accel / self.mech_gain[axis] * STEPPER_MOTOR.steps_per_turn * self.u_step[axis]) + " " + self.getAxisName(axis))
 
+        if ( "echo" in reply and "ok" in reply ) : pass
         else :
-            # Send speed command
-            reply = self.myGCode.__emit__("V4 S0 " + self.getAxisName(axis))
-
-            if ( "echo" in reply and "ok" in reply ) : pass
-            else :
-                raise Exception('Error in gCode execution')
-                return False
+            raise Exception('Error in gCode execution')
+            return False
 
         return
 
@@ -508,7 +499,7 @@ class MachineMotion :
             elif type is "asynchronous" :
                 return True
         else :
-            if speed is not None :
+            if speed is not None and accel is not None :
                 # set motor to speed mode
                 reply = self.myGCode.__emit__("V5 " + self.getAxisName(motor) + "2")
 
@@ -517,23 +508,13 @@ class MachineMotion :
                     raise Exception('Error in gCode execution')
                     return False
 
-                if accel is not None :
-                    # Send speed command
-                    reply = self.myGCode.__emit__("V4 S" + str(speed * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " A" + str(accel * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
+                # Send speed command
+                reply = self.myGCode.__emit__("V4 S" + str(speed * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " A" + str(accel * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
 
-                    if ( "echo" in reply and "ok" in reply ) : pass
-                    else :
-                        raise Exception('Error in gCode execution')
-                        return False
-
+                if ( "echo" in reply and "ok" in reply ) : pass
                 else :
-                    # Send speed command
-                    reply = self.myGCode.__emit__("V4 S" + str(speed * STEPPER_MOTOR.steps_per_turn * self.u_step[motor]) + " " + self.getAxisName(motor))
-
-                    if ( "echo" in reply and "ok" in reply ) : pass
-                    else :
-                        raise Exception('Error in gCode execution')
-                        return False
+                    raise Exception('Error in gCode execution')
+                    return False
 
             else :
                 return False
@@ -769,7 +750,7 @@ class MachineMotion :
         desc: Sets the global speed for all movement commands on all axes.
         params:
             speed:
-                desc: The global max speed in mm/min.
+                desc: The global max speed in mm/sec, or mm/min according to the units parameter.
                 type: Number
             units:
                 desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
@@ -1320,7 +1301,8 @@ class MachineMotion :
         foundIOModules = {}
         numIOModules = 0
 
-        for ioDeviceID in range(0,3):
+        # IO module possible addresses are 1, 2, 3
+        for ioDeviceID in range(1,4):
             if self.isIoExpanderAvailable(ioDeviceID):
                 foundIOModules["Digital IO Network Id " + str(ioDeviceID)] = ioDeviceID
                 numIOModules = numIOModules + 1

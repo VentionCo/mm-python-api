@@ -10,6 +10,7 @@ mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
 time.sleep(0.5)
 
+
 #Reads and Prints all input values on all connected digital IO Modules
 detectedIOModules = mm.detectIOModules()
 for IO_Name, IO_NetworkID in detectedIOModules.items():
