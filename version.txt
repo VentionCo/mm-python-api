@@ -1,2 +1,2 @@
-library = v3.0
-machine_motion = v1.14_hotfix_200326
+library = v3.1
+machine_motion = v1.15
