@@ -7,6 +7,9 @@
 # Import standard libraries
 import json, time, threading, sys
 
+sys.path.append("../../vention-control/sr_smart-drives/")
+import toolkit
+
 # Import package dependent libraries
 import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as MQTTsubscribe
@@ -272,16 +275,19 @@ class GCode:
 #
 class MachineMotion :
     # Class variables
-
+    
     validPorts   = ["AUX1", "AUX2", "AUX3"]
     valid_u_step = [1, 2, 4, 8, 16]
-
+    speed=0
+    acceleration=0
     class HomingSpeedOutOfBounds(Exception):
         pass
 
     # Class constructor
     def __init__(self, machineIp, gCodeCallback=None) :
-
+        toolkit.connect()
+        toolkit.addNodes("1")
+        toolkit.disablePDO("1")
         self.myConfiguration = {"machineIp": "notInitialized", "machineGateway": "notInitialized", "machineNetmask": "notInitialized"}
         self.myGCode = "notInitialized"
 
@@ -357,6 +363,11 @@ class MachineMotion :
 
         exampleCodePath: emitConveyorMove.py
         '''
+        if axis>3:
+            multiplier=1
+            toolkit.addNodes("4")
+            toolkit.setNodeSpeed("4",speed*multiplier)
+            return
         # set motor to speed mode
         reply = self.myGCode.__emit__("V5 " + self.getAxisName(axis) + "2")
 
@@ -755,6 +766,10 @@ class MachineMotion :
         note: If configAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If configAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
         exampleCodePath: emitHome.py
         '''
+        if axis>3: 
+            toolkit.addNodes("1")
+            toolkit.homing("1","home")
+            return
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         reply = self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
@@ -777,7 +792,9 @@ class MachineMotion :
                 type: String
         exampleCodePath: emitSpeed.py
         '''
-
+        #todo
+        # send speed to canopen 
+        self.speed=speed
         self._restrictInputValue("units", units, UNITS_SPEED)
 
         if units == UNITS_SPEED.mm_per_min:
@@ -806,7 +823,9 @@ class MachineMotion :
         exampleCodePath:  emitAcceleration.py
 
         '''
-
+        #todo
+        # send acceleration to canopen
+        self.acceleration=acceleration
         self._restrictInputValue("units", units, UNITS_ACCEL)
 
         if units == UNITS_ACCEL.mm_per_sec_sqr:
@@ -834,6 +853,10 @@ class MachineMotion :
         exampleCodePath: emitAbsoluteMove.py
 
         '''
+        if axis>3:
+            toolkit.addNodes("4")
+            toolkit.moveAbsolute("4",speed,position,acceleration,deceleration)
+            return 
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         # Set to absolute motion mode
@@ -865,7 +888,6 @@ class MachineMotion :
         exampleCodePath: emitCombinedAxesAbsoluteMove.py
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
-
         if (not isinstance(axes, list) or not isinstance(positions, list)):
             raise TypeError("Axes and Postions must be lists")
 
@@ -905,7 +927,12 @@ class MachineMotion :
                 type: Number
         exampleCodePath: emitRelativeMove.py
         '''
-
+        if axis>3:
+            position=distance
+            deceleration=self.acceleration
+            toolkit.addNodes("1")
+            toolkit.moveRelative("1",self.speed,position,self.acceleration,deceleration)
+            return 
         self._restrictInputValue("axis",axis, AXIS_NUMBER)
         self._restrictInputValue("direction", direction, DIRECTION)
 
@@ -945,7 +972,6 @@ class MachineMotion :
         exampleCodePath: emitCombinedAxesRelativeMove.py
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
-
         if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
             raise TypeError("Axes, Postions and Distances must be lists")
 
@@ -983,6 +1009,8 @@ class MachineMotion :
                 type: Number
         exampleCodePath: setPosition.py
         '''
+        if axis>3: # todo
+            return 
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         # Transmit move command
@@ -1024,7 +1052,8 @@ class MachineMotion :
         exampleCodePath: configAxisDirection.py
 
         '''
-
+        if axis>3: # todo
+            return 
         self._restrictInputValue("axis", axis, AXIS_NUMBER)
         self._restrictInputValue("direction", direction, DIRECTION)
 
@@ -1054,14 +1083,13 @@ class MachineMotion :
         returnValue: Returns false if the machine is currently executing a movement command.
         returnValueType: Boolean
         '''
-
+        
         #Sending gCode V0 command to
         reply = self.myGCode.__emit__("V0")
-
+        # and check 4th axis todo
         #Check if not error message
         if ( "echo" in reply and "ok" in reply ) :
-            if ("COMPLETED" in reply) : return True
-            else : return False
+            return "COMPLETED" in reply and toolkit.isMotionCompleted("1") and toolkit.isMotionCompleted("2") and toolkit.isMotionCompleted("3") and toolkit.isMotionCompleted("4")
         else : raise Exception('Error in gCode execution')
 
         return
@@ -1074,12 +1102,12 @@ class MachineMotion :
         '''
         #Sending gCode V0 command to
         reply = self.myGCode.__emit__("V0")
-
+        # and check 4th axis todo
         #Check if not error message
         if ( "echo" in reply and "ok" in reply ) :
 
             #Recursively calls the function until motion is completed
-            if ("COMPLETED" in reply) : return
+            if ("COMPLETED" in reply and toolkit.isMotionCompleted("1") and toolkit.isMotionCompleted("2") and toolkit.isMotionCompleted("3") and toolkit.isMotionCompleted("4")) : return
             else :
                 print( "Motion not completed : " + str(self.IP))
                 time.sleep(0.5)
@@ -1146,6 +1174,9 @@ class MachineMotion :
         exampleCodePath: configHomingSpeed.py
         note: Once set, the homing speed will apply to all programs, including MachineLogic applications.
         '''
+        if axes>3: # todo
+            toolkit.configHomingSpeed("1",speeds)# should be 4, 1 for testing
+            return 
 
         try:
             axes = list(axes)
@@ -1197,6 +1228,8 @@ class MachineMotion :
         exampleCodePath: configHomingSpeed.py
         note: This function can be used to set safe limits on homing speed. Because homing speed is configured only through software aPI, this safeguards against developers accidently modifying homing speed to unsafe levels.
         '''
+        if axes>3: # todo
+            return 
         gCodeCommand = "V1"
         for idx, axis in enumerate(axes):
 
@@ -1239,7 +1272,8 @@ class MachineMotion :
         exampleCodePath: configAxis.py
 
         '''
-
+        if axis>3: # todo
+            return 
         self._restrictInputValue("axis", axis,  AXIS_NUMBER)
         self._restrictInputValue("uStep", uStep, MICRO_STEPS)
 
@@ -1512,7 +1546,9 @@ class MachineMotion :
             return return_value
 
         return return_value
-
+    def disconnectCanOpen(self):
+        toolkit.disconnect()
+        print("Disconnected CanOpen")
     def resetSystem (self) :
 
         '''
