@@ -88,7 +88,7 @@ class MECH_GAIN:
     ballscrew_10mm_turn             = 10
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
-    #indexer_deg_turn                = 36
+    indexer_v2_deg_turn             = 36
     roller_conveyor_mm_turn         = 157
     belt_conveyor_mm_turn           = 69.12
     rack_pinion_mm_turn             = 157.08
@@ -1354,7 +1354,8 @@ class MachineMotion :
         foundIOModules = {}
         numIOModules = 0
 
-        for ioDeviceID in range(0,3):
+        # IO module possible addresses are 1, 2, 3
+        for ioDeviceID in range(1,4):
             if self.isIoExpanderAvailable(ioDeviceID):
                 foundIOModules["Digital IO Network Id " + str(ioDeviceID)] = ioDeviceID
                 numIOModules = numIOModules + 1
