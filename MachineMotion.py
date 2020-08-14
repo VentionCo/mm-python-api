@@ -1561,6 +1561,8 @@ class MachineMotion :
             safety_adapter_presence:
                 type: Boolean
                 desc: Is a yellow safety adapter plugged in between the brake cable and the AUX port.
+        exampleCodePath: controlBrakes.py
+        note: This function is compatible only with V1F and more recent MachineMotions.
         '''
 
         if ( not self.isIoExpanderIdValid(aux_port_number) ):
@@ -1582,6 +1584,8 @@ class MachineMotion :
             safety_adapter_presence:
                 type: Boolean
                 desc: Is a yellow safety adapter plugged in between the brake cable and the AUX port.
+        exampleCodePath: controlBrakes.py
+        note: This function is compatible only with V1F and more recent MachineMotions.
         '''
 
         if ( not self.isIoExpanderIdValid(aux_port_number) ):
@@ -1607,6 +1611,7 @@ class MachineMotion :
         returnValue: The current state of the brake, as determined according to the current voltage of the AUX port (0V or 24V). The returned String can be "locked", "unlocked", or "unknown" (for MachineMotions prior to the V1F hardware version), as defined by the BRAKE_STATES class.
         returnValueType: String
         exampleCodePath: controlBrakes.py
+        note: This function is compatible only with V1F and more recent MachineMotions.
         '''
 
         if ( not self.isIoExpanderIdValid(aux_port_number) ):
