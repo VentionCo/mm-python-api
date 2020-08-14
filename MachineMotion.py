@@ -103,6 +103,11 @@ class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
 
+class BRAKE_STATES:
+    locked = "locked"
+    unlocked = "unlocked"
+    unknown = "unknown"
+
 HARDWARE_MIN_HOMING_FEEDRATE =251
 HARDWARE_MAX_HOMING_FEEDRATE= 15999
 
@@ -116,6 +121,9 @@ class MQTT :
         ESTOP_RELEASE_RESPONSE = ESTOP + "/release/response"
         ESTOP_SYSTEMRESET_REQUEST = ESTOP + "/systemreset/request"
         ESTOP_SYSTEMRESET_RESPONSE = ESTOP + "/systemreset/response"
+
+        AUX_PORT_POWER = "aux_power"
+        AUX_PORT_SAFETY = "aux_safety_power"
 
     TIMEOUT = 10.0 # Number of seconds while we wait for MQTT response
 
@@ -274,8 +282,8 @@ class GCode:
 class MachineMotion :
     # Class variables
 
-    validPorts   = ["AUX1", "AUX2", "AUX3"]
-    valid_u_step = [1, 2, 4, 8, 16]
+    validPorts   = ["AUX1", "AUX2", "AUX3"] # TODO : Unused variable
+    valid_u_step = [1, 2, 4, 8, 16]         # TODO : Unused variable
 
     class HomingSpeedOutOfBounds(Exception):
         pass
@@ -290,6 +298,8 @@ class MachineMotion :
         self.myEncoderRealtimePositions    = [ 0, 0, 0 ]
         self.myEncoderStablePositions    = [ 0, 0, 0 ]
         self.digitalInputs = {}
+        self.brakeStatus_control = [ None, None, None ]
+        self.brakeStatus_safety = [ None, None, None ]
 
         self.myConfiguration['machineIp'] = machineIp
         self.IP = machineIp
@@ -1363,7 +1373,7 @@ class MachineMotion :
         if ( not self.isIoExpanderOutputIdValid( deviceNetworkId, pin ) ):
             logging.warning("DEBUG: unexpected digitalOutput parameters: device= " + str(deviceNetworkId) + " pin= " + str(pin))
             return
-        resp = self.myMqttClient.publish('devices/io-expander/' + str(deviceNetworkId) + '/digital-output/' +  str(pin), '1' if value else '0')
+        resp = self.myMqttClient.publish('devices/io-expander/' + str(deviceNetworkId) + '/digital-output/' +  str(pin), '1' if value else '0', retain=True)
 
         return
 
@@ -1408,7 +1418,7 @@ class MachineMotion :
         if readingType == ENCODER_TYPE.real_time:
             return self.myEncoderRealtimePositions[encoder]
         elif readingType == ENCODER_TYPE.stable:
-            return self.myEncoderStablePositions[encoder]
+            return self.myEncoderStablePositions[encoder] # TODO : The stable mode does NOT seem implemented !
 
         return
 
@@ -1496,7 +1506,6 @@ class MachineMotion :
         return return_value
 
     def resetSystem (self) :
-
         '''
         desc: Resets the system after an eStop event
         '''
@@ -1542,6 +1551,76 @@ class MachineMotion :
         self.eStopCallback = callback_function
         return
 
+    def lockBrake (self, aux_port_number, safety_adapter_presence = False) :
+        '''
+        desc: Lock the brake, by shutting off the power of the designated AUX port of the MachineMotion (0V).
+        params:
+            aux_port_number:
+                type: Integer
+                desc: The number of the AUX port the brake is connected to.
+            safety_adapter_presence:
+                type: Boolean
+                desc: Is a yellow safety adapter plugged in between the brake cable and the AUX port.
+        '''
+
+        if ( not self.isIoExpanderIdValid(aux_port_number) ):
+            logging.warning("DEBUG: unexpected lockBrake parameters: aux_port_number= " + str(aux_port_number))
+            raise Exception('unexpected lockBrake parameters: aux_port_number= ' + str(aux_port_number))
+            return
+        topic = MQTT.PATH.AUX_PORT_SAFETY if safety_adapter_presence else MQTT.PATH.AUX_PORT_POWER
+        self.myMqttClient.publish(topic + '/' + str(aux_port_number) + '/request', '0V')
+
+        return
+
+    def unlockBrake (self, aux_port_number, safety_adapter_presence = False) :
+        '''
+        desc: Unlock the brake, by powering on the designated AUX port of the MachineMotion (24V).
+        params:
+            aux_port_number:
+                type: Integer
+                desc: The number of the AUX port the brake is connected to.
+            safety_adapter_presence:
+                type: Boolean
+                desc: Is a yellow safety adapter plugged in between the brake cable and the AUX port.
+        '''
+
+        if ( not self.isIoExpanderIdValid(aux_port_number) ):
+            logging.warning("DEBUG: unexpected unlockBrake parameters: aux_port_number= " + str(aux_port_number))
+            raise Exception('unexpected unlockBrake parameters: aux_port_number= ' + str(aux_port_number))
+            return
+        topic = MQTT.PATH.AUX_PORT_SAFETY if safety_adapter_presence else MQTT.PATH.AUX_PORT_POWER
+        self.myMqttClient.publish(topic + '/' + str(aux_port_number) + '/request', '24V')
+
+        return
+
+    def getBrakeState (self, aux_port_number, safety_adapter_presence = False) :
+        '''
+        desc: Read the current state of the brake connected to a given AUX port of the MachineMotion.
+        params:
+            aux_port_number:
+                type: Integer
+                desc: The number of the AUX port the brake is connected to.
+            safety_adapter_presence:
+                type: Boolean
+                desc: Is a yellow safety adapter plugged in between the brake cable and the AUX port.
+
+        returnValue: The current state of the brake, as determined according to the current voltage of the AUX port (0V or 24V). The returned String can be "locked", "unlocked", or "unknown" (for MachineMotions prior to the V1F hardware version), as defined by the BRAKE_STATES class.
+        returnValueType: String
+        exampleCodePath: controlBrakes.py
+        '''
+
+        if ( not self.isIoExpanderIdValid(aux_port_number) ):
+            logging.warning("DEBUG: unexpected getBrakeStatus parameters: aux_port_number= " + str(aux_port_number))
+            raise Exception('unexpected getBrakeStatus parameters: aux_port_number= ' + str(aux_port_number))
+            return
+
+        voltage = self.brakeStatus_safety[aux_port_number-1] if safety_adapter_presence else self.brakeStatus_control[aux_port_number-1]
+
+        if voltage == '0V'      : return BRAKE_STATES.locked
+        elif voltage == '24V'   : return BRAKE_STATES.unlocked
+        else                    : return BRAKE_STATES.unknown
+
+
     # ------------------------------------------------------------------------
     # Register to the MQTT broker on each connection.
     #
@@ -1555,6 +1634,8 @@ class MachineMotion :
             self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
             self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
             self.myMqttClient.subscribe(MQTT.PATH.ESTOP_STATUS)
+            self.myMqttClient.subscribe(MQTT.PATH.AUX_PORT_SAFETY + '/+/status')
+            self.myMqttClient.subscribe(MQTT.PATH.AUX_PORT_POWER + '/+/status')
 
         return
 
@@ -1568,10 +1649,8 @@ class MachineMotion :
         topicParts = msg.topic.split('/')
         deviceType = topicParts[1]
 
-        if len(topicParts) > 2 :
-            device = int( topicParts[2] )
-
         if (deviceType == 'io-expander'):
+            device = int( topicParts[2] )
             if (topicParts[3] == 'available'):
                 availability = json.loads(msg.payload)
                 if (availability):
@@ -1590,13 +1669,26 @@ class MachineMotion :
                 self.digitalInputs[device] = {}
             self.digitalInputs[device][pin]= value
             return
-        if (deviceType == 'encoder'):
+        elif (deviceType == 'encoder'):
+            device = int( topicParts[2] )
             position = float( msg.payload )
             self.myEncoderRealtimePositions[device] = position
+            return
 
-        if (topicParts[0] == MQTT.PATH.ESTOP) :
+        elif (topicParts[0] == MQTT.PATH.ESTOP) :
             if (topicParts[1] == "status") :
                 self.eStopEvent(json.loads(msg.payload))
+            return
+
+        elif (topicParts[0] == MQTT.PATH.AUX_PORT_POWER) :
+            if (topicParts[2] == "status") :
+                aux_port = int( topicParts[1] )
+                self.brakeStatus_control[aux_port-1] = msg.payload
+
+        elif (topicParts[0] == MQTT.PATH.AUX_PORT_SAFETY) :
+            if (topicParts[2] == "status") :
+                aux_port = int( topicParts[1] )
+                self.brakeStatus_safety[aux_port-1] = msg.payload
 
         return
 
