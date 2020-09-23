@@ -1,14 +1,23 @@
-#!/usr/bin/python
-from _MachineMotion import *
+import sys
+sys.path.append("..")
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
 
-# Homing axis one
-machine_motion_example.emitHome(1)
-machine_motion_example.waitForMotionCompletion()
+#When starting a program, one must remove the software stop before moving
+print("--> Removing software stop")
+mm.releaseEstop()
+print("--> Resetting system")
+mm.resetSystem()
 
-print ( "--> Axis 1 is now at home position." )
+axis = AXIS_NUMBER.DRIVE1
+
+mm.configAxis(axis, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
+mm.emitHome(axis)
+print ("Application Message: Axis "+ str(axis) +" is going home")
+mm.waitForMotionCompletion()
+print("Application Message: Axis "+ str(axis) +" is at home")

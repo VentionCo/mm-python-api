@@ -1,22 +1,36 @@
-#!/usr/bin/python
-from _MachineMotion import *
+import sys
+sys.path.append("..")
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback = templateCallback)
 
-# Configuring the travel speed to 10 000 mm / min
-machine_motion_example.emitSpeed(10000)
+#When starting a program, one must remove the software stop before moving
+print("--> Removing software stop")
+mm.releaseEstop()
+print("--> Resetting system")
+mm.resetSystem()
 
-# Configuring the travel speed to 1000 mm / second^2
-machine_motion_example.emitAcceleration(1000)
+axis = 1                                       #The axis that you'd like to move
+speed = 400                                    #The max speed you'd like to move at
+acceleration = 500                             #The constant acceleration and decceleration value for the move
+position = 100                                 #The absolute position you'd like to move to
+mechGain = MECH_GAIN.timing_belt_150mm_turn    #The mechanical gain of the actuator on the axis
+mm.configAxis(axis, MICRO_STEPS.ustep_8, mechGain)
 
-# Homing axis one
-machine_motion_example.emitHome(1)
+# Home Axis before absolute move
+mm.emitHome(axis)
+print("Axis " + str(axis) + " is going home.")
+mm.waitForMotionCompletion()
+print("Axis " + str(axis) + " homed.")
 
-# Move the axis one to position 100 mm
-machine_motion_example.emitAbsoluteMove(1, 100)
-
-print ( "--> Example completed." )
+# Configure movement speed, acceleration and then move
+mm.emitSpeed(speed)
+mm.emitAcceleration(acceleration)
+mm.emitAbsoluteMove(axis, position)
+print("Axis " + str(axis) + " is moving towards position " + str(position) + "mm")
+mm.waitForMotionCompletion()
+print("Axis " + str(axis) + " is at position " + str(position) + "mm")

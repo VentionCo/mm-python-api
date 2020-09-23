@@ -1,2 +1,5 @@
-/examples/_MachineMotion.pyc
+#Ignore python compiled files
+*.pyc
+
+/examples/MachineMotion.pyc
 /examples/__pycache__

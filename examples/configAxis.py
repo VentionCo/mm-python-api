@@ -1,13 +1,12 @@
-#!/usr/bin/python
-from _MachineMotion import *
+import sys
+sys.path.append("..")
+from MachineMotion import *
 
-# Define a callback to process controller gCode responses (if desired)
-def templateCallback(data):
-   print ( "Controller gCode responses " + data )
+mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)
 
-machine_motion_example = MachineMotion(templateCallback, DEFAULT_IP_ADDRESS.usb_windows)
-
-# Configure the axis number one, 8 uSteps and 150 mm / turn for a timing belt
-machine_motion_example = machine_motion_example.configAxis(1, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
-
-print ( "--> Controller axis 1 configured" )
+# Configure the axis number 1, 8 uSteps and 150 mm / turn for a timing belt
+axis = AXIS_NUMBER.DRIVE1
+uStep = MICRO_STEPS.ustep_8
+mechGain = MECH_GAIN.timing_belt_150mm_turn
+mm.configAxis(axis, uStep, mechGain)
+print("Axis " + str(axis) + " configured with " + str(uStep) + " microstepping and " + str(mechGain) + "mm/turn mechanical gain")

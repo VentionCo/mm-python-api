@@ -30,9 +30,9 @@ The Python SDK includes the following core features:
 
 ## Compatibility
 
- The Python API V2 requires MachineMotion version V1.12 or newer. 
+ The Python API V3.0 requires MachineMotion version V1.14 or newer. 
  
- Please use [mm-python-api V1.6.7](https://github.com/VentionCo/mm-python-api/releases/tag/v1.6.7) for prior version of MachineMotion software.
+ Please use Python API v2.x for prior version of MachineMotion software.
 
 
 ## Host Connection Example
@@ -122,7 +122,7 @@ Creates a MachineMotion instance and establishes the TCP/IP communication. This 
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses
 def templateCallback(data):
@@ -170,7 +170,7 @@ Configures the IP address of the controller Ethernet interface.
 ####  Example 1
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -197,7 +197,7 @@ Controller gCode responses ok
 #### Example 2
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -240,7 +240,7 @@ Configure the axis' mechanical gain and micro-step settings to ensure accurate m
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -283,7 +283,7 @@ Controller gCode responses ok
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -312,7 +312,7 @@ Retrieve a key-value pair that was saved on the controller.
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -355,7 +355,7 @@ Blocking function that waits for the MachineMotion controller to ackowledge the 
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -398,7 +398,7 @@ Blocking function that prevents program execution until the last motion has been
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -452,7 +452,7 @@ Immediately stops motion on all axes.
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -491,7 +491,7 @@ Moves all carriages to their home location sequentially, axis 1 to axis 3.
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -522,7 +522,7 @@ Moves the carriage of the corresponding axis to its home location.
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -576,7 +576,7 @@ Configures the travel speed. Travel speed applies to combined axis moves and sin
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -605,7 +605,7 @@ Configures travel acceleration. Travel acceleration applies to combined axis mov
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -651,7 +651,7 @@ Configures the travel acceleration. Travel acceleration applies to combined axis
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -721,7 +721,7 @@ Moves the gantry to a position relative to its current location.
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -791,7 +791,7 @@ Sends a direct G-Code string command. See the G-Code Commands section for more d
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)
 def templateCallback(data):
@@ -893,7 +893,7 @@ Determines if the io-expander with the given id is available
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
@@ -918,7 +918,7 @@ Read the digital input from the given pin in put on the IO Expander
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
@@ -942,7 +942,7 @@ Modify the digital output of the given pin a the specified device.
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
@@ -967,7 +967,7 @@ Returns the realtime position of the given encoder.
 #### Example
 
 ```python
-from _MachineMotion import *
+from MachineMotion import *
 
 def templateCallback(data):
    print ( "Controller gCode responses " + data )
