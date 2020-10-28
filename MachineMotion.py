@@ -102,7 +102,7 @@ class ENCODER_TYPE:
     real_time = "realtime-position"
     stable = "stable-position"
 
-HARDWARE_MIN_HOMING_FEEDRATE =251
+HARDWARE_MIN_HOMING_FEEDRATE =10
 HARDWARE_MAX_HOMING_FEEDRATE= 15999
 
 class MQTT :
