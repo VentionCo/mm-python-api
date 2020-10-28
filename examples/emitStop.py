@@ -1,5 +1,5 @@
-import sys
-sys.path.append("..")
+import os, sys
+sys.path.append(os.path.abspath(__file__ + "/../../"))
 from MachineMotion import *
 
 import time

@@ -1,5 +1,5 @@
 import sys
-sys.path.append("..")
+sys.path.append(os.path.abspath(__file__ + "/../../"))
 from MachineMotion import *
 
 # Define a callback to process controller gCode responses (if desired)

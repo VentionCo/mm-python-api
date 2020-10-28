@@ -1,5 +1,5 @@
-import sys
-sys.path.append("..")
+import os, sys
+sys.path.append(os.path.abspath(__file__ + "/../../"))
 from MachineMotion import *
 
 mm = MachineMotion(DEFAULT_IP_ADDRESS.usb_windows)

@@ -288,8 +288,11 @@ class MachineMotion :
     class HomingSpeedOutOfBounds(Exception):
         pass
 
+    # Default callback
+    def emptyCallback(data) : pass
+    
     # Class constructor
-    def __init__(self, machineIp, gCodeCallback=None) :
+    def __init__(self, machineIp, gCodeCallback=emptyCallback) :
 
         self.myConfiguration = {"machineIp": "notInitialized", "machineGateway": "notInitialized", "machineNetmask": "notInitialized"}
         self.myGCode = "notInitialized"
@@ -313,11 +316,6 @@ class MachineMotion :
         self.myMqttClient.connect(machineIp)
         self.myMqttClient.loop_start()
 
-        # Default callback
-        def emptyCallBack(data) : pass
-
-        #Set callback to default until user initialize it
-        self.eStopCallback = emptyCallBack
 
         # Initializing axis parameters
         self.steps_mm = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
@@ -325,10 +323,10 @@ class MachineMotion :
         self.mech_gain = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
         self.direction = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized"]
 
-        if(gCodeCallback):
-            self.__establishConnection(False, gCodeCallback)
-        else:
-            self.__establishConnection(False, emptyCallBack)
+
+        self.__establishConnection(False, gCodeCallback)
+        
+        self._updateStepsPerMMAndDirection()
 
         return
 
@@ -351,6 +349,19 @@ class MachineMotion :
 
         return
 
+   
+    def _updateStepsPerMMAndDirection(self):
+        steps_mm = ["Axis 0 does not exist", None, None, None]
+        direction = ["Axis 0 does not exist", None, None, None]
+        reply = self.myGCode.__emit__("M503")
+        gainResponse = reply.split("\n")[1]                                     #get gain values on second line of reply
+        for idx, gain in enumerate(gainResponse.split(" ")[3:6]):
+            steps_mm[idx+1] = float(gain[1:])
+            direction[idx+1] = "negative" if "-" in gain[1:] else "positive"
+        self.steps_mm = steps_mm
+        self.direction = direction
+    
+    
     def setContinuousMove(self, axis, speed, accel = 100) :
 
         '''
@@ -623,88 +634,38 @@ class MachineMotion :
         returnValueType: Dictionary
         exampleCodePath: getEndStopState.py
         '''
-
-        states = {
-            'x_min' : None,
-            'x_max' : None,
-            'y_min' : None,
-            'y_max' : None,
-            'z_min' : None,
-            'z_max' : None,
+        #Initialize return variable
+        result = {
+            1:{"home":None, "end":None},
+            2:{"home":None, "end":None},
+            3:{"home":None, "end":None}
         }
+        
+        #Get the end stop sensor states and store them in statesDict
+        reply =self.myGCode.__emit__("M119")
+        states = reply.replace(" ","").split("\n")[1:-1]                        #remove whitespace and parse into list
+        statesDict = {line.split(":")[0]:line.split(":")[1] for line in states} #turn list into dictionary
+        
+        #Now assign to result based on whether the axis is reversed or not
+        reply = self.myGCode.__emit__("M503")
+        gainResponse = reply.split("\n")[1]                                     #get gain values on second line of reply
+        drive1Gain, drive2Gain, drive3Gain = gainResponse.split(" ")[3:6]       #assign to variables
+            
+        if "-" in drive1Gain: 
+            result[1]["home"] = statesDict["x_max"]; result[1]["end"] = statesDict["x_min"]
+        else:
+            result[1]["home"] = statesDict["x_min"]; result[1]["end"] = statesDict["x_max"]
+        if "-" in drive2Gain: 
+            result[2]["home"] = statesDict["y_max"]; result[2]["end"] = statesDict["y_min"]
+        else:
+            result[2]["home"] = statesDict["y_min"]; result[2]["end"] = statesDict["y_max"]
+        if "-" in drive3Gain: 
+            result[3]["home"] = statesDict["z_max"]; result[3]["end"] = statesDict["z_min"]
+        else:
+            result[3]["home"] = statesDict["z_min"]; result[3]["end"] = statesDict["z_max"]
 
-        def trimUntil(S, key) :
-            return S[S.find(key) + len(key) :]
-
-        reply = self.myGCode.__emit__("M119")
-
-        if ( "echo" in reply and "ok" in reply ) :
-            #Remove first line (echo line)
-            reply = trimUntil(reply, "\n")
-
-            if "x_min" in reply :
-                keyB = "x_min: "
-                keyE = " \n"
-                states['x_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-                #Remove x_min line
-                reply = trimUntil(reply, "\n")
-
-            else : raise Exception('Error in gCode')
-
-            if "x_max" in reply :
-                keyB = "x_max: "
-                keyE = " \n"
-                states['x_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-                #Remove x_max line
-                reply = trimUntil(reply, "\n")
-
-            else : raise Exception('Error in gCode')
-
-            if "y_min" in reply :
-                keyB = "y_min: "
-                keyE = " \n"
-                states['y_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-                #Remove y_min line
-                reply = trimUntil(reply, "\n")
-
-            else : raise Exception('Error in gCode')
-
-            if "y_max" in reply :
-                keyB = "y_max: "
-                keyE = " \n"
-                states['y_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-                #Remove y_max line
-                reply = trimUntil(reply, "\n")
-
-            else : raise Exception('Error in gCode')
-
-            if "z_min" in reply :
-                keyB = "z_min: "
-                keyE = " \n"
-                states['z_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-                #Remove z_min line
-                reply = trimUntil(reply, "\n")
-
-            else : raise Exception('Error in gCode')
-
-            if "z_max" in reply :
-                keyB = "z_max: "
-                keyE = " \n"
-                states['z_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-                #Remove z_max line
-                reply = trimUntil(reply, "\n")
-
-            else : raise Exception('Error in gCode')
-
-        else : raise Exception('Error in gCode execution')
-
-        return states
+        return result
+    
 
     def emitStop(self):
         '''
