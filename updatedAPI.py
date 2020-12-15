@@ -8,6 +8,12 @@
 import json, time, threading, sys
 
 # Import package dependent libraries
+# from pathlib import Path
+#from socketIO_client import SocketIO, BaseNamespace
+#import paho.mqtt.client as mqtt
+
+# Import package dependent libraries
+
 import paho.mqtt.client as mqtt
 import paho.mqtt.subscribe as MQTTsubscribe
 
@@ -1074,7 +1080,7 @@ class MachineMotion :
             if ("COMPLETED" in reply) : return
             else :
                 print( "Motion not completed : " + str(self.IP))
-                time.sleep(0.5)
+                time.sleep(0.05) #0.5 CUSTOM UPDATED 
                 return self.waitForMotionCompletion()
 
         else : raise Exception('Error in gCode execution')

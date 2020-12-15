@@ -10,7 +10,9 @@ import time
 from MachineMotion import *
 
 # Create MachineMotion instance
-mm = MachineMotion("192.168.7.2", None)
+# mm = MachineMotion("192.168.7.2", None)
+mm = MachineMotion("127.0.0.1", None)
+
 
 #When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")
