@@ -369,11 +369,6 @@ class MachineMotion :
         exampleCodePath: emitConveyorMove.py
         '''
 
-        # Verify argument type to avoid sending garbage in the GCODE
-        self._restrictInputValue("axis", axis, AXIS_NUMBER)
-        if not isinstance(speed, (int, long, float)) : raise Exception('Error in speed variable type')
-        if not isinstance(accel, (int, long, float)) : raise Exception('Error in accel variable type')
-
         # set motor to speed mode
         reply = self.myGCode.__emit__("V5 " + self.getAxisName(axis) + "2")
 
@@ -406,8 +401,7 @@ class MachineMotion :
         exampleCodePath: emitConveyorMove.py
         '''
 
-        # Verify argument type to avoid sending garbage in the GCODE
-        self._restrictInputValue("axis", axis, AXIS_NUMBER)
+
         if not isinstance(accel, (int, long, float)) : raise Exception('Error in accel variable type')
 
         # Send speed command with accel
@@ -746,7 +740,6 @@ class MachineMotion :
         note: If configAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If configAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
         exampleCodePath: emitHome.py
         '''
-        self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         reply = self.myGCode.__emit__("G28 " + self.myGCode.__getTrueAxis__(axis))
 
@@ -769,7 +762,6 @@ class MachineMotion :
         exampleCodePath: emitSpeed.py
         '''
 
-        self._restrictInputValue("units", units, UNITS_SPEED)
 
         if units == UNITS_SPEED.mm_per_min:
             speed_mm_per_min = speed
@@ -798,7 +790,6 @@ class MachineMotion :
 
         '''
 
-        self._restrictInputValue("units", units, UNITS_ACCEL)
 
         if units == UNITS_ACCEL.mm_per_sec_sqr:
             accel_mm_per_sec_sqr = acceleration
@@ -825,7 +816,6 @@ class MachineMotion :
         exampleCodePath: emitAbsoluteMove.py
 
         '''
-        self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         # Set to absolute motion mode
         reply = self.myGCode.__emit__("G90")
@@ -860,8 +850,6 @@ class MachineMotion :
         if (not isinstance(axes, list) or not isinstance(positions, list)):
             raise TypeError("Axes and Postions must be lists")
 
-        for axis in axes:
-            self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         # Set to absolute motion mode
         reply = self.myGCode.__emit__("G90")
@@ -897,8 +885,6 @@ class MachineMotion :
         exampleCodePath: emitRelativeMove.py
         '''
 
-        self._restrictInputValue("axis",axis, AXIS_NUMBER)
-        self._restrictInputValue("direction", direction, DIRECTION)
 
         # Set to relative motion mode
         reply = self.myGCode.__emit__("G91")
@@ -974,7 +960,6 @@ class MachineMotion :
                 type: Number
         exampleCodePath: setPosition.py
         '''
-        self._restrictInputValue("axis", axis, AXIS_NUMBER)
 
         # Transmit move command
         reply = self.myGCode.__emit__("G92 " + self.myGCode.__getTrueAxis__(axis) + str(position))
@@ -1016,8 +1001,6 @@ class MachineMotion :
 
         '''
 
-        self._restrictInputValue("axis", axis, AXIS_NUMBER)
-        self._restrictInputValue("direction", direction, DIRECTION)
 
         self.direction[axis] = direction
 
@@ -1232,9 +1215,6 @@ class MachineMotion :
 
         '''
 
-        self._restrictInputValue("axis", axis,  AXIS_NUMBER)
-        self._restrictInputValue("uStep", uStep, MICRO_STEPS)
-
         self.u_step[axis] = float(uStep)
         self.mech_gain[axis] = float(mechGain)
 
@@ -1410,8 +1390,6 @@ class MachineMotion :
         exampleCodePath: readEncoder.py
         note: The encoder position returned by this function may be delayed by up to 250 ms due to internal propogation delays.
         '''
-        self._restrictInputValue("readingType", readingType, ENCODER_TYPE)
-
         if (not self.isEncoderIdValid(encoder)):
             print ( "DEBUG: unexpected encoder identifier: encoderId= " + str(encoder) )
             return
