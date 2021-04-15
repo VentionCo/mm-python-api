@@ -1047,7 +1047,6 @@ class MachineMotion :
 
         '''
         #Sending gCode V0 command to
-        print("here")
         reply = self.myGCode.__emit__("V0")
 
         #Check if not error message
