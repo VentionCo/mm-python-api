@@ -1,2 +1,2 @@
-library = v3.2
-machine_motion = v1.16
+library = v4.0
+machine_motion = v2.0
