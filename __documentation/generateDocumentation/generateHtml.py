@@ -55,12 +55,12 @@ class MyFunction:
         self.exampleCodePath =self._get_docstring_param('exampleCodePath')
         if self.exampleCodePath != None:
             V1_exampleCodeFullPath = os.path.join(path_to_mm_python_api, "examples", "MachineMotionV1", self.exampleCodePath)
-            self.V1_exampleCodeExists = True
             self.V1_exampleCodeHtml = self.getExampleCode(V1_exampleCodeFullPath)
+            self.V1_exampleCodeExists = (self.V1_exampleCodeHtml is not None) 
         
             V2_exampleCodeFullPath = os.path.join(path_to_mm_python_api,"examples", "MachineMotionV2", self.exampleCodePath)
-            self.V2_exampleCodeExists = True
             self.V2_exampleCodeHtml = self.getExampleCode(V2_exampleCodeFullPath)
+            self.V2_exampleCodeExists = (self.V2_exampleCodeHtml is not None)
         else:
             self.exampleCodeExists = False
 
@@ -119,6 +119,7 @@ class MyFunction:
         except IOError:
             print("APPLICATION ERROR: " + self.name + " has an incorrectly formatted Example code path")
             print("\t\t Could not locate path:\t" + exampleCodePath)
+            return None
 
 
     def getSourceCode(self):
