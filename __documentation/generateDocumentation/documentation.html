@@ -70,7 +70,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v1. ###</span>
 
@@ -122,7 +122,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v2. ###</span>
 
@@ -173,7 +173,7 @@
                 <h3> 
                     <span class = "funcName"> <b>configAxis</b> </span>
                         (<span class="func funcParamHeading">
-                                axis, mechGain, uStep
+                                axis,uStep,mechGain
                             </span>)
                 </h3>
             </div>
@@ -189,6 +189,19 @@
 
 
         <h4> Parameters </h4>
+                <div class="indent1">
+                    <span class = "funcParam"><b>axis</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        The axis to configure.
+                    </span>
+                </div>
                 <div class="indent1">
                     <span class = "funcParam"><b>uStep</b></span>
                     <span style="requiredOptional" class ="funcParamType">
@@ -213,19 +226,6 @@
                     -
                     <span class = "funcText">          
                         The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
-                    </span>
-                </div>
-                <div class="indent1">
-                    <span class = "funcParam"><b>axis</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>Number</code></span>
-                    -
-                    <span class = "funcText">          
-                        The axis to configure.
                     </span>
                 </div>
 
@@ -270,7 +270,7 @@
             <div id = "configAxisv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures an actuator for a MachineMotion v1. ###</span>
 
@@ -306,7 +306,7 @@
                 <h3> 
                     <span class = "funcName"> <b>configAxisDirection</b> </span>
                         (<span class="func funcParamHeading">
-                                axis, direction
+                                axis,direction
                             </span>)
                 </h3>
             </div>
@@ -323,19 +323,6 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
-                    <span class = "funcParam"><b>direction</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>String</code></span>
-                    -
-                    <span class = "funcText">          
-                        A string from the DIRECTION class. Either 'DIRECTION.NORMAL' or 'DIRECTION.REVERSE'. Normal direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B.
-                    </span>
-                </div>
-                <div class="indent1">
                     <span class = "funcParam"><b>axis</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -346,6 +333,19 @@
                     -
                     <span class = "funcText">          
                         The specified axis.
+                    </span>
+                </div>
+                <div class="indent1">
+                    <span class = "funcParam"><b>direction</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>String</code></span>
+                    -
+                    <span class = "funcText">          
+                        A string from the DIRECTION class. Either 'DIRECTION.NORMAL' or 'DIRECTION.REVERSE'. Normal direction means the axis will home towards end stop sensor A and reverse will make the axis home towards end stop B.
                     </span>
                 </div>
 
@@ -395,7 +395,7 @@
             <div id = "configAxisDirectionv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures actuator direction for MachineMotion v1. ###</span>
 
@@ -445,7 +445,7 @@
                 <h3> 
                     <span class = "funcName"> <b>configHomingSpeed</b> </span>
                         (<span class="func funcParamHeading">
-                                speeds, axes, units
+                                axes,speeds,units
                             </span>)
                 </h3>
             </div>
@@ -461,19 +461,6 @@
 
 
         <h4> Parameters </h4>
-                <div class="indent1">
-                    <span class = "funcParam"><b>units</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Optional. Default = UNITS_SPEED.mm_per_sec 
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>String</code></span>
-                    -
-                    <span class = "funcText">          
-                        Units for speed. Can be switched to UNITS_SPEED.mm_per_min
-                    </span>
-                </div>
                 <div class="indent1">
                     <span class = "funcParam"><b>axes</b></span>
                     <span style="requiredOptional" class ="funcParamType">
@@ -498,6 +485,19 @@
                     -
                     <span class = "funcText">          
                         A list of homing speeds to set for each axis. ex - [50, 50, 100]
+                    </span>
+                </div>
+                <div class="indent1">
+                    <span class = "funcParam"><b>units</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Optional. Default = UNITS_SPEED.mm_per_sec 
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>String</code></span>
+                    -
+                    <span class = "funcText">          
+                        Units for speed. Can be switched to UNITS_SPEED.mm_per_min
                     </span>
                 </div>
 
@@ -560,7 +560,7 @@
             <div id = "configHomingSpeedv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures homing speed for MachineMotion v1. ###</span>
 
@@ -608,7 +608,7 @@
             <div id = "configHomingSpeedv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures homing speed for MachineMotion v2. ###</span>
 
@@ -663,7 +663,7 @@
                 <h3> 
                     <span class = "funcName"> <b>configServo</b> </span>
                         (<span class="func funcParamHeading">
-                                drive, motorCurrent, direction, tuningProfile, mechGain
+                                drive,mechGain,direction,motorCurrent,tuningProfile
                             </span>)
                 </h3>
             </div>
@@ -680,6 +680,19 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
+                    <span class = "funcParam"><b>drive</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        The drive to configure.
+                    </span>
+                </div>
+                <div class="indent1">
                     <span class = "funcParam"><b>mechGain</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -690,19 +703,6 @@
                     -
                     <span class = "funcText">          
                         The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
-                    </span>
-                </div>
-                <div class="indent1">
-                    <span class = "funcParam"><b>tuningProfile</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>String</code></span>
-                    -
-                    <span class = "funcText">          
-                        The tuning profile of the smartDrive.
                     </span>
                 </div>
                 <div class="indent1">
@@ -732,16 +732,16 @@
                     </span>
                 </div>
                 <div class="indent1">
-                    <span class = "funcParam"><b>drive</b></span>
+                    <span class = "funcParam"><b>tuningProfile</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
                         Required
                         )
                     </span>
-                    <span class = "funcParamType"><code>Number</code></span>
+                    <span class = "funcParamType"><code>String</code></span>
                     -
                     <span class = "funcText">          
-                        The drive to configure.
+                        The tuning profile of the smartDrive.
                     </span>
                 </div>
 
@@ -787,7 +787,7 @@
             <div id = "configServov2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures actuators for a MachineMotion v2. ###</span>
 
@@ -830,7 +830,7 @@
                 <h3> 
                     <span class = "funcName"> <b>configStepper</b> </span>
                         (<span class="func funcParamHeading">
-                                drive, motorCurrent, direction, microSteps, mechGain
+                                drive,mechGain,direction,motorCurrent,microSteps
                             </span>)
                 </h3>
             </div>
@@ -847,6 +847,19 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
+                    <span class = "funcParam"><b>drive</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        The drive to configure.
+                    </span>
+                </div>
+                <div class="indent1">
                     <span class = "funcParam"><b>mechGain</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -857,19 +870,6 @@
                     -
                     <span class = "funcText">          
                         The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
-                    </span>
-                </div>
-                <div class="indent1">
-                    <span class = "funcParam"><b>microSteps</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>Number from MICRO_STEPS class</code></span>
-                    -
-                    <span class = "funcText">          
-                        The microstep setting of the drive.
                     </span>
                 </div>
                 <div class="indent1">
@@ -899,16 +899,16 @@
                     </span>
                 </div>
                 <div class="indent1">
-                    <span class = "funcParam"><b>drive</b></span>
+                    <span class = "funcParam"><b>microSteps</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
                         Required
                         )
                     </span>
-                    <span class = "funcParamType"><code>Number</code></span>
+                    <span class = "funcParamType"><code>Number from MICRO_STEPS class</code></span>
                     -
                     <span class = "funcText">          
-                        The drive to configure.
+                        The microstep setting of the drive.
                     </span>
                 </div>
 
@@ -946,7 +946,7 @@
             <div id = "configStepperv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures actuators for a MachineMotion v2. ###</span>
 
@@ -1048,7 +1048,7 @@
             <div id = "detectIOModulesv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example reads digital inputs for MachineMotion v1. ###</span>
 
@@ -1080,7 +1080,7 @@
             <div id = "detectIOModulesv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example reads digital inputs for MachineMotion v2. ###</span>
 
@@ -1119,7 +1119,7 @@
                 <h3> 
                     <span class = "funcName"> <b>digitalRead</b> </span>
                         (<span class="func funcParamHeading">
-                                pin, deviceNetworkId
+                                deviceNetworkId,pin
                             </span>)
                 </h3>
             </div>
@@ -1198,7 +1198,7 @@
             <div id = "digitalReadv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example reads digital inputs for MachineMotion v1. ###</span>
 
@@ -1230,7 +1230,7 @@
             <div id = "digitalReadv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example reads digital inputs for MachineMotion v2. ###</span>
 
@@ -1269,7 +1269,7 @@
                 <h3> 
                     <span class = "funcName"> <b>digitalWrite</b> </span>
                         (<span class="func funcParamHeading">
-                                value, pin, deviceNetworkId
+                                deviceNetworkId,pin,value
                             </span>)
                 </h3>
             </div>
@@ -1358,7 +1358,7 @@
             <div id = "digitalWritev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example writes digital outputs for MachineMotion v1. ###</span>
 
@@ -1398,7 +1398,7 @@
             <div id = "digitalWritev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example writes digital outputs for MachineMotion v2. ###</span>
 
@@ -1445,7 +1445,7 @@
                 <h3> 
                     <span class = "funcName"> <b>emitAbsoluteMove</b> </span>
                         (<span class="func funcParamHeading">
-                                axis, position
+                                axis,position
                             </span>)
                 </h3>
             </div>
@@ -1462,19 +1462,6 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
-                    <span class = "funcParam"><b>position</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>Number</code></span>
-                    -
-                    <span class = "funcText">          
-                        The desired end position of the axis movement.
-                    </span>
-                </div>
-                <div class="indent1">
                     <span class = "funcParam"><b>axis</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -1485,6 +1472,19 @@
                     -
                     <span class = "funcText">          
                         The axis which will perform the absolute move command.
+                    </span>
+                </div>
+                <div class="indent1">
+                    <span class = "funcParam"><b>position</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        The desired end position of the axis movement.
                     </span>
                 </div>
 
@@ -1524,7 +1524,7 @@
             <div id = "emitAbsoluteMovev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases absolute moves with MachineMotion v1. ###</span>
 
@@ -1569,7 +1569,7 @@
             <div id = "emitAbsoluteMovev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases absolute moves with MachineMotion v2. ###</span>
 
@@ -1614,7 +1614,7 @@
                 <h3> 
                     <span class = "funcName"> <b>emitAcceleration</b> </span>
                         (<span class="func funcParamHeading">
-                                mm_per_sec_sqr, units
+                                acceleration,units
                             </span>)
                 </h3>
             </div>
@@ -1631,6 +1631,19 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
+                    <span class = "funcParam"><b>acceleration</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        The global acceleration in mm/s^2.
+                    </span>
+                </div>
+                <div class="indent1">
                     <span class = "funcParam"><b>units</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -1641,19 +1654,6 @@
                     -
                     <span class = "funcText">          
                         Units for speed. Can be switched to UNITS_ACCEL.mm_per_min_sqr
-                    </span>
-                </div>
-                <div class="indent1">
-                    <span class = "funcParam"><b>mm_per_sec_sqr</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>Number</code></span>
-                    -
-                    <span class = "funcText">          
-                        The global acceleration in mm/s^2.
                     </span>
                 </div>
 
@@ -1696,7 +1696,7 @@
             <div id = "emitAccelerationv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">()</span>
 
@@ -1721,7 +1721,7 @@
             <div id = "emitAccelerationv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures system acceleration for MachineMotion v2. ###</span>
 
@@ -1746,7 +1746,7 @@
                 <h3> 
                     <span class = "funcName"> <b>emitCombinedAxesAbsoluteMove</b> </span>
                         (<span class="func funcParamHeading">
-                                axes, positions
+                                axes,positions
                             </span>)
                 </h3>
             </div>
@@ -1763,19 +1763,6 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
-                    <span class = "funcParam"><b>positions</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>List</code></span>
-                    -
-                    <span class = "funcText">          
-                        The desired end position of all axess movement. Ex - [50, 10]
-                    </span>
-                </div>
-                <div class="indent1">
                     <span class = "funcParam"><b>axes</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -1786,6 +1773,19 @@
                     -
                     <span class = "funcText">          
                         The axes which will perform the move commands. Ex - [1 ,3]
+                    </span>
+                </div>
+                <div class="indent1">
+                    <span class = "funcParam"><b>positions</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>List</code></span>
+                    -
+                    <span class = "funcText">          
+                        The desired end position of all axess movement. Ex - [50, 10]
                     </span>
                 </div>
 
@@ -1834,7 +1834,7 @@
             <div id = "emitCombinedAxesAbsoluteMovev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="n">mm</span> <span class="o">=</span> <span class="n">MachineMotion</span><span class="p">()</span>
 
@@ -1881,7 +1881,7 @@
             <div id = "emitCombinedAxesAbsoluteMovev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases combined absolute moves with MachineMotion v2. ###</span>
 
@@ -1936,7 +1936,7 @@
                 <h3> 
                     <span class = "funcName"> <b>emitCombinedAxesRelativeMove</b> </span>
                         (<span class="func funcParamHeading">
-                                axes, distances, directions
+                                axes,directions,distances
                             </span>)
                 </h3>
             </div>
@@ -1952,6 +1952,19 @@
 
 
         <h4> Parameters </h4>
+                <div class="indent1">
+                    <span class = "funcParam"><b>axes</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>List of Integers</code></span>
+                    -
+                    <span class = "funcText">          
+                        The axes to move. Ex-[1,3]
+                    </span>
+                </div>
                 <div class="indent1">
                     <span class = "funcParam"><b>directions</b></span>
                     <span style="requiredOptional" class ="funcParamType">
@@ -1976,19 +1989,6 @@
                     -
                     <span class = "funcText">          
                         The travel distances in mm. Ex - [10, 40]
-                    </span>
-                </div>
-                <div class="indent1">
-                    <span class = "funcParam"><b>axes</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>List of Integers</code></span>
-                    -
-                    <span class = "funcText">          
-                        The axes to move. Ex-[1,3]
                     </span>
                 </div>
 
@@ -2041,7 +2041,7 @@
             <div id = "emitCombinedAxesRelativeMovev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases combined relative moves with MachineMotion v1. ###</span>
 
@@ -2084,7 +2084,7 @@
             <div id = "emitCombinedAxesRelativeMovev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases combined relative moves with MachineMotion v1. ###</span>
 
@@ -2198,7 +2198,7 @@
             <div id = "emitHomev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to home actuators with MachineMotion v1. ###</span>
 
@@ -2234,7 +2234,7 @@
             <div id = "emitHomev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to home actuators with MachineMotion v2. ###</span>
 
@@ -2323,7 +2323,7 @@
             <div id = "emitHomeAllv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to home actuators with MachineMotion v1. ###</span>
 
@@ -2355,7 +2355,7 @@
             <div id = "emitHomeAllv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to home actuators with MachineMotion v2. ###</span>
 
@@ -2387,7 +2387,7 @@
                 <h3> 
                     <span class = "funcName"> <b>emitRelativeMove</b> </span>
                         (<span class="func funcParamHeading">
-                                axis, direction, distance
+                                axis,direction,distance
                             </span>)
                 </h3>
             </div>
@@ -2404,16 +2404,16 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
-                    <span class = "funcParam"><b>distance</b></span>
+                    <span class = "funcParam"><b>axis</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
                         Required
                         )
                     </span>
-                    <span class = "funcParamType"><code>Number</code></span>
+                    <span class = "funcParamType"><code>Integer</code></span>
                     -
                     <span class = "funcText">          
-                        The travel distance in mm.
+                        The axis to move.
                     </span>
                 </div>
                 <div class="indent1">
@@ -2430,16 +2430,16 @@
                     </span>
                 </div>
                 <div class="indent1">
-                    <span class = "funcParam"><b>axis</b></span>
+                    <span class = "funcParam"><b>distance</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
                         Required
                         )
                     </span>
-                    <span class = "funcParamType"><code>Integer</code></span>
+                    <span class = "funcParamType"><code>Number</code></span>
                     -
                     <span class = "funcText">          
-                        The axis to move.
+                        The travel distance in mm.
                     </span>
                 </div>
 
@@ -2485,7 +2485,7 @@
             <div id = "emitRelativeMovev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases relative moves with MachineMotion v1. ###</span>
 
@@ -2523,7 +2523,7 @@
             <div id = "emitRelativeMovev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases relative moves with MachineMotion v2. ###</span>
 
@@ -2561,7 +2561,7 @@
                 <h3> 
                     <span class = "funcName"> <b>emitSpeed</b> </span>
                         (<span class="func funcParamHeading">
-                                speed, units
+                                speed,units
                             </span>)
                 </h3>
             </div>
@@ -2578,19 +2578,6 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
-                    <span class = "funcParam"><b>units</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Optional. Default = UNITS_SPEED.mm_per_sec 
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>String</code></span>
-                    -
-                    <span class = "funcText">          
-                        Units for speed. Can be switched to UNITS_SPEED.mm_per_min
-                    </span>
-                </div>
-                <div class="indent1">
                     <span class = "funcParam"><b>speed</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -2601,6 +2588,19 @@
                     -
                     <span class = "funcText">          
                         The global max speed in mm/sec, or mm/min according to the units parameter.
+                    </span>
+                </div>
+                <div class="indent1">
+                    <span class = "funcParam"><b>units</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Optional. Default = UNITS_SPEED.mm_per_sec 
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>String</code></span>
+                    -
+                    <span class = "funcText">          
+                        Units for speed. Can be switched to UNITS_SPEED.mm_per_min
                     </span>
                 </div>
 
@@ -2642,7 +2642,7 @@
             <div id = "emitSpeedv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures system speed for MachineMotion v1. ###</span>
 
@@ -2667,7 +2667,7 @@
             <div id = "emitSpeedv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example configures system speed for MachineMotion v2. ###</span>
 
@@ -2734,7 +2734,7 @@
             <div id = "emitStopv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to stop motion on MachineMotion v1. ###</span>
 
@@ -2779,7 +2779,7 @@
             <div id = "emitStopv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to stop motion on MachineMotion v2. ###</span>
 
@@ -2890,7 +2890,7 @@
             <div id = "emitgCodev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to emit custom gcode with MachineMotion v1. ###</span>
 
@@ -3039,7 +3039,7 @@
             <div id = "getActualPositionsv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read actuator positions with MachineMotion v1. ###</span>
 
@@ -3124,7 +3124,7 @@
             <div id = "getActualPositionsv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read actuator positions with MachineMotion v2. ###</span>
 
@@ -3199,7 +3199,7 @@
                 <h3> 
                     <span class = "funcName"> <b>getBrakeState</b> </span>
                         (<span class="func funcParamHeading">
-                                safety_adapter_presence, aux_port_number
+                                aux_port_number,safety_adapter_presence
                             </span>)
                 </h3>
             </div>
@@ -3280,7 +3280,7 @@
             <div id = "getBrakeStatev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example control brakes on MachineMotion v1. ###</span>
 
@@ -3337,7 +3337,7 @@
             <div id = "getBrakeStatev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example control brakes on MachineMotion v2. ###</span>
 
@@ -3467,7 +3467,7 @@
             <div id = "getDesiredPositionsv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read actuator positions with MachineMotion v1. ###</span>
 
@@ -3552,7 +3552,7 @@
             <div id = "getDesiredPositionsv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read actuator positions with MachineMotion v2. ###</span>
 
@@ -3774,7 +3774,7 @@
             <div id = "getEndStopStatev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read enstop sensor states with MachineMotion v1. ###</span>
 
@@ -3821,7 +3821,7 @@
             <div id = "getEndStopStatev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read enstop sensor states with MachineMotion v2. ###</span>
 
@@ -3918,7 +3918,7 @@
             <div id = "isMotionCompletedv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read actuator positions with MachineMotion v1. ###</span>
 
@@ -4003,7 +4003,7 @@
             <div id = "isMotionCompletedv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read actuator positions with MachineMotion v2. ###</span>
 
@@ -4085,7 +4085,7 @@
                 <h3> 
                     <span class = "funcName"> <b>lockBrake</b> </span>
                         (<span class="func funcParamHeading">
-                                safety_adapter_presence, aux_port_number
+                                aux_port_number,safety_adapter_presence
                             </span>)
                 </h3>
             </div>
@@ -4165,7 +4165,7 @@
             <div id = "lockBrakev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example control brakes on MachineMotion v1. ###</span>
 
@@ -4222,7 +4222,7 @@
             <div id = "lockBrakev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example control brakes on MachineMotion v2. ###</span>
 
@@ -4285,7 +4285,7 @@
                 <h3> 
                     <span class = "funcName"> <b>readEncoder</b> </span>
                         (<span class="func funcParamHeading">
-                                readingType, encoder
+                                encoder,readingType
                             </span>)
                 </h3>
             </div>
@@ -4367,7 +4367,7 @@
             <div id = "readEncoderv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to read encoder positions with MachineMotion v1. ###</span>
 
@@ -4482,7 +4482,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v1. ###</span>
 
@@ -4534,7 +4534,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v2. ###</span>
 
@@ -4662,7 +4662,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v1. ###</span>
 
@@ -4714,7 +4714,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v2. ###</span>
 
@@ -4765,7 +4765,7 @@
                 <h3> 
                     <span class = "funcName"> <b>setContinuousMove</b> </span>
                         (<span class="func funcParamHeading">
-                                axis, accel, speed
+                                axis,speed,accel
                             </span>)
                 </h3>
             </div>
@@ -4781,6 +4781,19 @@
 
 
         <h4> Parameters </h4>
+                <div class="indent1">
+                    <span class = "funcParam"><b>axis</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        Axis to move
+                    </span>
+                </div>
                 <div class="indent1">
                     <span class = "funcParam"><b>speed</b></span>
                     <span style="requiredOptional" class ="funcParamType">
@@ -4805,19 +4818,6 @@
                     -
                     <span class = "funcText">          
                         Acceleration used to reach the desired speed, in mm / sec^2
-                    </span>
-                </div>
-                <div class="indent1">
-                    <span class = "funcParam"><b>axis</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>Number</code></span>
-                    -
-                    <span class = "funcText">          
-                        Axis to move
                     </span>
                 </div>
 
@@ -4864,7 +4864,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases continuous moves with MachineMotion v1. ###</span>
 
@@ -4921,7 +4921,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases continuous moves with MachineMotion v2. ###</span>
 
@@ -4973,7 +4973,7 @@
                 <h3> 
                     <span class = "funcName"> <b>setPosition</b> </span>
                         (<span class="func funcParamHeading">
-                                axis, position
+                                axis,position
                             </span>)
                 </h3>
             </div>
@@ -4990,19 +4990,6 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
-                    <span class = "funcParam"><b>position</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>Number</code></span>
-                    -
-                    <span class = "funcText">          
-                        The new position value in mm.
-                    </span>
-                </div>
-                <div class="indent1">
                     <span class = "funcParam"><b>axis</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -5013,6 +5000,19 @@
                     -
                     <span class = "funcText">          
                         Overrides the position on this axis.
+                    </span>
+                </div>
+                <div class="indent1">
+                    <span class = "funcParam"><b>position</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        The new position value in mm.
                     </span>
                 </div>
 
@@ -5049,7 +5049,7 @@
             <div id = "setPositionv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to set actuator position with MachineMotion v1. ###</span>
 
@@ -5105,7 +5105,7 @@
             <div id = "setPositionv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to set actuator position with MachineMotion v2. ###</span>
 
@@ -5161,7 +5161,7 @@
                 <h3> 
                     <span class = "funcName"> <b>stopContinuousMove</b> </span>
                         (<span class="func funcParamHeading">
-                                axis, accel
+                                axis,accel
                             </span>)
                 </h3>
             </div>
@@ -5178,19 +5178,6 @@
 
         <h4> Parameters </h4>
                 <div class="indent1">
-                    <span class = "funcParam"><b>accel</b></span>
-                    <span style="requiredOptional" class ="funcParamType">
-                        (
-                        Required
-                        )
-                    </span>
-                    <span class = "funcParamType"><code>Number</code></span>
-                    -
-                    <span class = "funcText">          
-                        Acceleration used to reach a null speed, in mm / sec^2
-                    </span>
-                </div>
-                <div class="indent1">
                     <span class = "funcParam"><b>axis</b></span>
                     <span style="requiredOptional" class ="funcParamType">
                         (
@@ -5201,6 +5188,19 @@
                     -
                     <span class = "funcText">          
                         Axis to move
+                    </span>
+                </div>
+                <div class="indent1">
+                    <span class = "funcParam"><b>accel</b></span>
+                    <span style="requiredOptional" class ="funcParamType">
+                        (
+                        Required
+                        )
+                    </span>
+                    <span class = "funcParamType"><code>Number</code></span>
+                    -
+                    <span class = "funcText">          
+                        Acceleration used to reach a null speed, in mm / sec^2
                     </span>
                 </div>
 
@@ -5233,7 +5233,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases continuous moves with MachineMotion v1. ###</span>
 
@@ -5290,7 +5290,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases continuous moves with MachineMotion v2. ###</span>
 
@@ -5411,7 +5411,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v1. ###</span>
 
@@ -5463,7 +5463,7 @@
                 <div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/python</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to control eStop on MachineMotion v2. ###</span>
 
@@ -5514,7 +5514,7 @@
                 <h3> 
                     <span class = "funcName"> <b>unlockBrake</b> </span>
                         (<span class="func funcParamHeading">
-                                safety_adapter_presence, aux_port_number
+                                aux_port_number,safety_adapter_presence
                             </span>)
                 </h3>
             </div>
@@ -5594,7 +5594,7 @@
             <div id = "unlockBrakev1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example control brakes on MachineMotion v1. ###</span>
 
@@ -5651,7 +5651,7 @@
             <div id = "unlockBrakev2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example control brakes on MachineMotion v2. ###</span>
 
@@ -5763,7 +5763,7 @@
             <div id = "waitForMotionCompletionv1_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to wait for actuator motion completion on MachineMotion v1. ###</span>
 
@@ -5804,7 +5804,7 @@
             <div id = "waitForMotionCompletionv2_exampleCode">
                 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">MachineMotion</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1">### This Python example showcases how to wait for actuator motion completion on MachineMotion v2. ###</span>
 

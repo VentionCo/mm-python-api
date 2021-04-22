@@ -25,8 +25,8 @@ class MyFunction:
     
     def __init__(self, func):
         '''initialize the object from docstring, including example code mapping and source code mapping'''
-        self.docstringObj = self.getDocStringObject(func.docstring)
         self.name= func.name
+        self.docstringObj = self.getDocStringObject(func.docstring)
         self.desc = self.getValue('desc')
         self.functionType = self.getValue('functionType')
         self.parameters = []
@@ -49,6 +49,7 @@ class MyFunction:
         self.returnValue = self._get_docstring_param("returnValue")
          
         self.parameterObj = self._get_docstring_param("params")
+
         self.parametersExist = (self.parameterObj != None)
             
         # Example Code parsing
@@ -57,7 +58,8 @@ class MyFunction:
             V1_exampleCodeFullPath = os.path.join(path_to_mm_python_api, "examples", "MachineMotionV1", self.exampleCodePath)
             self.V1_exampleCodeHtml = self.getExampleCode(V1_exampleCodeFullPath)
             self.V1_exampleCodeExists = (self.V1_exampleCodeHtml is not None) 
-        
+
+            #not relevant for v3.2
             V2_exampleCodeFullPath = os.path.join(path_to_mm_python_api,"examples", "MachineMotionV2", self.exampleCodePath)
             self.V2_exampleCodeHtml = self.getExampleCode(V2_exampleCodeFullPath)
             self.V2_exampleCodeExists = (self.V2_exampleCodeHtml is not None)
@@ -68,7 +70,7 @@ class MyFunction:
 
         #Parameter parsing
         if self.parametersExist:
-            for p in self.parameterObj:
+            for p in self.listParameters():
                 try:
                     newParam = Parameter(paramName = p, paramDict = self.parameterObj[p])
                 except ValueError:
@@ -77,7 +79,7 @@ class MyFunction:
                     if not hasattr(self.parameterObj[p], "type"):
                         print("APPLICATION ERROR: Parameter " + p + " of function " + self.name + " has no type" )
                     raise ValueError
-                self.addParameter(newParam)
+                self.parameters.append(newParam)
 
 
     def __tostr__(self):
@@ -89,21 +91,28 @@ class MyFunction:
         except KeyError:
             return 'No value given for ' + paramName
     
-    def addParameter(self, param):
-        self.parameters.append(param)
+
 
     def listParameters(self):
         if not self.parametersExist:
             return ''
 
         paramStr = ''
-        params = [param for param in self.parameters[::-1]]
-        for idx, p in enumerate(params):
-            paramStr += p.paramName
-            if(idx < len(self.parameters)-1):
-                paramStr += ", "
+        # params = [param for param in self.parameters[::-1]]
+        # for idx, p in enumerate(params):
+        #     paramStr += p.paramName
+        #     if(idx < len(self.parameters)-1):
+        #         paramStr += ", "
         
-        return paramStr
+
+        paramNames = []
+        docstringList = self.docstring.split("\n")
+        for entry in docstringList:
+            if entry.startswith("    ") and entry[-1] == ":":
+                entry = entry[4:-1]
+                paramNames.append(entry)
+        
+        return paramNames
 
     def getExampleCode(self, exampleCodePath):
 
@@ -135,7 +144,25 @@ class MyFunction:
         return pig.highlight(self.sourceCode, pyLexer, HtmlFormatter())
 
     def getDocStringObject(self, docstring):
+        
+        
+        self.docstring = docstring
         docObject = yaml.safe_load(docstring)
+        
+        # paramObj = docObject["params"]
+        # paramNames = []
+        # for k, v in self.parameterObj.items():
+        #     paramNames.append(k)
+        # print(", ".join(paramNames))
+        
+        from collections import OrderedDict
+        docObject = OrderedDict(docObject)
+        # for keyval in docKeyVals:
+        #     try:
+        #         key, val = keyval.split(":")
+        #     except Exception as e:
+        #         print(e)
+        
         if hasattr(docObject, "params"):
             try:
                 docObject["params"]["desc"]

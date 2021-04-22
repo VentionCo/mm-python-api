@@ -6,7 +6,7 @@
                     <span class = "funcName"> <b>${func.name}</b> </span>
                     % if func.parametersExist:
                         (<span class="func funcParamHeading">
-                                ${func.listParameters()}
+                                ${",".join(func.listParameters())}
                             </span>)
                     % else:
                     ( )
