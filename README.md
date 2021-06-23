@@ -6,7 +6,7 @@
 
 ## Introduction
 
-This is Version 4.0 of Vention's MachineMotion API. 
+This is Version 4.1 of Vention's MachineMotion API. 
 
  - The documentation for this API can be found [here](https://vention.io/resources/guides/python-api-reference-v3-0-62).
  - If this is your first time using Ventions Python API, please start [here](https://vention.io/resources/guides/programming-manual-python-55).

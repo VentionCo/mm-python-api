@@ -33,6 +33,7 @@ class MultiDriveExtension():
             tuningProfile:
                 desc: The tuning profile of the smartDrive.
                 type: String
+        note: Warning, changing the configuration can de-energize motors and thus cause unintended behaviour on vertical axes.
         '''
         if len(driveList)!=len(directionList):
             raise "The length of driveList must be equal to length of directionList."
@@ -43,10 +44,10 @@ class MultiDriveExtension():
 
     def configStepperMulti(self, driveList, mechGain, directionList, motorCurrent, microSteps = MICRO_STEPS.ustep_8):
         '''
-        desc: Configures motion parameters as a stepper motor, for a single drive on the MachineMotion v2. All motors should share the same gain, current and microstepping.
+        desc: Configures motion parameters as a stepper motor, for multiple drives on the MachineMotion v2. All motors should share the same gain, current and microstepping.
         params:
             driveList:
-                desc: The drive to configure.
+                desc: The drives to configure.
                 type: List of Numbers
             mechGain:
                 desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
@@ -60,6 +61,7 @@ class MultiDriveExtension():
             microSteps:
                 desc: The microstep setting of the drive.
                 type: Number from MICRO_STEPS class
+        note: Warning, changing the configuration can de-energize motors and thus cause unintended behaviour on vertical axes.
         '''
         if len(driveList)!=len(directionList):
             raise "The length of driveList must be equal to length of directionList."
@@ -145,10 +147,10 @@ class MultiDriveExtension():
 
     def getActualPositionsMulti(self, driveList):
         '''
-        desc: Returns the current position of the coupled axis.
+        desc: Returns the current position of the multi-drive axis.
         params:
             driveList:
-                desc: The coupled axes to get the current position of.
+                desc: The drives involved in the multi-drive axis to get the current position of.
                 type: List of Numbers
         returnValue: The position of the axis.
         returnValueType: Number
@@ -175,7 +177,7 @@ class MultiDriveExtension():
 
     def emitSpeedMulti(self, driveList, speed):
         '''
-        desc: Sets the speed for subsequent movement commands on the coupled axes.
+        desc: Sets the speed for subsequent movement commands on the multi-drive axis.
         params:
             speed:
                 desc: The global max speed in mm/sec.
@@ -188,7 +190,7 @@ class MultiDriveExtension():
 
     def emitAccelerationMulti(self, driveList, acceleration):
         '''
-        desc: Sets the acceleration for subsequent movement commands on the coupled axes.
+        desc: Sets the acceleration for subsequent movement commands on the multi-drive axis.
         params:
             speed:
                 desc: The global max acceleration in mm/sec^2.

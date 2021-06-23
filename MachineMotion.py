@@ -23,6 +23,7 @@ import paho.mqtt.subscribe as MQTTsubscribe
 class MACHINEMOTION_HW_VERSIONS:
     MMv1 = 1
     MMv2 = 2
+    MMv2OneDrive = 3
 
 class DIRECTION:
     POSITIVE = "positive"
@@ -67,12 +68,14 @@ class MECH_GAIN:
     legacy_timing_belt_200_mm_turn  = 200
     enclosed_timing_belt_mm_turn    = 208
     ballscrew_10mm_turn             = 10
+    enclosed_ballscrew_16mm_turn    = 16
     legacy_ballscrew_5_mm_turn      = 5
     indexer_deg_turn                = 85
     indexer_v2_deg_turn             = 36
     roller_conveyor_mm_turn         = 157.7
     belt_conveyor_mm_turn           = 73.563
     rack_pinion_mm_turn             = 157.08
+    rack_pinion_v2_mm_turn          = 141.37
     electric_cylinder_mm_turn       = 6
 
 class STEPPER_MOTOR:
@@ -178,11 +181,12 @@ class GCode:
     # @param socket --- Description: The GCode class requires a socket object to communicate with the controller. The socket object is passed at contruction time.
     # @status
     #
-    def __init__(self, ip, isMMv2=False):
+    def __init__(self, ip, isMMv2=False, isMMv2OneDrive=False):
         # Passing in the socket instance at construction
         self.myIp = ip
         self.libPort = ":8000"
         self.isMMv2 = isMMv2
+        self.isMMv2OneDrive = isMMv2OneDrive
         return
 
     #
@@ -192,7 +196,13 @@ class GCode:
     # @status
     #
     def __getTrueAxis__(self, axis):
-        strs = "XYZW" if self.isMMv2 else "XYZ"
+        if self.isMMv2OneDrive:
+            strs = "X"
+        elif self.isMMv2:
+            strs = "XYZW"
+        else:
+            strs = "XYZ"
+
         if axis < 1 or axis > len(strs):
             rng = ", ".join([str(i + 1) for i in range(len(strs))])
             raise Exception("Invalid axis index %d ! (must be in range %s)" % (axis, rng))
@@ -320,10 +330,11 @@ class MachineMotion:
 
         self.IP = machineIp
         self.machineMotionHwVersion = machineMotionHwVersion
-        self.isMMv2 = self.machineMotionHwVersion == MACHINEMOTION_HW_VERSIONS.MMv2
+        self.isMMv2 = self.machineMotionHwVersion >= MACHINEMOTION_HW_VERSIONS.MMv2
+        self.isMMv2OneDrive = self.machineMotionHwVersion == MACHINEMOTION_HW_VERSIONS.MMv2OneDrive
 
         self.myConfiguration = {"machineIp": self.IP, "machineGateway": "notInitialized", "machineNetmask": "notInitialized"}
-        self.myGCode = GCode(self.IP, self.isMMv2)
+        self.myGCode = GCode(self.IP, self.isMMv2, self.isMMv2OneDrive)
         self.myGCode.__setUserCallback__(gCodeCallback)
 
         self.myIoExpanderAvailabilityState  = [ False, False, False ]
@@ -424,6 +435,7 @@ class MachineMotion:
     def _restrictAxisValue(self, axis) :
         # MMv1 has drives 1,2,3
         # MMv2 has drives 1,2,3,4
+        # MMv2OneDrive has drive 1
         self.myGCode.__getTrueAxis__(axis)
         return True
 
@@ -443,7 +455,12 @@ class MachineMotion:
     def _restrictBrakePort(self, port):
         # Brakes are connected to AUX port on MMv1
         # Brakes are connected to JunctionBox brake port on MMv2
-        maxId = 4 if self.isMMv2 else 3
+        if self.isMMv2OneDrive:
+            maxId = 1
+        elif self.isMMv2:
+            maxId = 4
+        else:
+            maxId = 3
         if (port < 1 or port > maxId):
             rng = ", ".join([str(i + 1) for i in range(maxId)])
             raise Exception("Invalid brake port %d ! (must be in range %s)" % (port, rng))
@@ -499,7 +516,7 @@ class MachineMotion:
         self.direction[3] = DIRECTION.NORMAL if self.steps_mm[3]>0 else DIRECTION.REVERSE
 
         # Ask the 4th one (if relevant) to the smartDrives
-        if self.isMMv2 and not onlyMarlin:
+        if self.isMMv2 and not onlyMarlin and not self.isMMv2OneDrive:
             reply = self.myGCode.__askConfigToSmartDrives__(4)
             if ( "Error" in str(reply) ) : # str() encoding is necessary for Python3
                 raise Exception('Error in gCode execution')
@@ -600,15 +617,18 @@ class MachineMotion:
 
             if ( "Error" in str(reply) ) : # str() encoding is necessary for Python3
                 raise Exception('Error in gCode execution')
-
-            else :
+            else:
                 parsedReply = self.__parseMessage(reply)
-                positions = {
-                    1 : parsedReply['X'],
-                    2 : parsedReply['Y'],
-                    3 : parsedReply['Z'],
-                    4 : parsedReply['W']
-                }
+                if not self.isMMv2OneDrive :
+                    positions = {
+                        1 : parsedReply['X'],
+                        2 : parsedReply['Y'],
+                        3 : parsedReply['Z'],
+                        4 : parsedReply['W']
+                    }
+                else:
+                    positions = {1 : parsedReply['X']}
+                
 
         if isinstance(axis, int) :  # Axis is a single number, return a number
             return positions[axis]
@@ -623,16 +643,23 @@ class MachineMotion:
         compatibility: MachineMotion v1 and MachineMotion v2.
         exampleCodePath: getEndStopState.py
         '''
-        states = {
-            'x_min' : None,
-            'x_max' : None,
-            'y_min' : None,
-            'y_max' : None,
-            'z_min' : None,
-            'z_max' : None,
-            'w_min' : None,
-            'w_max' : None
-        }
+    
+        if self.isMMv2OneDrive:
+            states = {
+                'x_min' : None,
+                'x_max' : None
+            }
+        else:
+            states = {
+                'x_min' : None,
+                'x_max' : None,
+                'y_min' : None,
+                'y_max' : None,
+                'z_min' : None,
+                'z_max' : None,
+                'w_min' : None,
+                'w_max' : None
+            }
 
         def trimUntil(S, key) :
             return S[S.find(key) + len(key) :]
@@ -667,59 +694,60 @@ class MachineMotion:
 
         else : raise Exception('Error in gCode')
 
-        if "y_min" in reply :
-            keyB = "y_min: "
-            states['y_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-            #Remove y_min line
-            reply = trimUntil(reply, keyE)
-
-        else : raise Exception('Error in gCode')
-
-        if "y_max" in reply :
-            keyB = "y_max: "
-            states['y_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-            #Remove y_max line
-            reply = trimUntil(reply, keyE)
-
-        else : raise Exception('Error in gCode')
-
-        if "z_min" in reply :
-            keyB = "z_min: "
-            states['z_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-            #Remove z_min line
-            reply = trimUntil(reply, keyE)
-
-        else : raise Exception('Error in gCode')
-
-        if "z_max" in reply :
-            keyB = "z_max: "
-            states['z_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-            #Remove z_max line
-            reply = trimUntil(reply, keyE)
-
-        else : raise Exception('Error in gCode')
-
-        if "w_min" in reply :
-            keyB = "w_min: "
-            states['w_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-            #Remove w_min line
-            reply = trimUntil(reply, keyE)
-
-        elif self.isMMv2 : raise Exception('Error in gCode')
-
-        if "w_max" in reply :
-            keyB = "w_max: "
-            states['w_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-
-            #Remove w_max line
-            reply = trimUntil(reply, keyE)
-
-        elif self.isMMv2 : raise Exception('Error in gCode')
+        if not self.isMMv2OneDrive:
+            if "y_min" in reply :
+                keyB = "y_min: "
+                states['y_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
+    
+                #Remove y_min line
+                reply = trimUntil(reply, keyE)
+    
+            else : raise Exception('Error in gCode')
+    
+            if "y_max" in reply :
+                keyB = "y_max: "
+                states['y_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
+    
+                #Remove y_max line
+                reply = trimUntil(reply, keyE)
+    
+            else : raise Exception('Error in gCode')
+    
+            if "z_min" in reply :
+                keyB = "z_min: "
+                states['z_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
+    
+                #Remove z_min line
+                reply = trimUntil(reply, keyE)
+    
+            else : raise Exception('Error in gCode')
+    
+            if "z_max" in reply :
+                keyB = "z_max: "
+                states['z_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
+    
+                #Remove z_max line
+                reply = trimUntil(reply, keyE)
+    
+            else : raise Exception('Error in gCode')
+    
+            if "w_min" in reply :
+                keyB = "w_min: "
+                states['w_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
+    
+                #Remove w_min line
+                reply = trimUntil(reply, keyE)
+    
+            elif self.isMMv2 : raise Exception('Error in gCode')
+    
+            if "w_max" in reply :
+                keyB = "w_max: "
+                states['w_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
+    
+                #Remove w_max line
+                reply = trimUntil(reply, keyE)
+    
+            elif self.isMMv2 : raise Exception('Error in gCode')
 
         return states
 
@@ -1144,6 +1172,7 @@ class MachineMotion:
             microSteps:
                 desc: The microstep setting of the drive.
                 type: Number from MICRO_STEPS class
+        note: Warning, changing the configuration can de-energize motors and thus cause unintended behaviour on vertical axes.
         compatibility: MachineMotion v2 only.
         exampleCodePath: configStepperServo.py
         '''
@@ -1173,6 +1202,7 @@ class MachineMotion:
             tuningProfile:
                 desc: The tuning profile of the smartDrive.
                 type: String
+        note: Warning, changing the configuration can de-energize motors and thus cause unintended behaviour on vertical axes.
         compatibility: MachineMotion v2 only.
         exampleCodePath: configStepperServo.py
         '''

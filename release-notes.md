@@ -1,3 +1,21 @@
+# Version 4.1
+Date: June 23<sup>rd</sup>, 2021
+
+**New features:**
+- The Python API now supports One Drive MachineMotion. For use in One Drive mode, you must have MachineMotion software release v2.1 or newer. 
+  - If using with a One Drive MachineMotion, You should instantiate your MachineMotion object with the correct hardware version (`MMv2OneDrive`), using the `MACHINEMOTION_HW_VERSIONS` class.
+  - When running in One Drive mode, the following functions will only return data for the first drive:
+    - getActualPositions
+    - getEndStopState
+  - Trying to move a drive other than the first drive will yield an error.
+
+- The Python API now supports the correct gain for `rack and pinion v2` and the `enclosed ballscrew`. See the `MECH_GAIN` class in `MachineMotion.py`.
+
+
+To learn how to interact with a One Drive MachineMotion, please refer to `oneDriveControl.py` in `examples/MachineMotionV2`.
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
 # Version 4.0
 Date: April 19<sup>th</sup>, 2021
 
