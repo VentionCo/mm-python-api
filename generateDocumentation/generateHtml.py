@@ -65,13 +65,13 @@ class MyFunction:
         if self.exampleCodePath != None:
             if self.V1_compatible:
                 V1_exampleCodeFullPath = os.path.join(path_to_mm_python_api, "examples", "MachineMotionV1", self.exampleCodePath)
-                self.V1_exampleCodeHtml = self.getExampleCode(V1_exampleCodeFullPath)
-                self.V1_exampleCodeExists = (self.V1_exampleCodeHtml is not None) 
+                self.V1_exampleCodeText = self.getExampleCode(V1_exampleCodeFullPath)
+                self.V1_exampleCodeText = (self.V1_exampleCodeText is not None) 
 
             if self.V2_compatible:
                 V2_exampleCodeFullPath = os.path.join(path_to_mm_python_api,"examples", "MachineMotionV2", self.exampleCodePath)
-                self.V2_exampleCodeHtml = self.getExampleCode(V2_exampleCodeFullPath)
-                self.V2_exampleCodeExists = (self.V2_exampleCodeHtml is not None)
+                self.V2_exampleCodeText = self.getExampleCode(V2_exampleCodeFullPath)
+                self.V2_exampleCodeExists = (self.V2_exampleCodeText is not None)
         else:
             self.exampleCodeExists = False
 
@@ -123,8 +123,10 @@ class MyFunction:
             codeFile = open(path, 'r')
             exampleCode = codeFile.read()
             codeFile.close()
-            pyLexer = pig.lexers.python.Python3Lexer()
-            return  pig.highlight(exampleCode, pyLexer, HtmlFormatter())
+            return exampleCode
+            # Legacy code that returns formatted html instead of text
+                # pyLexer = pig.lexers.python.Python3Lexer()
+                # return  pig.highlight(exampleCode, pyLexer, HtmlFormatter())
 
         try:
             return getCode(exampleCodePath)
@@ -135,7 +137,8 @@ class MyFunction:
 
 
     def getSourceCode(self):
-        pyLexer = pig.lexers.python.Python3Lexer()
+        # Legacy code that returns formatted html instead of text
+        # pyLexer = pig.lexers.python.Python3Lexer()
         
         docstringIndex = []
         for i,line in enumerate(self.sourceCode):
@@ -144,7 +147,9 @@ class MyFunction:
 
         del self.sourceCode[docstringIndex[0]:docstringIndex[1]+1]
         self.sourceCode = "".join(self.sourceCode)
-        return pig.highlight(self.sourceCode, pyLexer, HtmlFormatter())
+        return self.sourceCode
+        # Legacy code that returns formatted html instead of text
+        # return pig.highlight(self.sourceCode, pyLexer, HtmlFormatter())
 
     def getDocStringObject(self, docstring):
         
@@ -210,6 +215,7 @@ def get_functions_from_module(_module, _instance):
         else:
             continue
         moduleFunctions.append(newFunction)
+        break
     
     # We sort this list so the final html shows functions in alphabetical order
     moduleFunctions = sorted(moduleFunctions, key=lambda k: k.name) 
@@ -220,7 +226,7 @@ def generate_html(module_functions, output_file="documentation.html"):
     print("-"*20+"\nloading functions into file " + output_file)
 
 
-    functionTemplate = Template(filename=os.path.join(path_cur_dir, "function.mako"))
+    functionTemplate = Template(filename=os.path.join(path_cur_dir, "function copy.mako"))
     indexTemplate = Template(filename=os.path.join(path_cur_dir, "index.mako"))
 
 
@@ -241,19 +247,20 @@ def generate_html(module_functions, output_file="documentation.html"):
 
 if __name__ == '__main__':
     path_cur_dir = os.path.dirname(__file__)
-    print(path_cur_dir)
     path_to_documentation = os.path.dirname(path_cur_dir)
-    print(path_to_documentation)
     path_to_mm_python_api = os.path.dirname(path_to_documentation)
-    print(path_to_mm_python_api)
     sys.path.append(path_to_mm_python_api)
-    print(sys.path)
     import MachineMotion as mm_module
- 
-
-    mm_instance = mm_module.MachineMotion("192.168.137.5")
-    functions = get_functions_from_module(_module = mm_module, _instance = mm_instance)
-
-    filename = "documentation.html"
-    generate_html(functions, output_file=filename)
+    import socket
     
+    try:
+        IP_address = "192.168.137.5"
+        mm_instance = mm_module.MachineMotion(IP_address)
+
+        functions = get_functions_from_module(_module = mm_module, _instance = mm_instance)
+
+        filename = "documentation.html"
+        generate_html(functions, output_file=filename)
+    
+    except socket.error as e:
+        print("ERROR: Must connect laptop to a MachineMotion in order to generate documetnation. Could not establish connection with MachineMotion on IP " + IP_address)
