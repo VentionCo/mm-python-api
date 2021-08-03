@@ -66,7 +66,7 @@ class MyFunction:
             if self.V1_compatible:
                 V1_exampleCodeFullPath = os.path.join(path_to_mm_python_api, "examples", "MachineMotionV1", self.exampleCodePath)
                 self.V1_exampleCodeText = self.getExampleCode(V1_exampleCodeFullPath)
-                self.V1_exampleCodeText = (self.V1_exampleCodeText is not None) 
+                self.V1_exampleCodeExists = (self.V1_exampleCodeText is not None) 
 
             if self.V2_compatible:
                 V2_exampleCodeFullPath = os.path.join(path_to_mm_python_api,"examples", "MachineMotionV2", self.exampleCodePath)
@@ -215,7 +215,7 @@ def get_functions_from_module(_module, _instance):
         else:
             continue
         moduleFunctions.append(newFunction)
-        break
+        
     
     # We sort this list so the final html shows functions in alphabetical order
     moduleFunctions = sorted(moduleFunctions, key=lambda k: k.name) 

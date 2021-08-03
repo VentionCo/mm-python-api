@@ -5,7 +5,7 @@
 ( ) \
 % endif
 '}
-**Comaptibility**: \
+${'####'} **Compatibility**: \
 % if func.V1_compatible and func.V2_compatible:
 MachineMotion v1 & MachineMotion v2
 % elif func.V1_compatible:
@@ -14,13 +14,13 @@ MachineMotion V1 only
 MachineMotion V1 only
 % endif
 
-${'######'} **Description**
+${'####'} **Description**
 ${func.desc}
 % if func.parametersExist:
-${'######'} **Parameters**
+${'####'} **Parameters**
 ## loop through function parameters 
 % for param in func.parameters:
-**${param.paramName}** \
+* **${param.paramName}** \
 ( \
 % if param.optional:
 Optional. Default = ${param.defaultValue} \
@@ -32,25 +32,28 @@ Required \
 % endfor
 % endif
 
-${'######'} **Return Value**
+${'####'} **Return Value**
 %if func.returnValue is not None:
-${func.returnValue}
+* ${func.returnValue}
 %else:
 None
 %endif
 % if func.noteExists:
 **NOTE:** ${func.note}
 % endif
+***
 % if func.V1_exampleCodeExists:
-${'######'} MachineMotion V1 Example Code
+${'####'} MachineMotion V1 Example Code
 ```python
 ${func.V1_exampleCodeText}
 ```
 % endif
 % if func.V2_exampleCodeExists:
-${'######'} MachineMotion V2 Example Code
+***
+${'####'} MachineMotion V2 Example Code
 ```python
 ${func.V2_exampleCodeText}
 ```
 % endif
 {:/accordion}
+
