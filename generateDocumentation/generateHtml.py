@@ -222,11 +222,11 @@ def get_functions_from_module(_module, _instance):
     print("found " + str(len(moduleFunctions)) + " functions to document\n"+"-"*20+"\n\n")
     return moduleFunctions
 
-def generate_html(module_functions, output_file="documentation.html"):
+def generate_html(module_functions, output_file="documentation.md"):
     print("-"*20+"\nloading functions into file " + output_file)
 
 
-    functionTemplate = Template(filename=os.path.join(path_cur_dir, "function copy.mako"))
+    functionTemplate = Template(filename=os.path.join(path_cur_dir, "function.mako"))
     indexTemplate = Template(filename=os.path.join(path_cur_dir, "index.mako"))
 
 
@@ -236,7 +236,7 @@ def generate_html(module_functions, output_file="documentation.html"):
         functionHtml += (functionTemplate.render(func = apiFunction))
 
     savePath = os.path.join(path_cur_dir,output_file) 
-    introHtmlPath = os.path.join(path_cur_dir, "intro.html" )
+    introHtmlPath = os.path.join(path_cur_dir, "intro.md" )
     # Save the output html in the modules location
 
     # deletes and overrides the previous html file if it exists, otherwise it just creates it
@@ -259,7 +259,7 @@ if __name__ == '__main__':
 
         functions = get_functions_from_module(_module = mm_module, _instance = mm_instance)
 
-        filename = "documentation.html"
+        filename = "documentation.md"
         generate_html(functions, output_file=filename)
     
     except socket.error as e:

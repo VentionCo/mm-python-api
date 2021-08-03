@@ -20,6 +20,11 @@
   <p>
     The Python API comes pre-installed on your MachineMotion controller. To update the API verison or download it to an external computer, follow this <a href="https://github.com/VentionCo/mm-python-api/tree/release/v4.1">link</a> to version 4.1 of the Python API on Vention's Github. 
   </p>
+
+  <h2>MachineMotion v2 One-Drive</h2><hr>
+  <p>
+For use with MachineMotion 2 One-Drive (CE-CL-010-0001) please refer to the provided example which can be found <a href="https://github.com/VentionCo/mm-python-api/blob/release/v4.1/examples/MachineMotionV2/oneDriveControl.py">here</a>
+  </p>
   
   
 <p style="height:10px;"></p>
