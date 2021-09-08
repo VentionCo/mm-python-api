@@ -6,8 +6,7 @@ from MachineMotion import *
 
 ### MachineMotion configuration ###
 
-### Notice the ``MACHINEMOTION_HW_VERSIONS.MMv2OneDrive`` flag
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2OneDrive)
+mm = MachineMotionV2OneDrive()
 
 # When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")
@@ -23,16 +22,17 @@ mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, motorCu
 
 ### Home axis 1 specifically
 print("--> Homing axis " + str(axis))
-mm.emitHome(axis)
+mm.moveToHome(axis)
+mm.waitForMotionCompletion()
 
 ### Relative move axis 1
 print("--> Moving axis " + str(axis) + " by 100mm.")
-mm.emitRelativeMove(axis, DIRECTION.POSITIVE, 100)
+mm.moveRelative(axis, 100)
 mm.waitForMotionCompletion()
 
 ### Absolute move axis 1
 position = 50 # in mm
-mm.emitAbsoluteMove(axis, position)
+mm.moveToPosition(axis, position)
 print("--> Axis " + str(axis) + " is moving towards position " + str(position) + "mm")
 mm.waitForMotionCompletion()
 print("--> Axis " + str(axis) + " is at position " + str(position) + "mm")
@@ -45,7 +45,7 @@ print("--> Actual position is: " + str(actualPosition))
 ### Controlling any other axis will yield an error:
 try:
     print("--> Controlling an axis that doesn't exist..")
-    mm.emitAbsoluteMove(2, position)
+    mm.moveToPosition(2, position)
 except Exception as e:
     print (e)
 

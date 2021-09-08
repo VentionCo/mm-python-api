@@ -18,14 +18,13 @@ mm.configAxis(axis, MICRO_STEPS.ustep_8, MECH_GAIN.rack_pinion_mm_turn)
 
 # Configure Move Parameters
 speed = 200
-mm.emitSpeed(speed)
+mm.setSpeed(speed)
 
 # Begin Relative Move
 distance = 1000
-direction = DIRECTION.POSITIVE
-mm.emitRelativeMove(axis, direction, distance)
-print("Axis " + str(axis) + " is moving " + str(distance) + "mm in the " + direction + " direction.")
+mm.moveRelative(axis, distance)
+print("Axis " + str(axis) + " is moving " + str(distance) + "mm")
 # This move should take 5 seconds to complete (distance/speed). Instead, we wait 2 seconds and then stop the machine.
 time.sleep(2)
-mm.emitStop()
+mm.stopAllMotion()
 print("Axis " + str(axis) + " stopped.")

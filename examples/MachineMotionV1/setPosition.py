@@ -18,14 +18,14 @@ mm.configAxis(axis, MICRO_STEPS.ustep_8, MECH_GAIN.rack_pinion_mm_turn)
 
 # Home the actuator
 print("Axis " + str(axis) + " will home")
-mm.emitHome(axis)
+mm.moveToHome(axis)
 print("Axis " + str(axis) + " homed")
 
 ### Perform asolute moves with different reference points ###
 
 print("Absolute Moves are referenced from home")
 position = 100
-mm.emitAbsoluteMove(axis, position)
+mm.moveToPosition(axis, position)
 mm.waitForMotionCompletion()
 print("Axis " + str(axis) + " is " + str(position) + "mm away from home.")
 
@@ -37,6 +37,6 @@ time.sleep(2)
 # Move again
 position2 = 30
 print("Now moving to absolute position " + str(position2) + " mm, referenced from location 'setPosition' was called")
-mm.emitAbsoluteMove(axis, position2)
+mm.moveToPosition(axis, position2)
 mm.waitForMotionCompletion()
 print("Axis " + str(axis) + " is now " + str(position2) + "mm from reference position and " + str(position + position2) + "mm from home")

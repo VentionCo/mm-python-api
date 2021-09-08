@@ -4,7 +4,7 @@ from MachineMotion import *
 
 ### This Python example showcases how to wait for actuator motion completion on MachineMotion v2. ###
 
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 
 # When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")
@@ -18,10 +18,9 @@ mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 5.0)
 
 # Move the axis by 100mm
 distance = 100
-direction = DIRECTION.POSITIVE
 
 print("Moving %d mm!"  % distance)
-mm.emitRelativeMove(axis, direction, distance)
+mm.moveRelative(axis, distance)
 print("This message gets printed immediately")
 mm.waitForMotionCompletion()
 print("This message gets printed once machine has finished moving")

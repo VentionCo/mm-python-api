@@ -18,5 +18,5 @@ mm.configAxis(axis, MICRO_STEPS.ustep_8, MECH_GAIN.timing_belt_150mm_turn)
 
 # Home the actuator
 print ("Axis "+ str(axis) +" is going home")
-mm.emitHome(axis)
+mm.moveToHome(axis)
 print("Axis "+ str(axis) +" is at home")

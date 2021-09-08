@@ -27,9 +27,9 @@ homesTowards = {
 direction = DIRECTION.REVERSE
 mm.configAxisDirection(axis, direction)
 print("Axis " + str(axis) + " is set to " + direction + " mode. It will now home towards " + homesTowards[direction] + "." )
-mm.emitHome(axis)
+mm.moveToHome(axis)
 
 direction = DIRECTION.NORMAL
 mm.configAxisDirection(axis, direction)
 print("Axis " + str(axis) + " is set to " + direction + " mode. It will now home towards " + homesTowards[direction] + "." )
-mm.emitHome(axis)
+mm.moveToHome(axis)

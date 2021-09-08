@@ -4,7 +4,7 @@ from MachineMotion import *
 
 ### This Python example writes digital outputs for MachineMotion v2. ###
 
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 
 # Detect all connected digital IO Modules
 detectedIOModules = mm.detectIOModules()

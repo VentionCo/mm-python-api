@@ -4,7 +4,7 @@ from MachineMotion import *
 
 ### This Python example showcases how to home actuators with MachineMotion v2. ###
 
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 
 # When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")
@@ -18,5 +18,6 @@ mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 5.0)
 
 # Home the actuator
 print ("Axis "+ str(axis) +" is going home")
-mm.emitHome(axis)
+mm.moveToHome(axis)
+mm.waitForMotionCompletion()
 print("Axis "+ str(axis) +" is at home")
