@@ -4,7 +4,7 @@ from MachineMotion import *
 
 ### This Python example control brakes on MachineMotion v2. ###
 
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 
 # When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")

@@ -6,7 +6,7 @@ from MachineMotion import *
 
 ###### CONFIGURING MACHINEMOTION ######
 
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 
 # When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")
@@ -21,7 +21,8 @@ mm.configServo(axis, MECH_GAIN.rack_pinion_mm_turn, DIRECTION.POSITIVE, 5.0)
 
 # Home Axis Before Moving
 print("--> Axis " + str(axis) + " moving home")
-mm.emitHome(axis)
+mm.moveToHome(axis)
+mm.waitForMotionCompletion()
 print("--> Axis " + str(axis) + " homed")
 
 
@@ -44,10 +45,9 @@ print("Actual position of axis 4 is : " + str(actualPositions[4]) + " mm.")
 
 # Define Motion Parameters
 distance = 100
-move_direction = DIRECTION.POSITIVE
 
 # Move 100mm and check position again
-mm.emitRelativeMove(axis, move_direction, distance)
+mm.moveRelative(axis, distance)
 print("--> Move ongoing")
 while not mm.isMotionCompleted():
     actualPosition_axis  = mm.getActualPositions(axis)

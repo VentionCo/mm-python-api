@@ -1,59 +1,59 @@
-# Version 4.1
-Date: June 23<sup>rd</sup>, 2021
+# Version 2.0
 
-**New features:**
-- The Python API now supports One Drive MachineMotion. For use with a One Drive MachineMotion, you must have MachineMotion software release v2.1 or newer. 
-  - If using with a One Drive MachineMotion, You should instantiate your MachineMotion object with the correct hardware version (`MMv2OneDrive`), using the `MACHINEMOTION_HW_VERSIONS` class.
-  - When running in One Drive mode, the following functions will only return data for the first drive:
-    - getActualPositions
-    - getEndStopState
-  - Trying to move a drive other than the first drive will yield an error.
+The MachineMotion Python API V2.0 aims at simplifying the interfaces to the digital input / outputs and the encoder position.
 
-- The Python API now supports rack and pinion v2 and the enclosed ballscrew. See the `MECH_GAIN` class in `MachineMotion.py`.
+## Compatibility
 
-To learn how to interact with a One Drive MachineMotion, please refer to `oneDriveControl.py` in `examples/MachineMotionV2`.
+ The Python API V2 requires MachineMotion version V1.12 or newer.
+ 
+ Please use [mm-python-api V1.6.7](https://github.com/VentionCo/mm-python-api/releases/tag/v1.6.7) for prior version of MachineMotion software.
 
---------------------------------------------------------------------------------------------------------------------------------------------------
+## Interface changes
+- **Obsoleted interfaces**
+    - attachControlDevice
+    - dettachControlDevice
+    - readControlDevice
+    - writecontrolDevice
+- **New interfaces:**
+    - isIoExpanderAvailable(device)
+    - digitalRead(device, pin)
+    - digitalWrite(device, pin, value)
+    - readEncoderRealtimePosition(device)
 
-# Version 4.0
-Date: April 19<sup>th</sup>, 2021
 
-**New features:**
-- The Python API now supports Python 3.7. 
-- The Python API now supports the new functionalities of MachineMotion2, and maintains MachineMotion1 support.
-    - You should now instantiate your MachineMotion object with a hardware version, using the `MACHINEMOTION_HW_VERSIONS` class.
-    - The compatibility of all functions between MachineMotion1 and MachineMotion2 can be found in the `compatibility` section of each function description.
-    - All example files have been updated and organized into MachineMotion1 and MachineMotion2 specific folders.
-- We also provide some wrappers and examples for multi-drive axes with MachineMotion2, as defined in `multiDriveExtension.py`:
-    - configServoMulti
-    - configStepperMulti
-    - emitRelativeMoveMulti
-    - emitAbsoluteMoveMulti
-    - emitHomeMulti
-    - getActualPositionsMulti
-    - setPositionMulti
-    - emitSpeedMulti
-    - emitAccelerationMulti
-The example file is called `multiDriveAxis.py`.
+# Version 1.6.7
 
-**New functions:**
-- configServo (configuration of servo motors in closed-loop for MachineMotion2)
-- configStepper (configuration of motors in open-loop for MachineMotion2)
-- getDesiredPositions
-- getActualPositions
-- emitCombinedAxisRelativeMove
+Date: July 16<sup>th</sup>, 2019
 
-**Minor updates and bug fixes:**
-- The emergency stop related functions now have a return value representing the success of the operation (`triggerEstop`, `releaseEstop` and `resetSystem`).
-- The gain of the `roller_conveyor_mm_turn` in the `MECH_GAIN` class now has been fixed with one more decimal.
-- The electric cylinder's gain is supported in that class, under the name `electric_cylinder_mm_turn`.
-- Updated restrictions for all functions, to better support MachineMotion1 and MachineMotion2 versions.
+## Improvements:
+- Added support for Python3 and Python2.
+- Updated the REAMDME to include the new MQTT library dependency.
 
-**Deprecated functions:**
-- getCurrentPositions (use getDesiredPositions or getActualPositions instead)
-- emitCombinedAxisRelativeMove (use emitCombinedAxesRelativeMove instead)
-- emitDwell
-- configMinMaxHomingSpeed (please use configHomingSpeed)
-- configMachineMotionIp (please use the ControlCenter to configure the Ethernet ports of the MachineMotion)
-- saveData
-- getData
+
+# Version: 1.6.6
+
+Date:  July 4<sup>th</sup> 2019
+
+## Bug Fixes:
+- Fix distance of movement smaller then requested on linear axis.
+
+## Improvements:
+- All examples import statement are now version independant.
+
+<br><br>
+# Version: 1.6.5
+
+Date:  June 4<sup>th</sup> 2019
+
+## Bug Fixes:
+- Fix Line Number mismatch with the help of the 'resend' message
+- Fix application hang on termination 
+
+## New Features:
+- Support for the rotatory indexer with constants for mechanical gain.
+
+## Improvements:
+- Added more examples for each sensor port for the different control devices functions.
+- Auto reconnect on connection loss
+- Instead of starting a new thread each 0.1 seconds, we now start one thread at the beginning and keep it alive forever to receive messages from the server
+

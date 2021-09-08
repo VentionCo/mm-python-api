@@ -16,5 +16,5 @@ mm.resetSystem()
 
 ### Home all axes sequentially
 print ("All Axes Moving Home sequentially")
-mm.emitHomeAll()
+mm.moveToHomeAll()
 print("All Axes Homed")

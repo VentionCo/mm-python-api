@@ -4,7 +4,7 @@ from MachineMotion import *
 
 ### This Python example configures homing speed for MachineMotion v2. ###
 
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 
 # When starting a program, one must remove the software stop before moving
 print("--> Removing software stop")
@@ -26,9 +26,11 @@ mm.configHomingSpeed(axes, homingSpeeds)    # Sets homing speeds for all selecte
 axis = 1    # The axis to move
 
 print("Moving axis " + str(axis) + " by 100mm.")
-mm.emitRelativeMove(axis, DIRECTION.POSITIVE, 100)
+mm.moveRelative(axis, 100)
 mm.waitForMotionCompletion()
 
 #Homes the axis at the newly configured homing speed.
 print("Homing axis " + str(axis))
-mm.emitHome(axis)
+
+mm.moveToHome(axis)
+mm.waitForMotionCompletion()

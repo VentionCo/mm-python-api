@@ -8,7 +8,7 @@ from MachineMotion import *
 ### MachineMotion CONFIGURATION ###
 
 # Create MachineMotion instance
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 time.sleep(0.1) # Wait to initialize internal eStop topics.
 
 # Define a callback to process estop status

@@ -21,7 +21,7 @@ mm.configAxis(axis, MICRO_STEPS.ustep_8, MECH_GAIN.rack_pinion_mm_turn)
 
 # Home Axis Before Moving
 print("--> Axis " + str(axis) + " moving home")
-mm.emitHome(axis)
+mm.moveToHome(axis)
 print("--> Axis " + str(axis) + " homed")
 
 
@@ -50,10 +50,9 @@ print("Actual position of axis 3 is : " + str(actualPositions[3]) + " mm.")
 
 # Define Motion Parameters
 distance = 500
-move_direction = DIRECTION.POSITIVE
 
 # Move 500mm and check position again
-mm.emitRelativeMove(axis, move_direction, distance)
+mm.moveRelative(axis, distance)
 desiredPosition_axis = mm.getDesiredPositions(axis)
 print("--> Move ongoing")
 print("Desired position of axis " + str(axis) + " is : " + str(desiredPosition_axis) + " mm.")

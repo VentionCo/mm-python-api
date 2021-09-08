@@ -7,5 +7,5 @@ from MachineMotion import *
 mm = MachineMotion()
 
 speed = 500      # The max speed [mm/s] that all subsequent moves will move at
-mm.emitSpeed(speed)
+mm.setSpeed(speed)
 print("Global speed set to " + str(speed) + "mm/s.")

@@ -4,7 +4,7 @@ from MachineMotion import *
 
 ### This Python example showcases how to read enstop sensor states with MachineMotion v2. ###
 
-mm = MachineMotion(machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+mm = MachineMotionV2()
 
 # When starting a program, one must remove the software stop
 print("--> Removing software stop")

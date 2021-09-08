@@ -26,9 +26,9 @@ mm.configHomingSpeed(axes, homingSpeeds)    # Sets homing speeds for all selecte
 axis = 1    # The axis to move
 
 print("Moving axis " + str(axis) + " by 100mm.")
-mm.emitRelativeMove(axis, DIRECTION.POSITIVE, 100)
+mm.moveRelative(axis, 100)
 mm.waitForMotionCompletion()
 
 #Homes the axis at the newly configured homing speed.
 print("Homing axis " + str(axis))
-mm.emitHome(axis)
+mm.moveToHome(axis)

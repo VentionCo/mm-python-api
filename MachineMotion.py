@@ -103,6 +103,18 @@ class CONTROL_LOOPS:
     OPEN_LOOP   = "open"
     CLOSED_LOOP = "closed"
 
+class POWER_SWITCH:
+    ON = "on"
+    OFF = "off"
+
+class PUSH_BUTTON:
+    class COLOR:
+        BLACK = 0
+        WHITE = 1
+    class STATE:
+        PUSHED = "pushed"
+        RELEASED = "released"
+
 HARDWARE_MIN_HOMING_FEEDRATE = 500
 HARDWARE_MAX_HOMING_FEEDRATE = 8000
 
@@ -294,12 +306,11 @@ class GCode:
         self.__keepSocketAlive__()
 
         return
-
 #
 # Class used to encapsulate the MachineMotion controller
 # @status
 #
-class MachineMotion:
+class MachineMotion(object):
     # Version independent MQTT parser
     def __parseMessage(self, message, jsonLoads=True):
         # Decode the payload according to the Python version
@@ -317,7 +328,7 @@ class MachineMotion:
                 return None
         return payload
 
-    # Version independant numerical checker
+    # Version independent numerical checker
     def _isNumber(self, number):
         # Python 2 has two integer types - int and long. There is no 'long integer' in Python 3 anymore : integers in Python 3 are of unlimited size.
         if sys.version_info.major < 3:
@@ -327,7 +338,25 @@ class MachineMotion:
 
     # Class constructor
     def __init__(self, machineIp=DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback=(lambda *args: None), machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv1) :
-
+        '''
+        desc: Constructor of MachineMotion class
+        params:
+            machineIp:
+                desc: IP address of the Machine Motion
+                type: string of the DEFAULT_IP_ADDRESS class, or other valid IP address
+                default: DEFAULT_IP_ADDRESS.usb_windows
+            gCodeCallback:
+                desc: Allows to define a custom behaviour for the MachineMotion object
+                      when a response is received from the motion controller.
+                type: function
+                default: None
+            machineMotionHwVersion:
+                desc: The hardware version of the MachineMotion being used
+                type: string of the MACHINEMOTION_HW_VERSIONS class
+                default: MACHINEMOTION_HW_VERSIONS.MMv1
+        compatibility: MachineMotion v1 and MachineMotion v2.
+        exampleCodePath: moveRelative.py, oneDriveControl.py
+        '''
         self.IP = machineIp
         self.machineMotionHwVersion = machineMotionHwVersion
         self.isMMv2 = self.machineMotionHwVersion >= MACHINEMOTION_HW_VERSIONS.MMv2
@@ -337,10 +366,12 @@ class MachineMotion:
         self.myGCode = GCode(self.IP, self.isMMv2, self.isMMv2OneDrive)
         self.myGCode.__setUserCallback__(gCodeCallback)
 
-        self.myIoExpanderAvailabilityState  = [ False, False, False ]
+        self.maxIo = 8 if self.isMMv2 else 3
+        self.myIoExpanderAvailabilityState  = [ False ] * self.maxIo
         self.myEncoderRealtimePositions     = [ 0, 0, 0 ]   # MMv1 only
         self.myEncoderStablePositions       = [ 0, 0, 0 ]   # MMv1 only
         self.digitalInputs = {}
+        self.pushButtonStates = {}
 
         dev_count = 4 if self.isMMv2 else 3
         self.brakeStatus_control    = [None for i in range(dev_count)] # MMv2 does not support control power
@@ -359,6 +390,21 @@ class MachineMotion:
 
         #Set callback to default until user initialize it
         self.eStopCallback = (lambda *args: None)
+
+        # Initialize all of the possible push button callbacks
+        # The callbacks are stored in a dict of dicts of functions. The dict is first built with
+        # the total amount of possible push button addresses, then with the total amount buttons
+        # available per module.
+        # The callback associated with pressing the black button of module 1 can be accessed as follows:
+        # address = 1
+        # function = self.pushButtonCallbacks[str(address)][str(PUSH_BUTTON.COLOR.BLACK)]
+        self.pushButtonCallbacks = {}
+        for address in range(1,self.maxIo+1):
+            self.pushButtonCallbacks.update({str(address):{}})
+            validParams = [i for i in PUSH_BUTTON.COLOR.__dict__.keys() if i[:1] != '_']
+            validValues = [str(PUSH_BUTTON.COLOR.__dict__[i]) for i in validParams]
+            for button in validValues:
+                self.pushButtonCallbacks[str(address)].update({button: (lambda *args: None)})
 
         # Initializing axis parameters
         self.steps_mm = ["Axis 0 does not exist", "notInitialized", "notInitialized", "notInitialized", "notInitialized"]
@@ -383,7 +429,7 @@ class MachineMotion:
             errorMessage += "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
         raise Exception(errorMessage)
 
-    def setContinuousMove(self, axis, speed, accel = 100) :
+    def moveContinuous(self, axis, speed, accel) :
         '''
         desc: Starts an axis using speed mode.
         params:
@@ -397,7 +443,7 @@ class MachineMotion:
                 desc: Acceleration used to reach the desired speed, in mm / sec^2
                 type: Number
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitConveyorMove.py
+        exampleCodePath: moveContinuous.py
         '''
 
         # Verify argument type to avoid sending garbage in the GCODE
@@ -415,7 +461,7 @@ class MachineMotion:
 
         return
 
-    def stopContinuousMove(self, axis, accel = 100) :
+    def stopMoveContinuous(self, axis, accel) :
         '''
         desc: Stops an axis using speed mode.
         params:
@@ -426,9 +472,9 @@ class MachineMotion:
                 desc: Acceleration used to reach a null speed, in mm / sec^2
                 type: Number
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitConveyorMove.py
+        exampleCodePath: moveContinuous.py
         '''
-        return self.setContinuousMove(axis, 0, accel)
+        return self.moveContinuous(axis, 0, accel)
 
     # ------------------------------------------------------------------------
     # Determines if the given id is valid for a drive.
@@ -437,16 +483,6 @@ class MachineMotion:
         # MMv2 has drives 1,2,3,4
         # MMv2OneDrive has drive 1
         self.myGCode.__getTrueAxis__(axis)
-        return True
-
-    # ------------------------------------------------------------------------
-    # Determines if the drive id can perform a combined move.
-    def _restrictCombinedAxisValue(self, axis) :
-        # MMv1 and MMv2 support combined moves on drives 1,2,3
-        self._restrictAxisValue(axis)
-        # Combined moves are impossible on axis 4
-        if axis == 4:
-            raise Exception('Combined moves are possible only on axis 1, 2 and 3.')
         return True
 
     # ------------------------------------------------------------------------
@@ -470,9 +506,9 @@ class MachineMotion:
     # Determines if the given id is valid for an IO Exapnder.
     # @param {int} id - Device identifier
     def isIoExpanderIdValid(self, id):
-        # IO-Expander IDs range between 1 and 3.
-        if id < 1 or id > 3:
-            rng = ", ".join([str(i) for i in range(3)])
+        # IO-Expander IDs range between 1 and maxIo.
+        if id < 1 or id > self.maxIo:
+            rng = ", ".join([str(i) for i in range(self.maxIo)])
             raise Exception("Invalid Digital IO Module device ID %d (must be in range %s)" % (id, rng))
         return True
 
@@ -480,7 +516,7 @@ class MachineMotion:
     # Determines if the given input pin identifier is valid for an IO Exapnder.
     # @param {int} deviceId - Device identifier
     # @param {int} pinId    - Pin identifier
-    def isIoExpanderInputIdValid(self, deviceId, pinId) :
+    def isIoExpanderInputIdValid(self, deviceId, pinId):
         self.isIoExpanderIdValid(deviceId)
         # IO-Expander pins range between 0 and 3.
         if (pinId < 0 or pinId > 3):
@@ -494,6 +530,15 @@ class MachineMotion:
     # @param {int} pinId    - Pin identifier
     def isIoExpanderOutputIdValid(self, deviceId, pinId) :
         return self.isIoExpanderInputIdValid(deviceId, pinId)
+
+    # ------------------------------------------------------------------------
+    # Determines if the given push button address is valid for a given push button module.
+    # @param {int} deviceId - Device identifier
+    # @param {str} buttonId    - Button identifier
+    def isPushButtonInputIdValid(self, deviceId, buttonId):
+        self.isIoExpanderIdValid(deviceId)
+        self._restrictInputValue("buttonId", buttonId, PUSH_BUTTON.COLOR)
+        return True
 
     # ------------------------------------------------------------------------
     # Determines if the given id is valid for an encoder.
@@ -628,7 +673,7 @@ class MachineMotion:
                     }
                 else:
                     positions = {1 : parsedReply['X']}
-                
+
 
         if isinstance(axis, int) :  # Axis is a single number, return a number
             return positions[axis]
@@ -643,7 +688,7 @@ class MachineMotion:
         compatibility: MachineMotion v1 and MachineMotion v2.
         exampleCodePath: getEndStopState.py
         '''
-    
+
         if self.isMMv2OneDrive:
             states = {
                 'x_min' : None,
@@ -665,7 +710,6 @@ class MachineMotion:
             return S[S.find(key) + len(key) :]
 
         reply = self.myGCode.__emitEchoOk__("M119")
-
         #If Python 2.7
         if sys.version_info.major < 3:
             keyE = "\n"
@@ -675,14 +719,12 @@ class MachineMotion:
 
         #Remove first line (echo line)
         reply = trimUntil(reply, keyE)
-
         if "x_min" in reply :
             keyB = "x_min: "
             states['x_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
 
             #Remove x_min line
             reply = trimUntil(reply, keyE)
-
         else : raise Exception('Error in gCode')
 
         if "x_max" in reply :
@@ -698,81 +740,81 @@ class MachineMotion:
             if "y_min" in reply :
                 keyB = "y_min: "
                 states['y_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-    
+
                 #Remove y_min line
                 reply = trimUntil(reply, keyE)
-    
+
             else : raise Exception('Error in gCode')
-    
+
             if "y_max" in reply :
                 keyB = "y_max: "
                 states['y_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-    
+
                 #Remove y_max line
                 reply = trimUntil(reply, keyE)
-    
+
             else : raise Exception('Error in gCode')
-    
+
             if "z_min" in reply :
                 keyB = "z_min: "
                 states['z_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-    
+
                 #Remove z_min line
                 reply = trimUntil(reply, keyE)
-    
+
             else : raise Exception('Error in gCode')
-    
+
             if "z_max" in reply :
                 keyB = "z_max: "
                 states['z_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-    
+
                 #Remove z_max line
                 reply = trimUntil(reply, keyE)
-    
+
             else : raise Exception('Error in gCode')
-    
+
             if "w_min" in reply :
                 keyB = "w_min: "
                 states['w_min'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-    
+
                 #Remove w_min line
                 reply = trimUntil(reply, keyE)
-    
+
             elif self.isMMv2 : raise Exception('Error in gCode')
-    
+
             if "w_max" in reply :
                 keyB = "w_max: "
                 states['w_max'] = reply[(reply.find(keyB) + len(keyB)) : (reply.find(keyE))]
-    
+
                 #Remove w_max line
                 reply = trimUntil(reply, keyE)
-    
+
             elif self.isMMv2 : raise Exception('Error in gCode')
 
         return states
 
-    def emitStop(self):
+    def stopAllMotion(self):
         '''
         desc: Immediately stops all motion of all axes.
         note: This function is a hard stop. It is not a controlled stop and consequently does not decelerate smoothly to a stop. Additionally, this function is not intended to serve as an emergency stop since this stop mechanism does not have safety ratings.
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitStop.py
+        exampleCodePath: stopAllMotion.py
         '''
         return self.myGCode.__emitEchoOk__("M410")
 
-    def emitHomeAll(self):
+    def moveToHomeAll(self):
         '''
-        desc: Initiates the homing sequence of all axes. All axes will home sequentially.
+        desc: Initiates the homing sequence of all axes. All axes will move home sequentially.
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitHomeAll.py
+        exampleCodePath: moveToHomeAll.py
         '''
         try:
             return self.myGCode.__emitEchoOk__("G28", timeout=DEFAULT_TIMEOUT * 5)
         except Exception as e:
-            self.emitStop()
+            self.stopAllMotion()
             raise e
 
-    def emitHome(self, axis):
+    def moveToHome(self, axis):
         '''
         desc: Initiates the homing sequence for the specified axis.
         params:
@@ -781,17 +823,17 @@ class MachineMotion:
                 type: Number
         note: If configAxisDirection is set to "normal" on axis 1, axis 1 will home itself towards sensor 1A. If configAxisDirection is set to "reverse" on axis 1, axis 1 will home itself towards sensor 1B.
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitHome.py
+        exampleCodePath: moveToHome.py
         '''
         self._restrictAxisValue(axis)
         gCode = "G28 " + self.myGCode.__getTrueAxis__(axis)
         try:
             return self.myGCode.__emitEchoOk__(gCode, timeout=DEFAULT_TIMEOUT * 5)
         except Exception as e:
-            self.emitStop()
+            self.stopAllMotion()
             raise e
 
-    def emitSpeed(self, speed, units = UNITS_SPEED.mm_per_sec):
+    def setSpeed(self, speed, units = UNITS_SPEED.mm_per_sec):
         '''
         desc: Sets the global speed for all movement commands on all axes.
         params:
@@ -803,7 +845,7 @@ class MachineMotion:
                 defaultValue: UNITS_SPEED.mm_per_sec
                 type: String
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitSpeed.py
+        exampleCodePath: setSpeed.py
         '''
 
         self._restrictInputValue("units", units, UNITS_SPEED)
@@ -817,7 +859,7 @@ class MachineMotion:
 
         return
 
-    def emitAcceleration(self, acceleration, units=UNITS_ACCEL.mm_per_sec_sqr):
+    def setAcceleration(self, acceleration, units=UNITS_ACCEL.mm_per_sec_sqr):
         '''
         desc: Sets the global acceleration for all movement commands on all axes.
         params:
@@ -829,7 +871,7 @@ class MachineMotion:
                 defaultValue: UNITS_ACCEL.mm_per_sec_sqr
                 type: String
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitAcceleration.py
+        exampleCodePath: setAcceleration.py
         '''
 
         self._restrictInputValue("units", units, UNITS_ACCEL)
@@ -844,7 +886,7 @@ class MachineMotion:
 
         return
 
-    def emitAbsoluteMove(self, axis, position):
+    def moveToPosition(self, axis, position):
         '''
         desc: Moves the specified axis to a desired end location.
         params:
@@ -855,7 +897,7 @@ class MachineMotion:
                 desc: The desired end position of the axis movement.
                 type: Number
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitAbsoluteMove.py
+        exampleCodePath: moveToPosition.py
         '''
         self._restrictAxisValue(axis)
 
@@ -867,9 +909,9 @@ class MachineMotion:
 
         return
 
-    def emitCombinedAxesAbsoluteMove(self, axes, positions):
+    def moveToPositionCombined(self, axes, positions):
         '''
-        desc: Moves multiple specified axes to their desired end locations synchronously. Combined moves are possible only on axis 1, 2 and 3.
+        desc: Moves multiple specified axes to their desired end locations synchronously.
         params:
             axes:
                 desc: The axes which will perform the move commands. Ex - [1 ,3]
@@ -878,7 +920,7 @@ class MachineMotion:
                 desc: The desired end position of all axess movement. Ex - [50, 10]
                 type: List
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitCombinedAxesAbsoluteMove.py
+        exampleCodePath: moveToPositionCombined.py
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
 
@@ -886,7 +928,7 @@ class MachineMotion:
             raise TypeError("Axes and Positions must be lists")
 
         for axis in axes:
-            self._restrictCombinedAxisValue(axis)       
+            self._restrictAxisValue(axis)
 
         # Set to absolute motion mode
         self.myGCode.__emitEchoOk__("G90")
@@ -900,72 +942,56 @@ class MachineMotion:
 
         return
 
-    def emitRelativeMove(self, axis, direction, distance):
+    def moveRelative(self, axis, distance):
         '''
-        desc: Moves the specified axis the specified distance in the specified direction.
+        desc: Moves the specified axis the specified distance.
         params:
             axis:
                 desc: The axis to move.
                 type: Integer
-            direction:
-                desc: The direction of travel. Ex - DIRECTION.POSITIVE or DIRECTION.NEGATIVE
-                type: String pertaining to the DIRECTION class.
             distance:
                 desc: The travel distance in mm.
                 type: Number
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitRelativeMove.py
+        exampleCodePath: moveRelative.py
         '''
 
         self._restrictAxisValue(axis)
-        self._restrictInputValue("direction", direction, DIRECTION)
 
         # Set to relative motion mode
         self.myGCode.__emitEchoOk__("G91")
-
-        if direction == DIRECTION.POSITIVE :
-            distance = str(distance)
-        elif direction  == DIRECTION.NEGATIVE :
-            distance = str(-distance)
 
         # Transmit move command
         self.myGCode.__emitEchoOk__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
         return
 
-    def emitCombinedAxesRelativeMove(self, axes, directions, distances):
+    def moveRelativeCombined(self, axes, distances):
         '''
-        desc: Moves the multiple specified axes the specified distances in the specified directions. Combined moves are possible only on axis 1, 2 and 3.
+        desc: Moves the multiple specified axes the specified distances.
         params:
             axes:
                 desc: The axes to move. Ex-[1,3]
                 type: List of Integers
-            directions:
-                desc: The direction of travel of each specified axis. Ex - [DIRECTION.POSITIVE, DIRECTION.NEGATIVE]
-                type: List of Strings pertaining to the DIRECTION class
             distances:
                 desc: The travel distances in mm. Ex - [10, 40]
                 type: List of Numbers
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: emitCombinedAxesRelativeMove.py
+        exampleCodePath: moveRelativeCombined.py
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
 
-        if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
-            raise TypeError("Axes, Postions and Distances must be lists")
+        if (not isinstance(axes, list) or not isinstance(distances, list)):
+            raise TypeError("Axes and Distances must be lists")
 
         for axis in axes:
-            self._restrictCombinedAxisValue(axis)
+            self._restrictAxisValue(axis)
 
         # Set to relative motion mode
         self.myGCode.__emitEchoOk__("G91")
 
         # Transmit move command
         command = "G0"
-        for axis, direction, distance in zip(axes, directions, distances):
-            if direction == DIRECTION.POSITIVE :
-                distance = str(distance)
-            elif direction  == DIRECTION.NEGATIVE :
-                distance = str(-distance)
+        for axis, distance in zip(axes, distances):
             command += " " + self.myGCode.__getTrueAxis__(axis) + str(distance)
 
         self.myGCode.__emitEchoOk__(command)
@@ -998,7 +1024,7 @@ class MachineMotion:
         params:
             gCode:
                 desc: The g-code that will be passed directly to the controller.
-                type: string
+                type: String
         note: All movement commands sent to the controller are by default in mm.
         compatibility: Recommended for MachineMotion v1.
         exampleCodePath: emitgCode.py
@@ -1159,13 +1185,13 @@ class MachineMotion:
         params:
             drive:
                 desc: The drive to configure.
-                type: Number
+                type: Number of the AXIS_NUMBER class
             mechGain:
                 desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
-                type: Number
+                type: Number of the MECH_GAIN class
             direction:
                 desc: The direction of the axis
-                type: String from DIRECTION class
+                type: String of the DIRECTION class
             motorCurrent:
                 desc: The current to power the motor with, in Amps.
                 type: Number
@@ -1179,32 +1205,39 @@ class MachineMotion:
         if not self.isMMv2 :
             raise Exception("The function configStepper is not supported on MachineMotion v1.")
 
+        if isinstance(drive, list):
+            raise Exception("The drive should be a Number and not a List")
         loop = CONTROL_LOOPS.OPEN_LOOP
         tuningProfile = TUNING_PROFILES.DEFAULT
         self.configAxis_v2(drive, mechGain, direction, motorCurrent, loop, microSteps, tuningProfile)
 
-    def configServo(self, drive, mechGain, direction, motorCurrent, tuningProfile = TUNING_PROFILES.DEFAULT) :
+    def configServo(self, drives, mechGain, directions, motorCurrent, tuningProfile = TUNING_PROFILES.DEFAULT, parentDrive=None):
         '''
         desc: Configures motion parameters as a servo motor, for a single drive on the MachineMotion v2.
         params:
-            drive:
-                desc: The drive to configure.
-                type: Number
+            drives:
+                desc: The drive or list of drives to configure.
+                type: Number or list of numbers of the AXIS_NUMBER class
             mechGain:
                 desc: The distance moved by the actuator for every full rotation of the stepper motor, in mm/revolution.
-                type: Number
-            direction:
-                desc: The direction of the axis
-                type: String from DIRECTION class
+                type: Number of the MECH_GAIN class
+            directions:
+                desc: The direction or list of directions of each configured axis
+                type: String or list of strings of the DIRECTION class. Must have the same length as `drives`
             motorCurrent:
                 desc: The current to power the motor with, in Amps.
                 type: Number
             tuningProfile:
-                desc: The tuning profile of the smartDrive.
-                type: String
+                desc: The tuning profile of the smartDrive. Determines the characteristics of the servo motor's PID controller
+                type: String of the TUNING_PROFILES class
+                default: TUNING_PROFILES.DEFAULT
+            parentDrive:
+                desc: The parent drive of the multi-drive axis. The axis' home and end sensors must be connected to this drive.
+                type: Number
+                default: None
         note: Warning, changing the configuration can de-energize motors and thus cause unintended behaviour on vertical axes.
         compatibility: MachineMotion v2 only.
-        exampleCodePath: configStepperServo.py
+        exampleCodePath: configStepperServo.py, configMultiDriveServo.py
         '''
         if not self.isMMv2 :
             raise Exception("The function configServo is not supported on MachineMotion v1.")
@@ -1219,48 +1252,64 @@ class MachineMotion:
             microSteps = MICRO_STEPS.ustep_4
         else:
             raise Exception('Mechanical gain should be a positive value.')
-        self.configAxis_v2(drive, mechGain, direction, motorCurrent, loop, microSteps, tuningProfile)
+        self.configAxis_v2(drives, mechGain, directions, motorCurrent, loop, microSteps, tuningProfile,_parent=parentDrive)
 
-    def configAxis_v2(self, axis, mechGain, direction, motorCurrent, loop, microSteps, tuningProfile) :
-        # Configure an axis for the smartDrives
-        # Internal function called by configStepper and configServo
-
-        # Restrict arguments
-        self._restrictAxisValue(axis)
-        self._restrictInputValue("direction", direction, DIRECTION)
-        if   motorCurrent > MAX_MOTOR_CURRENT :
+    def configAxis_v2(self, drives, mechGain, directions, motorCurrent, loop, microSteps, tuningProfile, _parent=None):
+        if motorCurrent > MAX_MOTOR_CURRENT:
             print("Motor current value was clipped to the maximum (" + str(MAX_MOTOR_CURRENT) + "A).")
             motorCurrent = MAX_MOTOR_CURRENT
-        elif motorCurrent < MIN_MOTOR_CURRENT :
+        elif motorCurrent < MIN_MOTOR_CURRENT:
             print("Motor current value was clipped to the minimum (" + str(MIN_MOTOR_CURRENT) + "A).")
             motorCurrent = MIN_MOTOR_CURRENT
         self._restrictInputValue("control loop type", loop, CONTROL_LOOPS)
         self._restrictInputValue("microSteps", microSteps, MICRO_STEPS)
         self._restrictInputValue("tuning profile", tuningProfile, TUNING_PROFILES)
-        if not mechGain>0 : raise Exception('Mechanical gain should be a positive value.')
+        if _parent!=None:
+            self._restrictInputValue("parentDrive", _parent, AXIS_NUMBER)
 
-        # Update local attributes
-        self.mech_gain[axis] = float(mechGain)
-        self.direction[axis] = direction
-        self.u_step[axis] = microSteps
-        self.steps_mm[axis] = self.deduce_steps_per_mm(self.mech_gain[axis], self.u_step[axis], self.direction[axis])
+        if mechGain <= 0:
+            raise Exception('Mechanical gain should be a positive value.')
 
-        # Create a new object with the payload config
-        configPayload = {}
-        configPayload["gain"] = mechGain
-        configPayload["direction"] = direction
-        configPayload["motorCurrent"] = motorCurrent
-        configPayload["loop"] = loop
-        configPayload["microSteps"] = microSteps
-        configPayload["tuningProfile"] = tuningProfile
+        if isinstance(drives, list) != isinstance(directions, list):
+            raise Exception("Drives and directions must be of the same type.")
 
-        # Talk to the smartDrives instead of using gcode
-        reply = self.myGCode.__sendConfigToSmartDrives__(axis, json.dumps(configPayload))
+        if not isinstance(drives, list):
+            drives = [drives]
+            if _parent is None:
+                _parent = drives[0]
+            directions = [directions]
+        if _parent not in drives:
+            raise Exception("parent drive is not in drives list")
 
-        if ( "ok" in reply ) : pass
-        else : raise Exception('Error while talking to the smartDrives')
+        if len(drives)>len(self.brakeStatus_control):
+            raise Exception("Number of Drives can not exceed {}".format(len(self.brakeStatus_control)))
 
-        return
+        if len(drives) != len(directions):
+            raise Exception("drives and directions are not the same length.")
+
+        for a, b in zip(drives, directions):
+            self._restrictAxisValue(a)
+            self._restrictInputValue("direction", b, DIRECTION)
+            self.mech_gain[a] = float(mechGain)
+            self.direction[a] = b
+            self.u_step[a] = microSteps
+            self.steps_mm[a] = self.deduce_steps_per_mm(self.mech_gain[a],
+                                                        self.u_step[a],
+                                                        self.direction[a])
+        payload = {
+            "gain": mechGain,
+            "drives": drives,
+            "directions": directions,
+            "motorCurrent": motorCurrent,
+            "loop": loop,
+            "microSteps": microSteps,
+            "tuningProfile": tuningProfile,
+            "parent": _parent
+        }
+        reply = self.myGCode.__sendConfigToSmartDrives__(_parent, json.dumps(payload))
+        if "ok" not in reply:
+            raise Exception('Error while talking to the smartDrives')
+        return self
 
     # ------------------------------------------------------------------------
     # Determines if the io-expander with the given id is available
@@ -1347,6 +1396,146 @@ class MachineMotion:
 
         return
 
+
+    def setPowerSwitch(self, deviceNetworkId, switchState) :
+        '''
+        desc: Sets a switch of a power switch module to ON (closed) or OFF (open).
+        params:
+            deviceNetworkId:
+                desc: Power switch device network ID. It can be found printed on the dipswitch of the power switch module.
+                type: Integer
+            value:
+                desc: Writing POWER_SWITCH.ON will set the switch to closed, writing POWER_SWITCH.OFF will set the switch to open.
+                type: Boolean or String of the POWER_SWITCH class
+        compatibility: MachineMotion v2.
+        exampleCodePath: powerSwitch.py
+        '''
+        if not self.isMMv2 :
+            raise Exception("The function setPowerSwitch is only supported on MachineMotion v2.")
+
+        self.isIoExpanderIdValid(deviceNetworkId)
+        if isinstance(switchState, bool): # accept boolean.
+            switchState = POWER_SWITCH.ON if switchState else POWER_SWITCH.OFF
+        else:
+            self._restrictInputValue("switchState", switchState, POWER_SWITCH)
+        self.myMqttClient.publish('devices/power-switch/' + str(deviceNetworkId) + '/digital-output/0', switchState, retain=True)
+
+        return
+
+    def waitOnPushButton(self, deviceNetworkId, button, state=PUSH_BUTTON.STATE.PUSHED, timeout=None) :
+        '''
+        desc: Wait until a push button has reached a desired state
+        params:
+            deviceNetworkId:
+                desc: The Push-Button module's device network ID. This is set on the dipswitch of the module.
+                type: Integer
+            button:
+                desc: The address of the button (PUSH_BUTTON.COLOR.BLACK or PUSH_BUTTON.COLOR.WHITE) you want to read
+                      see PUSH_BUTTON class
+                type: Integer of the PUSH_BUTTON.COLOR class
+
+            state:
+                desc: The state of the push button (PUSH_BUTTON.STATE.PUSHED or PUSH_BUTTON.STATE.RELEASED) necessary to proceed
+                      see PUSH_BUTTON class
+                type: String of the PUSH_BUTTON.STATE class
+                default: By default, this function will wait until the desired push button is PUSH_BUTTON.STATE.PUSHED.
+            timeout:
+                desc: The maximum time (seconds) the function will wait until it returns.
+                      If no timeout is passed, the function will wait indefinitely.
+                type: Integer, Float or None
+                default: None
+        returnValue: `True` if push button has reached the desired state, `False` if the timeout has been reached.
+        compatibility: MachineMotion v2.
+        exampleCodePath: pushButton.py
+        '''
+        if not self.isMMv2:
+            raise Exception("The function waitOnPushButton is only supported on MachineMotion v2.")
+        self.isIoExpanderIdValid( deviceNetworkId )
+        self._restrictInputValue( "button", button, PUSH_BUTTON.COLOR )
+        self._restrictInputValue( "state", state, PUSH_BUTTON.STATE )
+
+        deviceNetworkId = str(deviceNetworkId)
+        button = str(button)
+        if (not hasattr(self, 'pushButtonStates')):
+            self.pushButtonStates = {}
+        if (not deviceNetworkId in self.pushButtonStates):
+            self.pushButtonStates[deviceNetworkId] = {}
+        if (not button in self.pushButtonStates[deviceNetworkId]):
+            self.pushButtonStates[deviceNetworkId][button] = "unknown"
+
+        if not(isinstance(timeout, int) or isinstance(timeout, float) or timeout==None):
+            raise Exception("timeout must be of type float, int or None!")
+
+        intervalSeconds = 0.1
+        if timeout!=None:
+            elapsedSeconds = 0
+            while (self.pushButtonStates[deviceNetworkId][button] != state and elapsedSeconds<timeout):
+                elapsedSeconds+=intervalSeconds
+                time.sleep(intervalSeconds)
+            if elapsedSeconds>timeout:
+                return False
+        else:
+            while self.pushButtonStates[deviceNetworkId][button] != state:
+                time.sleep(intervalSeconds)
+        return True
+
+    def bindPushButtonEvent (self, deviceNetworkId, button, callback_function) :
+        '''
+        desc: Configures a user-defined function to execute immediately after a change of state of a push button module button
+        params:
+            deviceNetworkId:
+                desc: The Push-Button module's device network ID. This is set on the dipswitch of the module.
+                type: Integer
+            button:
+                desc: The address of the button (PUSH_BUTTON.COLOR.BLACK or PUSH_BUTTON.COLOR.WHITE) you want to read
+                      see PUSH_BUTTON class
+                type: Integer of the PUSH_BUTTON.COLOR class
+            callback_function:
+                desc: The function to be executed after a push button changes state.
+                type: function
+        note: The callback function used will be executed in a new thread.
+        compatibility: MachineMotion v2.
+        exampleCodePath: pushButton.py
+        '''
+        if not self.isMMv2:
+            raise Exception("The function bindPushButtonEvent is only supported on MachineMotion v2.")
+        self.isIoExpanderIdValid( deviceNetworkId )
+        self._restrictInputValue( "button", button, PUSH_BUTTON.COLOR )
+        if not callable(callback_function):
+            raise Exception("callback_function must be of type function!")
+        self.pushButtonCallbacks[str(deviceNetworkId)][str(button)] = callback_function
+        return
+
+    def readPushButton(self, deviceNetworkId, button) :
+        '''
+        desc: Reads the state of a Push-Button module button.
+        params:
+            deviceNetworkId:
+                desc: The Push-Button module's device network ID. This is set on the dipswitch of the module.
+                type: Integer of the PUSH_BUTTON.COLOR class
+            button:
+                desc: The address of the button (PUSH_BUTTON.COLOR.BLACK or PUSH_BUTTON.COLOR.WHITE) you want to read
+                      see PUSH_BUTTON class
+                type: Integer of the PUSH_BUTTON.COLOR class
+        returnValue : Returns PUSH_BUTTON.STATE.RELEASED if the input button is released and returns PUSH_BUTTON.STATE.PUSHED if the input button pushed
+        compatibility: MachineMotion v2.
+        exampleCodePath: pushButton.py
+        '''
+        if not self.isMMv2:
+            raise Exception("The function waitOnPushButton is only supported on MachineMotion v2.")
+
+        self.isIoExpanderIdValid( deviceNetworkId ) # Enforce restrictions on Push-Button
+        self._restrictInputValue("button", button, PUSH_BUTTON.COLOR)
+        deviceNetworkId = str(deviceNetworkId)
+        button = str(button)
+        if (not hasattr(self, 'pushButtonStates')):
+            self.pushButtonStates = {}
+        if (not deviceNetworkId in self.pushButtonStates):
+            self.pushButtonStates[deviceNetworkId] = {}
+        if (not button in self.pushButtonStates[deviceNetworkId]):
+            self.pushButtonStates[deviceNetworkId][button] = "unknown"
+        return self.pushButtonStates[deviceNetworkId][button]
+
     def readEncoder(self, encoder, readingType=ENCODER_TYPE.real_time) :
         '''
         desc: Returns the last received encoder position in counts.
@@ -1386,14 +1575,11 @@ class MachineMotion:
         self.eStopCallback(status)
         return
 
-    def triggerEstop (self) :
-        '''
-        desc: Triggers the MachineMotion software emergency stop, cutting power to all drives and enabling brakes (if any). The software E stop must be released (using releaseEstop()) in order to re-enable the machine.
-        returnValue: The success of the operation.
-        returnValueType: Boolean
-        compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: eStop.py
-        '''
+    def triggerEstopWithMsg (self, msg="python-api") :
+        # This function allows you to trigger an estop and send a custom message  to the service
+        # The message should be a string, which will then be logged by the eStop service to
+        # allow for easier error handling
+
         # Creating return value for the function. If nothing good happens, it will return False
         q = [] # List is used to pass share variables with a thread
         q.append(False)
@@ -1413,7 +1599,7 @@ class MachineMotion:
         time.sleep(0.2)
 
         # Publish trigger request on MQTT
-        self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, "") # payload message is not important
+        self.myMqttClient.publish(MQTT.PATH.ESTOP_TRIGGER_REQUEST, msg) # we pass a message to the eStop service, for debugging
 
         mqttResponseThread.join(MQTT.TIMEOUT)
 
@@ -1421,6 +1607,16 @@ class MachineMotion:
             raise Exception('eStop is still not triggered after ' + str(MQTT.TIMEOUT) + ' seconds')
         else :
             return q.pop()
+
+    def triggerEstop (self) :
+        '''
+        desc: Triggers the MachineMotion software emergency stop, cutting power to all drives and enabling brakes (if any). The software E stop must be released (using releaseEstop()) in order to re-enable the machine.
+        returnValue: The success of the operation.
+        returnValueType: Boolean
+        compatibility: MachineMotion v1 and MachineMotion v2.
+        exampleCodePath: eStop.py
+        '''
+        return self.triggerEstopWithMsg()
 
     def releaseEstop (self) :
         '''
@@ -1604,8 +1800,8 @@ class MachineMotion:
     # @param rc       - The connection return code
     def __onConnect(self, client, userData, flags, rc):
         if rc == 0:
-            self.myMqttClient.subscribe('devices/io-expander/+/available')
-            self.myMqttClient.subscribe('devices/io-expander/+/digital-input/#')
+            self.myMqttClient.subscribe('devices/+/+/available')
+            self.myMqttClient.subscribe('devices/+/+/digital-input/#')
             self.myMqttClient.subscribe('devices/encoder/+/realtime-position')
             self.myMqttClient.subscribe('devices/encoder/+/stable-position')
             self.myMqttClient.subscribe(MQTT.PATH.ESTOP_STATUS)
@@ -1625,38 +1821,61 @@ class MachineMotion:
         # try/except to make _onMessage robust to garbage MQTT messages
         try:
             topicParts = msg.topic.split('/')
-            deviceType = topicParts[1]
-
-            if (deviceType == 'io-expander'):
+            if topicParts[0]=="devices":
                 device = int( topicParts[2] )
-                if (topicParts[3] == 'available'):
-                    availability = self.__parseMessage(msg.payload)
-                    if (availability):
-                        self.myIoExpanderAvailabilityState[device-1] = True
-                        return
-                    else:
-                        self.myIoExpanderAvailabilityState[device-1] = False
-                        return
-                pin = int( topicParts[4] )
-                self.isIoExpanderInputIdValid(device, pin) # Enforce restrictions on IO-Expander ID and pin number
-                value = int(self.__parseMessage(msg.payload))
+                device_str = topicParts[2]
+                deviceType = topicParts[1]
+                if (deviceType == 'push-button'):
+                    self.isIoExpanderIdValid(device)
+                    if (topicParts[3] == 'digital-input'):
+                        button = int ( topicParts[4] )
+                        button_str = topicParts[4]
+                        self.isPushButtonInputIdValid(device,button)
+                        state = self.__parseMessage(msg.payload, jsonLoads=False)
+                        self._restrictInputValue("state", state, PUSH_BUTTON.STATE)
 
-                if (not hasattr(self, 'digitalInputs')):
-                    self.digitalInputs = {}
-                if (not device in self.digitalInputs):
-                    self.digitalInputs[device] = {}
-                self.digitalInputs[device][pin]= value
-                return
+                        if (not hasattr(self, 'pushButtonStates')):
+                            self.pushButtonStates = {}
+                        if (not device_str in self.pushButtonStates):
+                            self.pushButtonStates[device_str] = {}
+                        if (not button_str in self.pushButtonStates[device_str]):
+                            self.pushButtonStates[device_str][button_str] = {}
+                        self.pushButtonStates[device_str][button_str] = state
+                        # to free up Mqtt, call the resulting fn in a new thread
+                        cbThread = threading.Thread(target=self.pushButtonCallbacks[device_str][button_str], args=[state])
+                        cbThread.start()
+                    return
 
-            elif (deviceType == 'encoder'):
-                device = int( topicParts[2] )
-                position_type = topicParts[3]
-                position = float( self.__parseMessage(msg.payload) )
-                if position_type == ENCODER_TYPE.real_time :
-                    self.myEncoderRealtimePositions[device] = position
-                elif position_type == ENCODER_TYPE.stable :
-                    self.myEncoderStablePositions[device] = position
-                return
+                if (deviceType == 'io-expander'):
+                    self.isIoExpanderIdValid(device)
+                    if (topicParts[3] == 'available'):
+                        availability = self.__parseMessage(msg.payload)
+                        if (availability):
+                            self.myIoExpanderAvailabilityState[device-1] = True
+                            return
+                        else:
+                            self.myIoExpanderAvailabilityState[device-1] = False
+                            return
+                    pin = int( topicParts[4] )
+                    self.isIoExpanderInputIdValid(device, pin) # Enforce restrictions on IO-Expander ID and pin number
+                    value = int(self.__parseMessage(msg.payload))
+
+                    if (not hasattr(self, 'digitalInputs')):
+                        self.digitalInputs = {}
+                    if (not device in self.digitalInputs):
+                        self.digitalInputs[device] = {}
+                    self.digitalInputs[device][pin]= value
+                    return
+
+                elif (deviceType == 'encoder'):
+                    device = int( topicParts[2] )
+                    position_type = topicParts[3]
+                    position = float( self.__parseMessage(msg.payload) )
+                    if position_type == ENCODER_TYPE.real_time :
+                        self.myEncoderRealtimePositions[device] = position
+                    elif position_type == ENCODER_TYPE.stable :
+                        self.myEncoderStablePositions[device] = position
+                    return
 
             elif (topicParts[0] == MQTT.PATH.ESTOP) :
                 if (topicParts[1] == "status") :
@@ -1697,12 +1916,68 @@ class MachineMotion:
     # Function that indicates if the GCode communication port is ready to send another command.
     # @status
     #
+
     def isReady(self):
         return True
         #return self.myGCode.__isReady__()
 
+    def emitStop(self):
+        return self.stopAllMotion()
+
+    def emitHomeAll(self):
+        if not self.isMMv2:
+            allDrives = 3
+        elif self.isMMv2OneDrive:
+            allDrives = 1
+        else:
+            allDrives = 4
+        for drive in range(1,allDrives+1):
+            retVal =  self.moveToHome(drive)
+            self.waitForMotionCompletion()
+        return retVal
+
+    def emitHome(self,axis):
+        retVal = self.moveToHome(axis)
+        self.waitForMotionCompletion()
+        return retVal
+
+    def emitSpeed(self, speed, units = UNITS_SPEED.mm_per_sec):
+        self.setSpeed(speed, units)
+
+    def emitAcceleration(self, acceleration, units=UNITS_ACCEL.mm_per_sec_sqr):
+        self.setAcceleration(acceleration, units)
+
+    def emitAbsoluteMove(self, axis, position):
+        self.moveToPosition(axis, position)
+
+    def emitCombinedAxesAbsoluteMove(self, axes, positions):
+        self.moveToPositionCombined(axes, positions)
+
+    def emitRelativeMove(self, axis, direction, distance):
+        self._restrictInputValue("direction", direction, DIRECTION)
+
+        if direction  == DIRECTION.NEGATIVE:
+            distance = -float(distance)
+        self.moveRelative(axis, distance)
+
+    def emitCombinedAxesRelativeMove(self, axes, directions, distances):
+
+        if (not isinstance(axes, list) or not isinstance(directions, list) or not isinstance(distances, list)):
+            raise TypeError("Axes, Directions and Distances must be lists")
+
+        # Transmit move command
+        tempDistances=[-x if direction == DIRECTION.NEGATIVE else x for direction,x in zip(directions,distances)]
+
+        self.moveRelativeCombined(axes, tempDistances)
+
     def emitCombinedAxisRelativeMove(self, axes, directions, distances):
-        return self.emitCombinedAxesRelativeMove(axes, directions, distances)
+        self.emitCombinedAxesRelativeMove(axes, directions, distances)
+
+    def setContinuousMove(self, axis, speed, accel = 100):
+        self.moveContinuous(axis, speed, accel)
+
+    def stopContinuousMove(self, axis, accel = 100) :
+        self.stopMoveContinuous(axis, accel)
 
     def configMachineMotionIp(self, mode = None, machineIp = None, machineNetmask = None, machineGateway = None):
         # Note : This function has been deprecated. Please use the ControlCenter to configure the networking.
@@ -1721,7 +1996,7 @@ class MachineMotion:
         #     machineGateway:
         #         desc: The gateway IP Address given to the controller. (Required if mode = <code>NETWORK_MODE.static</code>)
         #         type: String
-        # Note: All strings expect the format "XXX.XXX.XXX.XXX". To connect the controller to the internet, the gateway IP should be the same IP as your LAN router.
+        # Note: All Strings expect the format "XXX.XXX.XXX.XXX". To connect the controller to the internet, the gateway IP should be the same IP as your LAN router.
         # exampleCodePath: configMachineMotionIp.py
         # '''
 
@@ -1924,6 +2199,35 @@ class MachineMotion:
                 return False
 
         return False
+
+class MachineMotionV2(MachineMotion):
+    def __init__(self, machineIp=DEFAULT_IP_ADDRESS.usb_windows):
+        '''
+        desc: Constructor of MachineMotionV2 class
+        params:
+            machineIp:
+                desc: IP address of the Machine Motion
+                type: string of the DEFAULT_IP_ADDRESS class, or other valid IP address
+        compatibility: MachineMotion v2.
+        exampleCodePath: moveRelative.py
+        '''
+        super(MachineMotionV2, self).__init__(machineIp,
+                         machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
+
+class MachineMotionV2OneDrive(MachineMotion):
+    def __init__(self, machineIp=DEFAULT_IP_ADDRESS.usb_windows):
+        '''
+        desc: Constructor of MachineMotionV2OneDrive class
+        params:
+            machineIp:
+                desc: IP address of the Machine Motion
+                type: string of the DEFAULT_IP_ADDRESS class, or other valid IP address
+        compatibility: MachineMotion v2 One Drive.
+        exampleCodePath: oneDriveControl.py
+        '''
+        super(MachineMotionV2OneDrive, self).__init__(machineIp,
+                         machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2OneDrive)
+
 
 ########################
 ######## LEGACY ########
