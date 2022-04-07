@@ -14,7 +14,7 @@ mm.resetSystem()
 
 # Axis configuration
 axis = 1             #The axis that you'd like to move
-mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 5.0)
+mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 10.0, motorSize=MOTOR_SIZE.LARGE)
 
 # Movement configuration
 position = 100       # The absolute position to which you'd like to move

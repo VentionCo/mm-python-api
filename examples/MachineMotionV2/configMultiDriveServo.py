@@ -19,12 +19,12 @@ child = 2
 childDirection = DIRECTION.NORMAL
 
 mechGain = MECH_GAIN.timing_belt_150mm_turn
-motorCurrent = 5.0 # Current (A)
+motorCurrent = 10.0 # Current (A)
 
 print("--> Configuring parent drive " + str(parent) + " with child " + str(child))
 
 ### Configure your multi-drive axis by passing the list of drives, directions and parent drive.
-mm.configServo([parent, child], mechGain, [parentDirection, childDirection], motorCurrent, parentDrive = parent)
+mm.configServo([parent, child], mechGain, [parentDirection, childDirection], motorCurrent, parentDrive = parent, motorSize=MOTOR_SIZE.LARGE)
 
 ### The parent and child drives are now linked.
 ### Control the multi-drive axis via the parent drive:

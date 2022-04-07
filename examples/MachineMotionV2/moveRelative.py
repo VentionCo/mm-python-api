@@ -14,7 +14,7 @@ mm.resetSystem()
 
 # Configure the actuator
 axis = 1
-mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 5.0)
+mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 10.0, motorSize=MOTOR_SIZE.LARGE)
 
 # Begin Relative Move
 distance = 100 # in mm

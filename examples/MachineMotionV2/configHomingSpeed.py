@@ -15,10 +15,10 @@ mm.resetSystem()
 ### Configuring ###
 
 axes = [1,2]
-homingSpeeds = [50,100] # The homing speeds to set for each axis, in mm/sec
+homingSpeeds = [50,100] # The homing speeds to set for each axis, in mm/s
 
-mm.configServo(1, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 5.0)
-mm.configServo(2, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 5.0)
+mm.configServo(1, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 10.0, motorSize=MOTOR_SIZE.LARGE)
+mm.configServo(2, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 10.0, motorSize=MOTOR_SIZE.LARGE)
 mm.configHomingSpeed(axes, homingSpeeds)    # Sets homing speeds for all selected axes.
 
 ### Testing the configuration ###

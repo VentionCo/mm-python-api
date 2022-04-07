@@ -1,5 +1,5 @@
 # File name:            MachineMotion.py                            #
-# Version:              4.3                                         #
+# Version:              4.4                                         #
 # Note:                 Information about all the g-Code            #
 #                       commands supported are available at         #
 #                       the following location of the SDK:          #
@@ -8,7 +8,8 @@
 # Import standard libraries
 import json, time, threading, sys
 import traceback
-import urllib
+import re
+
 
 if sys.version_info.major < 3:
     from httplib import HTTPConnection
@@ -100,6 +101,10 @@ class BRAKE_STATES:
     unlocked = "unlocked"
     unknown  = "unknown"
 
+class BRAKE:
+    PRESENT = 'present'
+    NONE = 'none'
+
 class TUNING_PROFILES:
     DEFAULT = "default"
     CONVEYOR_TURNTABLE = "conveyor_turntable"
@@ -120,15 +125,17 @@ class PUSH_BUTTON:
         PUSHED   = "pushed"
         RELEASED = "released"
 class MOTOR_SIZE:
-    SMALL   = "Small Servo"
-    MEDIUM  = "Medium Servo"
-    LARGE   = "Large Servo"
+    SMALL               = "Small Servo"
+    MEDIUM              = "Medium Servo"
+    LARGE               = "Large Servo"
+    ELECTRIC_CYLINDER   = "Nema 17 Stepper"
 
 HARDWARE_MIN_HOMING_FEEDRATE = 500
 HARDWARE_MAX_HOMING_FEEDRATE = 8000
 
 MIN_MOTOR_CURRENT = 1.5     # Amps
 MAX_MOTOR_CURRENT = 10.0    # Amps
+ELECTRIC_CYLINDER_MAX_MOTOR_CURRENT = 1.68 # Amps
 
 class MQTT :
     class PATH :
@@ -349,7 +356,6 @@ class MachineMotion(object):
             return isinstance(number, (int, long, float))
         else:
             return isinstance(number, (int, float))
-
     # Class constructor
     def __init__(self, machineIp=DEFAULT_IP_ADDRESS.usb_windows, gCodeCallback=(lambda *args: None), machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv1) :
         '''
@@ -371,6 +377,8 @@ class MachineMotion(object):
         compatibility: MachineMotion v1 and MachineMotion v2.
         exampleCodePath: moveRelative.py, oneDriveControl.py
         '''
+        self.__async_support = None # cached flag.
+        self.__MachineMotionSoftwareVersion = None # cached flag.
         self.IP = machineIp
         self.machineMotionHwVersion = machineMotionHwVersion
         self.isMMv2 = self.machineMotionHwVersion >= MACHINEMOTION_HW_VERSIONS.MMv2
@@ -434,7 +442,6 @@ class MachineMotion(object):
 
         validParams = [i for i in argClass.__dict__.keys() if i[:1] != '_']
         validValues = [argClass.__dict__[i] for i in validParams]
-
         if argValue in validValues:
             return
 
@@ -443,51 +450,70 @@ class MachineMotion(object):
             errorMessage += "\n" + argClass.__name__ + "." + param + " (" + str(argClass.__dict__[param]) +")"
         raise Exception(errorMessage)
 
-    def moveContinuous(self, axis, speed, accel) :
+    def moveContinuous(self, axis, speed = None, accel = None, direction = None) :
         '''
         desc: Starts an axis using speed mode.
         params:
             axis:
                 desc: Axis to move
-                type: Number
+                type: Number of AXIS_NUMBER class
             speed:
-                desc: Speed to move the axis at in mm / sec
-                type: Number
+                desc: Optional. Speed to move the axis at in mm/s. If no speed is specified, the axis will move at the configured axis max speed in the positive axis direction.
+                type: Number, positive or negative
             accel:
-                desc: Acceleration used to reach the desired speed, in mm / sec^2
-                type: Number
-        compatibility: MachineMotion v1 and MachineMotion v2, software version 2.3.0 and newer.
+                desc: Optional. Acceleration used to reach the desired speed, in mm/s^2. If no acceleration is specified, the axis will move at the configured axis max acceleration
+                type: Positive number
+            direction:
+                desc: Optional. Overrides sign of speed. Determines the direction of the continuous move. If no direction is given, the actuator will move according to the direction of `speed`.
+                type: String of the DIRECTION class.
+        compatibility: MachineMotion v1 and MachineMotion v2. On software versions older than v2.4.0, speed and acceleration arguments are mandatory.
         exampleCodePath: moveContinuous.py
         '''
 
         # Verify argument type to avoid sending garbage in the GCODE
         self._restrictAxisValue(axis)
-        if not self._isNumber(speed) : raise Exception('Error in speed variable type')
-        if not self._isNumber(accel) : raise Exception('Error in accel variable type')
+        lMajor, lMinor, lPatch = self._getSoftwareVersion()
+        # Check arguments
+        if (lMajor<2 or (lMajor==2 and lMinor<4)) and (not self._isNumber(speed) or not self._isNumber(accel)):
+            raise Exception('Unrecognized mandatory speed, acceleration arguments' )
+        if speed is not None and not self._isNumber(speed):
+             raise Exception('Invalid Speed argument: ' + str(speed))
+        if accel is not None and not self._isNumber(accel):
+             raise Exception('Invalid Acceleration argument: ' + str(accel))
+        if direction is not None:
+            self._restrictInputValue('direction', direction, DIRECTION)
+        
+        if direction is not None:
+            lDirectionStr  = '-' if direction == DIRECTION.NEGATIVE else ''
+        elif speed is not None and speed<0:
+            lDirectionStr = '-'
+        else:
+            lDirectionStr = ''
 
-        if self.isMMv2:
-            gCode = "V7 S" + str(speed) + " A" + str(abs(accel)) + " " + self.myGCode.__getTrueAxis__(axis)
+        if (lMajor>2 or (lMajor==2 and lMinor>=3)):
+            lSpeedStr = str(abs(speed)) if speed is not None else ''
+            lAccelStr = str(abs(accel)) if accel is not None else ''
+            gCode = "V7 S" + lDirectionStr + lSpeedStr + " A" + lAccelStr + " " + self.myGCode.__getTrueAxis__(axis)
         else:
             # Check if steps_per_mm are defined locally. If not, query them.
             if not self._isNumber(self.steps_mm[axis]) :
                 self.populateStepsPerMm()
-
             # Send speed command with accel
-            gCode = "V4 S" + str(speed * self.steps_mm[axis]) + " A" + str(abs(accel * self.steps_mm[axis])) + " " + self.myGCode.__getTrueAxis__(axis)
+            gCode = "V4 S" + lDirectionStr + str(abs(speed * self.steps_mm[axis])) + " A" + str(abs(accel * self.steps_mm[axis])) + " " + self.myGCode.__getTrueAxis__(axis)
         self.myGCode.__emitEchoOk__(gCode)
         return
 
-    def stopMoveContinuous(self, axis, accel) :
+    def stopMoveContinuous(self, axis, accel=None) :
         '''
         desc: Stops an axis using speed mode.
         params:
             axis:
                 desc: Axis to move
-                type: Number
+                type: Number of the AXIS_NUMBER class
             accel:
-                desc: Acceleration used to reach a null speed, in mm / sec^2
-                type: Number
-        compatibility: MachineMotion v1 and MachineMotion v2.
+                desc: Optional. Acceleration used to reach a null speed, in mm/s2. If no accel is specified, the axis will decelerate at the configured max axis acceleration.
+                type: Positive number
+        compatibility: MachineMotion v1 and MachineMotion v2. On software versions older than v2.4.0, accel argument is mandatory.
         exampleCodePath: moveContinuous.py
         '''
         return self.moveContinuous(axis, 0, accel)
@@ -524,7 +550,7 @@ class MachineMotion(object):
     def isIoExpanderIdValid(self, id):
         # IO-Expander IDs range between 1 and maxIo.
         if id < 1 or id > self.maxIo:
-            rng = ", ".join([str(i) for i in range(self.maxIo)])
+            rng = ", ".join([str(i) for i in range(1,self.maxIo+1)])
             raise Exception("Invalid Digital IO Module device ID %d (must be in range %s)" % (id, rng))
         return True
 
@@ -566,8 +592,9 @@ class MachineMotion(object):
         return True
 
     def populateStepsPerMm(self,onlyMarlin=False):
-        if self.isMMv2:
-            raise Exception('function populateStepsPerMm is not supported by MachineMotion v2.')
+        lMajor,lMinor, lPatch = self._getSoftwareVersion()
+        if not (lMajor<2 or (lMajor==2 and lMinor<4)):
+            raise Exception('function populateStepsPerMm is not supported by MachineMotion software v2.3.0 and newer')
         # For axes 1,2,3 ask directly from Marlin
         reply_M503 = self.myGCode.__emitEchoOk__("M503")
         beginning = reply_M503.find('M92')
@@ -630,7 +657,7 @@ class MachineMotion(object):
             axis (optional):
                 desc: The axis to get the current position of.
                 type: Number
-        returnValue: The position of the axis if that parameter was specified, or a dictionary containing the current position of every axis.
+        returnValue: The position of the axis if that parameter was specified, or a dictionary containing the current position of every axis, in mm.
         returnValueType: Number or Dictionary of numbers
         compatibility: MachineMotion v1 and MachineMotion v2.
         exampleCodePath: getPositions.py
@@ -807,9 +834,30 @@ class MachineMotion(object):
         '''
         return self.myGCode.__emitEchoOk__("M410")
 
+    def stopAxis(self, *axes):
+        '''
+        desc: Immediately stops motion on a set of axes.
+        params:
+              *axes:
+                  desc: Axis or axes to stop.
+                  type: Number or numbers separated by a comma, of the AXIS_NUMBER class
+        compatibility: MachineMotion v2.
+        exampleCodePath: moveIndependentAxis.py
+        '''
+        lAxes = list(axes)
+        if not self._getAsyncSupport():
+            raise Exception('Independent axis control not supported on this version')
+        if len(lAxes) == 0:
+            return
+        for lAxis in lAxes:
+            self._restrictAxisValue(lAxis)
+        return self.myGCode.__emitEchoOk__(
+            "M410 " + " ".join(map(self.myGCode.__getTrueAxis__, lAxes))
+        )
+
     def moveToHomeAll(self):
         '''
-        desc: Initiates the homing sequence of all axes. All axes will move home sequentially.
+        desc: Initiates the homing sequence of all axes. All axes will move home simultaneously on MachineMotion v2, and sequentially on MachineMotion v1.
         compatibility: MachineMotion v1 and MachineMotion v2.
         exampleCodePath: moveToHomeAll.py
         '''
@@ -838,58 +886,191 @@ class MachineMotion(object):
             self.stopAllMotion()
             raise e
 
-    def setSpeed(self, speed, units = UNITS_SPEED.mm_per_sec):
+    def _getSoftwareVersion(self):
+        
+        if self.__MachineMotionSoftwareVersion != None:
+            return self.__MachineMotionSoftwareVersion
+            
+        lResponseRaw = self.myGCode.__sendToSmartDrives__(
+            "/health",
+            JsonResponse=True)
+        # GET /health
+        # {
+        #     time_server_started_at: '2022-01-28T19:43:17.934Z',
+        #     mqtt_services_running: {
+        #         'services/mm-io-expander-hub/version': 'v2.0',
+        #         'services/mm-vention-control/version': '2.3.0',
+        #     },
+        #     devices: {
+        #         'devices/io-expander/1/available': 'false',
+        #         'devices/io-expander/2/available': 'false',
+        #         'devices/io-expander/3/available': 'false',
+        #     },
+        #     ip: [],
+        #     motion_controller_reachable: true,
+        #     io_expander_hub_running: 'io_expander_hub',
+        #     estop_triggered: true,
+        #     time_now: '2022-01-28T20:09:04.983Z',
+        # }
+        lResponse = json.loads(lResponseRaw)
+        if 'mqtt_services_running' not in lResponse:
+            self.__MachineMotionSoftwareVersion = [0,0,0]
+            return self.__MachineMotionSoftwareVersion
+
+        if 'services/mm-vention-control/version' not in lResponse['mqtt_services_running']:
+            self.__MachineMotionSoftwareVersion = [0,0,0]
+            return self.__MachineMotionSoftwareVersion
+        
+        lVersion = re.search(r'(\d+).(\d+).?(\d*)',lResponse['mqtt_services_running']['services/mm-vention-control/version'])
+        if lVersion:
+            lMajor = int(lVersion.group(1))
+            lMinor = int(lVersion.group(2))
+            lPatch = int(lVersion.group(3)) if lVersion.group(3) else 0
+        else: lMajor, lMinor, lPatch = 0, 0, 0 
+        
+        self.__MachineMotionSoftwareVersion = [lMajor,lMinor,lPatch]
+        return self.__MachineMotionSoftwareVersion
+        
+        
+    def _getAsyncSupport(self):
+        # cached flag to check if machine motion supports independent axes.
+        if self.__async_support != None:
+            # return cached value.
+            return self.__async_support
+        
+        lMajor, lMinor, lPatch = self._getSoftwareVersion()
+        self.__async_support = False
+        if lMajor > 2:
+            self.__async_support = True
+        if lMajor >= 2 and lMinor >= 4:
+            self.__async_support = True
+        return self.__async_support
+
+    def setAxisMaxSpeed(self, axis, speed):
         '''
-        desc: Sets the global speed for all movement commands on all axes.
+        desc: Set maximum speed for a given axis.
         params:
+            axis:
+                desc: The target to set axis speed.
+                type: Number of the AXIS_NUMBER class.
             speed:
-                desc: The global max speed in mm/sec, or mm/min according to the units parameter.
+                desc: The axis speed in mm/s.
                 type: Number
-            units:
-                desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
-                defaultValue: UNITS_SPEED.mm_per_sec
-                type: String
-        compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: setSpeed.py
+        compatibility: MachineMotion v2.
+        exampleCodePath: speedAndAcceleration.py, moveIndependentAxis.py
         '''
+        if not self.isMMv2:
+            raise Exception('Cannot set axis speed on MachineMotionV1')
+        if not self._getAsyncSupport():
+            raise Exception('Independent axis control not supported on this MachineMotion software version')
+        self._restrictAxisValue(axis)
+        return self.myGCode.__sendToSmartDrives__(
+            "/smartDrives/maxSpeed/" + str(axis),
+            json.dumps({"maxSpeed": speed}),
+            True,
+            True)
 
-        self._restrictInputValue("units", units, UNITS_SPEED)
-
-        if units == UNITS_SPEED.mm_per_min:
-            speed_mm_per_min = speed
-        elif units == UNITS_SPEED.mm_per_sec:
-            speed_mm_per_min = 60*speed
-
-        self.myGCode.__emitEchoOk__("G0 F" +str(speed_mm_per_min))
-
-        return
-
-    def setAcceleration(self, acceleration, units=UNITS_ACCEL.mm_per_sec_sqr):
+    def getAxisMaxSpeed(self, axis):
         '''
-        desc: Sets the global acceleration for all movement commands on all axes.
+        desc: Get maximum speed for a given axis.
         params:
-            mm_per_sec_sqr:
-                desc: The global acceleration in mm/s^2.
-                type: Number
-            units:
-                desc: Units for speed. Can be switched to UNITS_ACCEL.mm_per_min_sqr
-                defaultValue: UNITS_ACCEL.mm_per_sec_sqr
-                type: String
-        compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: setAcceleration.py
+            axis:
+                desc: The target axis to read maximum speed from.
+                type: Number of the AXIS_NUMBER class.
+        compatibility: MachineMotion v2.
+        returnValue: Axis max speed in mm/s
+        returnValueType: Number
+        exampleCodePath: speedAndAcceleration.py
         '''
+        if not self.isMMv2:
+            raise Exception("Cannot get axis speed on MachineMotionV1")
+        if not self._getAsyncSupport():
+            raise Exception('Independent axis control not supported on this MachineMotion software version')
+        self._restrictAxisValue(axis)
+        lResponse =  self.myGCode.__sendToSmartDrives__(
+            "/smartDrives/maxSpeed/" + str(axis),
+            JsonResponse=True)
+        lParsed = json.loads(lResponse)
+        return lParsed["maxSpeed"]
 
-        self._restrictInputValue("units", units, UNITS_ACCEL)
+    def getActualSpeeds(self, axis=None):
+        '''
+        desc: Get the current measured speed of all or one axis, in mm/s
+        params:
+            axis:
+                desc: The axis to get the current speed of. If None is passed, all axes will be checked.
+                type: Number of the AXIS_NUMBER class, or None
+                default: None
+        compatibility: MachineMotion v2, software version 2.2.0 and newer.
+        returnValue: The current speed of the axis if that parameter was specified, or a dictionary containing the current speed of every axis, in mm/s.
+        returnValueType: Number or Dictionary of numbers
+        exampleCodePath: speedAndAcceleration.py
+        '''
+        lMajor, lMinor, lPatch = self._getSoftwareVersion()
+        if lMajor < 2 or (lMajor==2 and lMinor < 2):
+            raise Exception('getActualSpeeds is not supported on this MachineMotion software version')
 
-        if units == UNITS_ACCEL.mm_per_sec_sqr:
-            accel_mm_per_sec_sqr = acceleration
-        elif units == UNITS_ACCEL.mm_per_min_sqr:
-            accel_mm_per_sec_sqr = acceleration/3600
+        if axis != None :  # Restrict argument if we were given some
+            self._restrictAxisValue(axis)
 
-        # Note : Set travel and print acceleration, to impact G0 and G1 commands.
-        self.myGCode.__emitEchoOk__("M204 T" + str(accel_mm_per_sec_sqr) + " P" + str(accel_mm_per_sec_sqr))
+        lResponse = self.myGCode.__sendToSmartDrives__("/smartDrives/get/actualSpeed", JsonResponse=True)
+        lParsed = json.loads(lResponse)["actual speed"]
+        lSpeeds = {}
+        for axis_string in lParsed:
+            lSpeeds[int(axis_string)] = lParsed[axis_string]
 
-        return
+        if isinstance(axis, int) :  # Axis is a single number, return a number
+            return lSpeeds[axis]
+        else :                      # Return the whole dictionary
+            return lSpeeds
+
+    def setAxisMaxAcceleration(self, axis, acceleration):
+        '''
+        desc: Set maximum acceleration for a given axis.
+        params:
+            axis:
+                desc: The target to set axis acceleration.
+                type: Number of the AXIS_NUMBER class.
+            acceleration:
+                desc: The axis acceleration in mm/s^2
+                type: Number
+        compatibility: MachineMotion v2.
+        exampleCodePath: speedAndAcceleration.py, moveIndependentAxis.py
+        '''
+        if not self.isMMv2:
+            raise Exception('Cannot set axis acceleration on MachineMotionV1')
+        if not self._getAsyncSupport():
+            raise Exception('Independent axis control not supported on this MachineMotion software version')
+        self._restrictAxisValue(axis)
+        return self.myGCode.__sendToSmartDrives__(
+            "/smartDrives/maxAcceleration/" + str(axis),
+            json.dumps({"maxAcceleration": acceleration}),
+            True,
+            True)
+
+    def getAxisMaxAcceleration(self, axis):
+        '''
+        desc: Get maximum acceleration for a given axis.
+        params:
+            axis:
+                desc: The target axis to read maximum acceleration from.
+                type: Number of the AXIS_NUMBER class.
+        compatibility: MachineMotion v2.
+        returnValue: Max acceleration for the axis in mm/s^2.
+        returnValueType: Number
+        exampleCodePath: speedAndAcceleration.py
+
+        '''
+        if not self.isMMv2:
+            raise Exception("Cannot get axis speed on MachineMotionV1")
+        if not self._getAsyncSupport():
+            raise Exception('Independent axis control not supported on this MachineMotion software version')
+        self._restrictAxisValue(axis)
+        lResponse =  self.myGCode.__sendToSmartDrives__(
+            "/smartDrives/maxAcceleration/" + str(axis),
+            JsonResponse=True)
+        lParsed = json.loads(lResponse)
+        return lParsed["maxAcceleration"]
 
     def moveToPosition(self, axis, position):
         '''
@@ -905,14 +1086,20 @@ class MachineMotion(object):
         exampleCodePath: moveToPosition.py
         '''
         self._restrictAxisValue(axis)
+        if not self._getAsyncSupport():
+            # Set to absolute motion mode
+            self.myGCode.__emitEchoOk__("G90")
+            # Transmit move command
+            self.myGCode.__emitEchoOk__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
+            return
 
-        # Set to absolute motion mode
-        self.myGCode.__emitEchoOk__("G90")
-
-        # Transmit move command
-        self.myGCode.__emitEchoOk__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(position))
-
-        return
+        lParams = dict()
+        lParams[axis] = position
+        return self.myGCode.__sendToSmartDrives__(
+           "/smartDrives/motion/moveAbsolute",
+            json.dumps(lParams),
+            True,
+            True)
 
     def moveToPositionCombined(self, axes, positions):
         '''
@@ -929,12 +1116,18 @@ class MachineMotion(object):
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
 
-        if (not isinstance(axes, list) or not isinstance(positions, list)):
-            raise TypeError("Axes and Positions must be lists")
-
+        if (not isinstance(axes, list) or not isinstance(positions, list)) or len(axes) != len(positions):
+            raise TypeError("Axes and Positions must be lists of the same length")
         for axis in axes:
             self._restrictAxisValue(axis)
 
+        if self._getAsyncSupport():
+            lParams = dict(zip(axes, positions))
+            return self.myGCode.__sendToSmartDrives__(
+                "/smartDrives/motion/moveAbsolute",
+                json.dumps(lParams),
+                True,
+                True)
         # Set to absolute motion mode
         self.myGCode.__emitEchoOk__("G90")
 
@@ -962,13 +1155,19 @@ class MachineMotion(object):
         '''
 
         self._restrictAxisValue(axis)
-
-        # Set to relative motion mode
-        self.myGCode.__emitEchoOk__("G91")
-
-        # Transmit move command
-        self.myGCode.__emitEchoOk__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
-        return
+        if not self._getAsyncSupport():
+            # Set to relative motion mode
+            self.myGCode.__emitEchoOk__("G91")
+            # Transmit move command
+            self.myGCode.__emitEchoOk__("G0 " + self.myGCode.__getTrueAxis__(axis) + str(distance))
+            return
+        lParams = dict()
+        lParams[axis] = distance
+        return self.myGCode.__sendToSmartDrives__(
+           "/smartDrives/motion/moveRelative",
+            json.dumps(lParams),
+            True,
+            True)
 
     def moveRelativeCombined(self, axes, distances):
         '''
@@ -985,11 +1184,19 @@ class MachineMotion(object):
         note: The current speed and acceleration settings are applied to the combined motion of the axes.
         '''
 
-        if (not isinstance(axes, list) or not isinstance(distances, list)):
-            raise TypeError("Axes and Distances must be lists")
+        if (not isinstance(axes, list) or not isinstance(distances, list)) or len(axes) != len(distances):
+            raise TypeError("Axes and Distances must be lists of the same length")
 
         for axis in axes:
             self._restrictAxisValue(axis)
+
+        if self._getAsyncSupport():
+            lParams = dict(zip(axes, distances))
+            return self.myGCode.__sendToSmartDrives__(
+                "/smartDrives/motion/moveRelative",
+                json.dumps(lParams),
+                True,
+                True)
 
         # Set to relative motion mode
         self.myGCode.__emitEchoOk__("G91")
@@ -1037,35 +1244,49 @@ class MachineMotion(object):
 
         return self.myGCode.__emit__(gCode)
 
-    def isMotionCompleted(self):
+    def isMotionCompleted(self, axis=None):
         '''
         desc: Indicates if the last move command has completed.
+        params:
+             axis:
+                desc: Target axis to check. If None is passed, all axes will be checked.
+                type: Number of the AXIS_NUMBER class, or None
+                default: None
         returnValue: Returns false if the machine is currently executing a movement command.
-        returnValueType: Boolean
+        returnValueType: Boolean or Dictionary of Booleans
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: getPositions.py
+        exampleCodePath: getPositions.py, moveIndependantAxis.py
         note: isMotionCompleted does not account for on-going continuous moves.
         '''
-
         #Sending gCode V0 command to
-        reply = self.myGCode.__emitEchoOk__("V0")
+        if axis == None or not self.isMMv2:
+            reply = self.myGCode.__emitEchoOk__("V0")
+            return ("COMPLETED" in reply)
+        if not self._getAsyncSupport():
+            raise Exception('Independent axis control not supported on this MachineMotion software version')
+        self._restrictAxisValue(axis)
+        lResponse =  self.myGCode.__sendToSmartDrives__( "/smartDrives/complete/" + self.myGCode.__getTrueAxis__(axis),
+            JsonResponse=True)
+        lParsed = json.loads(lResponse)
+        return lParsed["complete"]
 
-        return ("COMPLETED" in reply)
 
-    def waitForMotionCompletion(self):
+    def waitForMotionCompletion(self, axis=None):
         '''
         desc: Pauses python program execution until machine has finished its current movement.
+        params:
+            axis: Target axis to check. If None is passed, all axes will be checked.
+            type: Number or None
+            default: None
         compatibility: MachineMotion v1 and MachineMotion v2.
-        exampleCodePath: waitForMotionCompletion.py
+        exampleCodePath: waitForMotionCompletion.py, moveIndependentAxis.py
         note: waitForMotionCompletion does not account for on-going continuous moves.
         '''
         delay = 0.5
         if(self.isMMv2):
             delay = 0.1 # Shorter delay is possible on MMv2 because of the BeagleBone AI
-
-        while not self.isMotionCompleted() :
+        while not self.isMotionCompleted(axis):
             time.sleep(delay)
-
         return
 
     def configHomingSpeed(self, axes, speeds, units = UNITS_SPEED.mm_per_sec):
@@ -1109,9 +1330,9 @@ class MachineMotion(object):
                 speed_mm_per_min = speeds[idx]
 
             if speed_mm_per_min < HARDWARE_MIN_HOMING_FEEDRATE:
-                raise Exception("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/sec).")
+                raise Exception("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/s).")
             if speed_mm_per_min > HARDWARE_MAX_HOMING_FEEDRATE:
-                raise Exception("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/sec)")
+                raise Exception("Your desired homing speed of " + str(speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/s)")
 
             gCodeCommand = gCodeCommand + " " + self.myGCode.__getTrueAxis__(axis) + str(speed_mm_per_min)
 
@@ -1220,7 +1441,7 @@ class MachineMotion(object):
         tuningProfile = TUNING_PROFILES.DEFAULT
         self.configAxis_v2(drive, mechGain, direction, motorCurrent, loop, microSteps, tuningProfile,_motorSize=motorSize)
 
-    def configServo(self, drives, mechGain, directions, motorCurrent, tuningProfile = TUNING_PROFILES.DEFAULT, parentDrive=None,motorSize=MOTOR_SIZE.LARGE):
+    def configServo(self, drives, mechGain, directions, motorCurrent, tuningProfile = TUNING_PROFILES.DEFAULT, parentDrive = None,motorSize = MOTOR_SIZE.LARGE, brake = BRAKE.NONE):
         '''
         desc: Configures motion parameters as a servo motor, for a single drive on the MachineMotion v2.
         params:
@@ -1248,6 +1469,12 @@ class MachineMotion(object):
                 desc: The size of the motor(s) connected to the specified drive(s)
                 type: String from the MOTOR_SIZE class
                 default: MOTOR_SIZE.LARGE
+            brake:
+                desc: The presence of a brake on the desired axis.
+                    If set to BRAKE.PRESENT, moving the axis while the brake is locked will generate an error.
+                    If set to BRAKE.NONE, motion will be allowed regardless of internal brake control.
+                type: String of the BRAKE class
+                default: BRAKE.NONE
         note: Warning, changing the configuration can de-energize motors and thus cause unintended behaviour on vertical axes.
         compatibility: MachineMotion v2 only.
         exampleCodePath: configStepperServo.py, configMultiDriveServo.py
@@ -1265,9 +1492,9 @@ class MachineMotion(object):
             microSteps = MICRO_STEPS.ustep_4
         else:
             raise Exception('Mechanical gain should be a positive value.')
-        self.configAxis_v2(drives, mechGain, directions, motorCurrent, loop, microSteps, tuningProfile, _parent = parentDrive, _motorSize = motorSize)
+        self.configAxis_v2(drives, mechGain, directions, motorCurrent, loop, microSteps, tuningProfile, _parent = parentDrive, _motorSize = motorSize, _brake = brake)
 
-    def configAxis_v2(self, drives, mechGain, directions, motorCurrent, loop, microSteps, tuningProfile, _parent=None, _motorSize = MOTOR_SIZE.LARGE):
+    def configAxis_v2(self, drives, mechGain, directions, motorCurrent, loop, microSteps, tuningProfile, _parent=None, _motorSize = MOTOR_SIZE.LARGE, _brake = BRAKE.NONE):
         if motorCurrent > MAX_MOTOR_CURRENT:
             print("Motor current value was clipped to the maximum (" + str(MAX_MOTOR_CURRENT) + "A).")
             motorCurrent = MAX_MOTOR_CURRENT
@@ -1278,6 +1505,15 @@ class MachineMotion(object):
         self._restrictInputValue("microSteps", microSteps, MICRO_STEPS)
         self._restrictInputValue("tuning profile", tuningProfile, TUNING_PROFILES)
         self._restrictInputValue("motor Size", _motorSize, MOTOR_SIZE)
+        self._restrictInputValue("brake presence", _brake, BRAKE)
+
+        # Cap the current if electric cylinder:
+        if _motorSize==MOTOR_SIZE.ELECTRIC_CYLINDER and motorCurrent>ELECTRIC_CYLINDER_MAX_MOTOR_CURRENT:
+            raise Exception(
+                'Current for Actuator type ' + MOTOR_SIZE.ELECTRIC_CYLINDER
+                + ' cannot be greater than ' + str(ELECTRIC_CYLINDER_MAX_MOTOR_CURRENT) + ' A!'
+            )
+
         if _parent!=None:
             self._restrictInputValue("parentDrive", _parent, AXIS_NUMBER)
 
@@ -1319,7 +1555,8 @@ class MachineMotion(object):
             "microSteps": microSteps,
             "tuningProfile": tuningProfile,
             "parent": _parent,
-            "motorSize":_motorSize
+            "motorSize":_motorSize,
+            "brake": _brake
         }
         reply = self.myGCode.__sendConfigToSmartDrives__(_parent, json.dumps(payload))
         if "ok" not in reply:
@@ -1349,8 +1586,8 @@ class MachineMotion(object):
         # Note : Delay is needed for MQTT callbacks to get triggered (in case detectIOModules is the first function called after instanciating the MachineMotion object)
         time.sleep(0.5)
 
-        # IO module possible addresses are 1, 2, 3
-        for ioDeviceID in range(1,4):
+        # IO module possible addresses are 1, 2, 3, 4, 5, 6, 8
+        for ioDeviceID in range(1,self.maxIo+1):
             if self.isIoExpanderAvailable(ioDeviceID):
                 foundIOModules["Digital IO Network Id " + str(ioDeviceID)] = ioDeviceID
                 numIOModules = numIOModules + 1
@@ -1927,11 +2164,56 @@ class MachineMotion(object):
     # All the functions below are left only for legacy and backwards compatibility purposes.
     # Vention does not advise to use any of them.
 
-    #
-    # Function that indicates if the GCode communication port is ready to send another command.
-    # @status
-    #
+    def setSpeed(self, speed, units = UNITS_SPEED.mm_per_sec):
+        '''hidden
+        desc: Sets the global speed for all movement commands on all axes.
+        params:
+            speed:
+                desc: The global max speed in mm/s, or mm/min according to the units parameter.
+                type: Number
+            units:
+                desc: Units for speed. Can be switched to UNITS_SPEED.mm_per_min
+                defaultValue: UNITS_SPEED.mm_per_sec
+                type: String
+        compatibility: MachineMotion v1 and MachineMotion v2.
+        '''
 
+        self._restrictInputValue("units", units, UNITS_SPEED)
+
+        if units == UNITS_SPEED.mm_per_min:
+            speed_mm_per_min = speed
+        elif units == UNITS_SPEED.mm_per_sec:
+            speed_mm_per_min = 60*speed
+
+        self.myGCode.__emitEchoOk__("G0 F" +str(speed_mm_per_min))
+
+        return
+
+    def setAcceleration(self, acceleration, units=UNITS_ACCEL.mm_per_sec_sqr):
+        '''hidden
+        desc: Sets the global acceleration for all movement commands on all axes.
+        params:
+            mm_per_sec_sqr:
+                desc: The global acceleration in mm/s^2.
+                type: Number
+            units:
+                desc: Units for speed. Can be switched to UNITS_ACCEL.mm_per_min_sqr
+                defaultValue: UNITS_ACCEL.mm_per_sec_sqr
+                type: String
+        compatibility: MachineMotion v1 and MachineMotion v2.
+        '''
+
+        self._restrictInputValue("units", units, UNITS_ACCEL)
+
+        if units == UNITS_ACCEL.mm_per_sec_sqr:
+            accel_mm_per_sec_sqr = acceleration
+        elif units == UNITS_ACCEL.mm_per_min_sqr:
+            accel_mm_per_sec_sqr = acceleration/3600
+
+        # Note : Set travel and print acceleration, to impact G0 and G1 commands.
+        self.myGCode.__emitEchoOk__("M204 T" + str(accel_mm_per_sec_sqr) + " P" + str(accel_mm_per_sec_sqr))
+
+        return
     def isReady(self):
         return True
         #return self.myGCode.__isReady__()
@@ -2079,9 +2361,9 @@ class MachineMotion(object):
                 max_speed_mm_per_min = maxspeeds[idx]
 
             if min_speed_mm_per_min < HARDWARE_MIN_HOMING_FEEDRATE:
-                raise Exception("Your desired homing speed of " + str(min_speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/sec).")
+                raise Exception("Your desired homing speed of " + str(min_speed_mm_per_min) + "mm/min can not be less than " + str(HARDWARE_MIN_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MIN_HOMING_FEEDRATE/60) + "mm/s).")
             if max_speed_mm_per_min > HARDWARE_MAX_HOMING_FEEDRATE:
-                raise Exception("Your desired homing speed of " + str(max_speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/sec)")
+                raise Exception("Your desired homing speed of " + str(max_speed_mm_per_min) + "mm/min can not be greater than " + str(HARDWARE_MAX_HOMING_FEEDRATE) + "mm/min (" + str(HARDWARE_MAX_HOMING_FEEDRATE/60) + "mm/s)")
 
             gCodeCommand = gCodeCommand + " " + self.myGCode.__getTrueAxis__(axis) + str(min_speed_mm_per_min) + ":" + str(max_speed_mm_per_min)
 
@@ -2216,6 +2498,8 @@ class MachineMotion(object):
         return False
 
 class MachineMotionV2(MachineMotion):
+    '''skip
+    '''
     '''z-index:99
     '''
     def __init__(self, machineIp=DEFAULT_IP_ADDRESS.usb_windows):
@@ -2232,6 +2516,8 @@ class MachineMotionV2(MachineMotion):
                          machineMotionHwVersion=MACHINEMOTION_HW_VERSIONS.MMv2)
 
 class MachineMotionV2OneDrive(MachineMotion):
+    '''skip
+    '''
     '''z-index:98
     '''
     def __init__(self, machineIp=DEFAULT_IP_ADDRESS.usb_windows):

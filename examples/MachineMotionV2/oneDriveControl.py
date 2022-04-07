@@ -15,10 +15,10 @@ print("--> Resetting system")
 mm.resetSystem()
 
 axis = AXIS_NUMBER.DRIVE1
-motorCurrent = 7.5 # current (A)
+motorCurrent = 10 # current (A)
 
 print("--> Configuring axis " + str(axis) + " as timing belt")
-mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, motorCurrent)
+mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, motorCurrent, motorSize=MOTOR_SIZE.LARGE)
 
 ### Home axis 1 specifically
 print("--> Homing axis " + str(axis))

@@ -17,7 +17,7 @@ mm.resetSystem()
 # Configure actuator
 axis = 1
 print("--> Configuring actuator")
-mm.configServo(axis, MECH_GAIN.rack_pinion_mm_turn, DIRECTION.POSITIVE, 5.0)
+mm.configServo(axis, MECH_GAIN.rack_pinion_mm_turn, DIRECTION.POSITIVE, 10.0, motorSize=MOTOR_SIZE.LARGE)
 
 # Home Axis Before Moving
 print("--> Axis " + str(axis) + " moving home")

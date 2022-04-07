@@ -15,7 +15,7 @@ mm.resetSystem()
 # Configure actuators
 axesToMove = [1,2,3]
 for axis in axesToMove:
-    mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 5.0)
+    mm.configServo(axis, MECH_GAIN.timing_belt_150mm_turn, DIRECTION.NORMAL, 10.0, motorSize=MOTOR_SIZE.LARGE)
 
 # Home actuators before performing absolute moves
 print("Axes Moving Home Sequentially")

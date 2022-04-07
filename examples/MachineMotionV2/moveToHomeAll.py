@@ -14,8 +14,8 @@ mm.releaseEstop()
 print("--> Resetting system")
 mm.resetSystem()
 
-### Home all axes sequentially
-print ("All Axes Moving Home sequentially")
+### Home all axes simultaneously
+print ("All axes moving home simultaneously")
 mm.moveToHomeAll()
 mm.waitForMotionCompletion()
-print("All Axes Homed")
+print("All axes homed")
