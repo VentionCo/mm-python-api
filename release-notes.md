@@ -1,59 +1,56 @@
-# Version 2.0
+Version 4.5
 
-The MachineMotion Python API V2.0 aims at simplifying the interfaces to the digital input / outputs and the encoder position.
+## Hardware Compatibility
+Hardware version is available at the bottom of the ControlCenter page.
+  - V2A3* 1D/4D
+  - V2A4* 1D/4D
+  - V2B0*  1D/4D
+  - V2B1*  1D/4D
+  - V2B2*  1D/4D
+  - V2B3   1D/4D
 
-## Compatibility
-
- The Python API V2 requires MachineMotion version V1.12 or newer.
- 
- Please use [mm-python-api V1.6.7](https://github.com/VentionCo/mm-python-api/releases/tag/v1.6.7) for prior version of MachineMotion software.
-
-## Interface changes
-- **Obsoleted interfaces**
-    - attachControlDevice
-    - dettachControlDevice
-    - readControlDevice
-    - writecontrolDevice
-- **New interfaces:**
-    - isIoExpanderAvailable(device)
-    - digitalRead(device, pin)
-    - digitalWrite(device, pin, value)
-    - readEncoderRealtimePosition(device)
+  *: - These versions do not support path following. 
 
 
-# Version 1.6.7
+## Software Compatibility
+Python API v4.5 is compatible with all software versions of Machine motion. However, some functions are only supported on newer versions. These functions are described below:
 
-Date: July 16<sup>th</sup>, 2019
+|  Function 	        |   2.2	|   2.3	|   2.4	|   2.5	|   2.6 |
+|---	                |---	|---	|---	|---    |---    |
+|loadPath   	        |   	|   	|   	|   	|✅     |
+|startPath   	        |   	|   	|   	|   	|✅     |
+|stopPath   	        |   	|   	|   	|   	|✅     |
+|configActuator  	    |   	|   	|   	|   	|✅     |
+|setAxisMaxSpeed   	    |   	|   	|✅     |✅     |✅     |
+|setAxisMaxAcceleration |   	|   	|✅     |✅	  |✅     |
+|getAxisMaxSpeed   	    |   	|   	|✅     |✅     |✅     |
+|getAxisMaxAcceleration |   	|   	|✅     |✅	  |✅     |
+|getActualSpeeds   	    |   	|   	|✅     |✅	  |✅     |
+|stopAxis          	    |   	|   	|✅     |✅     |✅     |
 
-## Improvements:
-- Added support for Python3 and Python2.
-- Updated the REAMDME to include the new MQTT library dependency.
 
 
-# Version: 1.6.6
+## Additions
 
-Date:  July 4<sup>th</sup> 2019
+  + Add new classes for use with path following:
+    + `DIGITAL_OUTPUT_STATE`: Defines deviceId, port and value a DIO module must have to trigger a tool action
+    + `TOOL`: Mapping of a tool number and list of digital output states to define how a tool is activated and stopped.
+  + Add path following functions:
+    + `configPathMode`: Associates g-code axes with Vention drives, and tools with digital outputs
+    + `startPath`: Sends a g-code path to the motion server to be executed
+    + `stopPath`: Abrubtly stops a path
+    + `getPathStatus`: Fetches relevant information on the current loaded path
+  + Add path following example `pathFollowing.py`
+  + Add new classes for Configuration Centralization:
+    + `DriveConfigParams`: Defines the direction and motor size of a given drive
+    + `AcutatorConfigParams`: Defines the various characteristics of a Vention actuator (e.g type, brake presence, gearbox, etc.)
+    + `AXIS_TYPE`: Class of strings that define the available axis types for configuration
+    + `GEARBOX`: Defines supported gearbox ratios for configuration
+  + Add new function for Configuration Centralization:
+    + `configActuator`: Uses the above new classes to configure a Vention actuator. This function makes requests to an intermediate server (execution engine) so that changes can be tracked in ControlCenter
+  + Add new configuration example `configActuator.py`
+  + Examples that previously included a configuration no longer do so. Instead, comments documenting the intended configuration have been added.
+  + Support telescopic column
+  + Support timing belt conveyor
 
-## Bug Fixes:
-- Fix distance of movement smaller then requested on linear axis.
-
-## Improvements:
-- All examples import statement are now version independant.
-
-<br><br>
-# Version: 1.6.5
-
-Date:  June 4<sup>th</sup> 2019
-
-## Bug Fixes:
-- Fix Line Number mismatch with the help of the 'resend' message
-- Fix application hang on termination 
-
-## New Features:
-- Support for the rotatory indexer with constants for mechanical gain.
-
-## Improvements:
-- Added more examples for each sensor port for the different control devices functions.
-- Auto reconnect on connection loss
-- Instead of starting a new thread each 0.1 seconds, we now start one thread at the beginning and keep it alive forever to receive messages from the server
-
+For a complete API reference, see: [our documentation](vention.io)
