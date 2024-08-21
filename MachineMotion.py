@@ -815,6 +815,10 @@ class MachineMotion(object):
         self.myMqttClient.connect(machineIp)
         self.myMqttClient.loop_start()
 
+        # user-assigned callback function.
+        self.onMQTTDisconnect = None
+        self.onMQTTConnect = None
+
         # Set callback to default until user initialize it
         self.eStopCallback = lambda *args: None
 
@@ -866,6 +870,13 @@ class MachineMotion(object):
         ]
 
         return
+    
+    # set callback function for MQTT disconnect.
+    def setOnMQTTDisconnect(self, fn):
+        self.onMQTTDisconnect = fn
+
+    def setOnMQTTConnect(self, fn):
+        self.onMQTTConnect = fn
 
     def moveContinuous(self, axis, speed=None, accel=None, direction=None):
         """
@@ -2762,6 +2773,14 @@ class MachineMotion(object):
             self.myMqttClient.subscribe(MQTT.PATH.AUX_PORT_POWER + "/+/status")
             self.myMqttClient.subscribe(MQTT.PATH.SMARTDRIVES_READY)
 
+            if self.onMQTTConnect is None:
+                stderr("mqtt Connected rc=%d" % (rc,))
+                return
+            try:
+                self.onMQTTConnect(self, client, userData, rc)
+            except Exception as e:
+                stderr(e)
+
         return
 
     def onDigitalInput(self, callback):
@@ -2890,9 +2909,15 @@ class MachineMotion(object):
 
         return
 
+    
     def __onDisconnect(self, client, userData, rc):
-        # eprint("Disconnected with rtn code [%d]"% (rc))
-        return
+        if self.onMQTTDisconnect is None:
+            stderr("mqtt disconnected rc=%d" % (rc,))
+            return
+        try:
+            self.onMQTTDisconnect(self, client, userData, rc)
+        except Exception as e:
+            stderr(e)
 
     ########################
     ######## LEGACY ########
